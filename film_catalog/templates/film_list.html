@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Películas</title>
+</head>
+<body>
+    <h1>Lista de Películas</h1>
+    <ul>
+        {% for pelicula in peliculas %}
+            <li>
+                <a href="{% url 'fil_detail' film.pk %}">
+                    <strong>{{ film.title }}</strong>
+                </a>
+                ({{ film.year }}) - {{ film.director }} - {{ film.category }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
