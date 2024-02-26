@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('book_catalog/', include('book_catalog.urls')),
+    path('person_catalog/', include('person_catalog.urls')),
     path('', RedirectView.as_view(url='/book_catalog/', permanent=True)),
 ]
 
