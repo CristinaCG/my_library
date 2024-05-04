@@ -3,7 +3,7 @@
 import os
 import sys
 from django.core.management.base import BaseCommand
-import book_catalog.models as models
+# import book_catalog.models as models
 
 
 def main():

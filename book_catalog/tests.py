@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Author, Book, Genre, Language
+from .models import Author, Book, Genre, Language, BookSaga
 # Create your tests here.
 
 class LanguageModelTest(TestCase):
@@ -121,6 +121,7 @@ class BookModelTest(TestCase):
         language = Language.objects.create(name='English')
         book = Book.objects.create(title='Big Book', author=author, summary='Big Summary', isbn='1234567890123', language=language)
         book.genre.set([genre])
+        saga = BookSaga.objects.create(name='Big Saga', author=Author.objects.get(id=1))
 
     def test_title_label(self):
         book = Book.objects.get(id=1)
@@ -162,7 +163,52 @@ class BookModelTest(TestCase):
         field_label = book._meta.get_field('language').verbose_name
         self.assertEqual(field_label, 'language')
 
+    def test_saga_label(self):
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('saga').verbose_name
+        self.assertEqual(field_label, 'saga')
+    
+    def test_saga_volume(self):
+        with self.assertRaises(Exception):
+            book = Book.objects.create(title='Big Book', author=Author.objects.get(id=1), summary='Big Summary', isbn='1234567890123', language=Language.objects.get(id=1),
+                            saga=BookSaga.objects.get(id=1))
+
+    def test_volume_unique_in_saga(self):
+        Book.objects.create(title='Book 1', author=Author.objects.get(id=1), saga=BookSaga.objects.get(id=1), saga_volume=1, language = Language.objects.get(id=1))
+        with self.assertRaises(Exception):
+            Book.objects.create(title='Book 2', author=Author.objects.get(id=1), saga=BookSaga.objects.get(id=1), saga_volume=1, language = Language.objects.get(id=1))
+
     # def test_get_absolute_url(self):
     #     book = Book.objects.get(id=1)
     #     # This will also fail if the urlconf is not defined.
     #     self.assertEqual(book.get_absolute_url(), '/book_catalog/book/1')
+
+class BookSagaModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        author = Author.objects.create(first_name='Big', last_name='Bob')
+        saga = BookSaga.objects.create(name='Big Saga', author=author)
+        language = Language.objects.create(name='English')
+        Book.objects.create(title='Big Book', author=author, summary='Big Summary', isbn='1234567890123', saga = saga, saga_volume = 1, language = language)
+        
+    def test_name_label(self):
+        saga = BookSaga.objects.get(id=1)
+        field_label = saga._meta.get_field('name').verbose_name
+        self.assertEqual(field_label, 'name')
+
+    def test_name_max_length(self):
+        saga = BookSaga.objects.get(id=1)
+        max_length = saga._meta.get_field('name').max_length
+        self.assertEqual(max_length, 200)
+
+    def test_author_label(self):
+        saga = BookSaga.objects.get(id=1)
+        field_label = saga._meta.get_field('author').verbose_name
+        self.assertEqual(field_label, 'author')
+
+    def test_author_null(self):
+        saga = BookSaga.objects.get(id=1)
+        field_null = saga._meta.get_field('author').null
+        self.assertEqual(field_null, False)
+    
