@@ -74,11 +74,11 @@ class Book(models.Model):
         """
         return self.title
 
-    # def get_absolute_url(self):
-    #     """
-    #     Returns the url to access a detail record for this book.
-    #     """
-    #     return reverse('book_detail', args=[str(self.id)])
+    def get_absolute_url(self):
+        """
+        Returns the url to access a detail record for this book.
+        """
+        return reverse('book-detail', args=[str(self.id)])
     
     def display_author(self):
         """
@@ -132,11 +132,11 @@ class Author(models.Model):
     class Meta:
         ordering = ['last_name', 'first_name']
 
-    # def get_absolute_url(self):
-    #     """
-    #     Returns the url to access a particular author instance.
-    #     """
-    #     return reverse('author-detail', args=[str(self.id)])
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular author instance.
+        """
+        return reverse('author-detail', args=[str(self.id)])
     
     def __str__(self):
         """

@@ -8,8 +8,10 @@
 
       {% for book in book_list %}
       <li>
-        <!-- <a href="{{ book.get_absolute_url }}">{{ book.title }}</a> ({{book.display_author}}) -->
-        <a href="">{{ book.title }}</a> ({{book.display_author}})
+          <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>{% if book.saga %}
+          <span style="color: gray;">
+              (<a href="{{ book.saga.get_absolute_url }}">{{ book.saga.name }} </a>#{{ book.saga_volume }})
+          </span>{% endif %}, <a href="{{ book.author.get_absolute_url }}">{{ book.display_author }}</a>
       </li>
       {% endfor %}
 

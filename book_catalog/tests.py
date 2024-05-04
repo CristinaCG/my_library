@@ -111,6 +111,9 @@ class AuthorModelTest(TestCase):
     def test_year_of_birth_after_death(self):
         with self.assertRaises(Exception):
             Author.objects.create(first_name='Big', last_name='Bob', year_of_birth=2000, year_of_death=1999)
+    def test_get_absolute_url(self):
+        author = Author.objects.get(id=1)
+        self.assertEqual(author.get_absolute_url(), '/book_catalog/author/1')
 
 class BookModelTest(TestCase):
     @classmethod
@@ -178,10 +181,10 @@ class BookModelTest(TestCase):
         with self.assertRaises(Exception):
             Book.objects.create(title='Book 2', author=Author.objects.get(id=1), saga=BookSaga.objects.get(id=1), saga_volume=1, language = Language.objects.get(id=1))
 
-    # def test_get_absolute_url(self):
-    #     book = Book.objects.get(id=1)
-    #     # This will also fail if the urlconf is not defined.
-    #     self.assertEqual(book.get_absolute_url(), '/book_catalog/book/1')
+    def test_get_absolute_url(self):
+        book = Book.objects.get(id=1)
+        # This will also fail if the urlconf is not defined.
+        self.assertEqual(book.get_absolute_url(), '/book_catalog/book/1')
 
 class BookSagaModelTest(TestCase):
     @classmethod
@@ -212,3 +215,6 @@ class BookSagaModelTest(TestCase):
         field_null = saga._meta.get_field('author').null
         self.assertEqual(field_null, False)
     
+    def test_get_absolute_url(self):
+        saga = BookSaga.objects.get(id=1)
+        self.assertEqual(saga.get_absolute_url(), '/book_catalog/saga/1')

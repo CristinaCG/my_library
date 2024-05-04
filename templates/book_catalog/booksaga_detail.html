@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Saga: {{ booksaga.name }}</h1>
+
+  <p><strong>Author:</strong> {{ booksaga.author }}</p>
+
+  <h2>Books in this Saga:</h2>
+  <ul>
+    {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
+      <li>
+        <a href="{% url 'book-detail' book.pk %}">{{ book.title }}</a>
+        {% if book.saga_volume %}
+          - <span style="color: gray;">#{{ book.saga_volume }}</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
