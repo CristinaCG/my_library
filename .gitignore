@@ -1,0 +1,51 @@
+# Ignora la configuración local de Django
+*/settings.py
+
+# Ignora los archivos de byte compilados de Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+
+# Ignora los archivos de la base de datos de SQLite si estás usando SQLite
+*.sqlite3
+
+# Ignora los archivos de los medios si estás sirviendo los medios con Django en desarrollo
+media
+
+# Ignora los archivos de registro
+*.log
+
+# Ignora los archivos temporales que pueden contener información sensible
+*.bak
+*.swp
+*.pids
+secrets
+*.DS_Store
+
+# Ignora los archivos de entorno virtual de Python
+venv/
+ENV/
+
+# Ignora los archivos de paquetes de Python
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+*.egg
+
+# Ignora los archivos de IDE y editores de texto
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
