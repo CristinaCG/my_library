@@ -60,7 +60,7 @@ class Book(models.Model):
     isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book')
     # ManyToManyField, porque un género puede contener muchos libros y un libro puede cubrir varios géneros.
-    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
+    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         ordering = ['title', 'author']
@@ -85,6 +85,15 @@ class Book(models.Model):
         Creates a string for the Author. This is required to display author in Admin.
         """
         return f"{self.author.first_name[0]}. {self.author.last_name}"
+
+    def display_title(self):
+        """
+        Creates a string for the Book. This is required to display book in Admin.
+        """
+        if self.saga is not None:
+            return f"{self.title} ({self.saga.name}, #{self.saga_volume})"
+        else:
+            return f"{self.title}"
 
     def clean(self):
         if (self.saga is not None) and (self.saga_volume is None):

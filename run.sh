@@ -2,7 +2,7 @@ source C:\\Users\\crist\\Envs\\tokio_project
 
 python3 run.py clear_data
 
-python3 manage.py makemigrations
+python3 manage.py makemigrations book_catalog
 
 python3 manage.py migrate
 
