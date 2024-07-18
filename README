@@ -30,6 +30,11 @@ python manage.py runserver
 ```
 Luego, abre un navegador y ve a `http://localhost:8000`.
 
+## Tests
+```
+python manage.py test
+```
+
 ## Contribuir
 
 Si quieres contribuir a este proyecto, por favor realiza un fork del repositorio, crea una rama con tus cambios y envía un pull request.

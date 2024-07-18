@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Author, Book, Genre, Language, BookSaga
 from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def index(request):
     """
@@ -18,14 +19,20 @@ def index(request):
 class BookListView(generic.ListView):
     model = Book
 
-class BookDetailView(generic.DetailView):
+class BookDetailView(LoginRequiredMixin, generic.DetailView):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
     model = Book
 
 class AuthorListView(generic.ListView):
     model = Author
 
-class AuthorDetailView(generic.DetailView):
+class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
     model = Author
 
-class BookSagaDetailView(generic.DetailView):
+class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
     model = BookSaga
