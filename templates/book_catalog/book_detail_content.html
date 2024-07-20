@@ -1,0 +1,13 @@
+{% block content %}
+  <h1>Title: {{ book.title }}</h1>
+
+  <p><strong>Author:</strong> <a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></p>
+  {% if book.saga %}
+  <p><strong>Saga:</strong> <a href="{{ book.saga.get_absolute_url }}">{{ book.saga.name }} </a>, <strong>Volume: </strong>{{ book.saga_volume }}</p>
+  {% endif %}
+  <p><strong>Summary:</strong> {{ book.summary }}</p>
+  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+  <p><strong>Language:</strong> {{ book.language }}</p>
+  <p><strong>Genero:</strong> {% for genre in book.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+{% endblock %}

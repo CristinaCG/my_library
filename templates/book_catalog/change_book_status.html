@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+{% block content %}
+{% include "book_catalog/book_detail_content.html" %}
+
+<div style="margin-top: 20px;">
+    <h2>Cambiar Estado del Libro</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <a href="{% url 'delete-book-status' book.id %}">Delete</a>
+      <button type="submit">Cambiar Estado</button>
+    </form>
+  </div>
+
+{% endblock %}

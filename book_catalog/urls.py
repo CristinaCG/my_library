@@ -11,4 +11,7 @@ urlpatterns = [
     path('author/<int:pk>', views.AuthorDetailView.as_view(), name='author-detail'),
     path('saga/<int:pk>', views.BookSagaDetailView.as_view(), name='saga-detail'),
     path('mybooks/', views.UerBookRelationListView.as_view(), name='my-books'),
+    path('book/<int:pk>/change-status/', views.change_book_status, name='change-book-status'),
+    # path('book/<int:book_id>/change-status/', views.ChangeBookStatusView.as_view(), name='change-book-status'),
+    path('book/<int:pk>/delete-status/', views.delete_book_status, name='delete-book-status'),
 ]
