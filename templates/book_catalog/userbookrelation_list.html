@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Lista de libros</h1>
+
+    {% if userbookrelation_list %}
+    <ul>
+
+      {% for object in userbookrelation_list %}
+      <li>
+          <a href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>{% if object.book.saga %}
+          <span style="color: gray;">
+              (<a href="{{ object.book.saga.get_absolute_url }}">{{ object.book.saga.name }} </a>#{{ object.book.saga_volume }})
+          </span>{% endif %}, <a href="{{ object.book.author.get_absolute_url }}">{{ object.book.display_author }}</a>
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>No hay libros en la biblioteca.</p>
+    {% endif %}
+{% endblock %}

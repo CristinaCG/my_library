@@ -32,6 +32,10 @@
           <li><a href="{% url 'index' %}">Home</a></li>
           <li><a href="{% url 'books' %}">All books</a></li>
           <li><a href="{% url 'authors' %}">All authors</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my-books' %}">My Books</a></li>
+          {% endif %}
+
       </ul>
      {% endblock %}
       </div>

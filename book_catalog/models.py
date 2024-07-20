@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 import uuid
 
 # Create your models here.
@@ -9,33 +10,66 @@ class Genre(models.Model):
     """
     Model representing a book genre (e.g. Science Fiction, Non Fiction).
     """
-    name = models.CharField(max_length=200, help_text='Enter a book genre (e.g. Science Fiction, French Poetry etc.)')
-    
+    name = models.CharField(max_length=200,
+                            help_text='Enter a book genre (e.g. Science Fiction,'
+                            'French Poetry etc.)')
+
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return self.name
+        return str(self.name)
+
+    def clean(self):
+        """
+        Check if the genre is valid
+        """
+        if self.name is not None:
+            if self.name == "":
+                raise ValidationError("Genre cannot be empty.")
+            if len(self.name) > 200:
+                raise ValidationError("Genre is too long, maximum length is 200 characters")
+
+    def save(self, *args, **kwargs):
+        """
+        Save the genre in the data base
+        """
+        # self.clean()
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 class Language(models.Model):
     """
     Model representing a Language (e.g. English, French, Japanese, etc.)
     """
     name = models.CharField(max_length=200,
-                            help_text="Enter the book's natural language (e.g. English, French, Japanese etc.)")
-    
-    def get_absolute_url(self):
-        """
-        Returns the url to access a particular language instance.
-        """
-        return reverse('language-detail', args=[str(self.id)])
+                            help_text="Enter the book's natural language (e.g. "
+                            "English, French, Japanese etc.)")
 
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return self.name
+        return str(self.name)
+
+    def clean(self):
+        """
+        Check if the language is valid
+        """
+        if self.name == "":
+            raise ValidationError("Language cannot be empty.")
+        if len(self.name) > 200:
+            raise ValidationError("Language is too long, maximum length is "
+                                  "200 characters.")
     
+    def save(self, *args, **kwargs):
+        """
+        Save the language in the data base
+        """
+        # self.clean()
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -63,6 +97,9 @@ class Book(models.Model):
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
+        """
+        Metadata for the model.
+        """
         ordering = ['title', 'author']
         constraints = [
             models.UniqueConstraint(fields=['saga', 'saga_volume'], name='unique_volume_in_saga')
@@ -72,14 +109,14 @@ class Book(models.Model):
         """
         String for representing the Model object.
         """
-        return self.title
+        return str(self.title)
 
     def get_absolute_url(self):
         """
         Returns the url to access a detail record for this book.
         """
         return reverse('book-detail', args=[str(self.id)])
-    
+
     def display_author(self):
         """
         Creates a string for the Author. This is required to display author in Admin.
@@ -98,27 +135,69 @@ class Book(models.Model):
     def clean(self):
         if (self.saga is not None) and (self.saga_volume is None):
             raise ValidationError("Saga volume cannot be empty if saga is set")
-    
+        if (self.saga is None) and (self.saga_volume is not None):
+            raise ValidationError("Saga cannot be empty if saga volume is set")
+        if self.title == "":
+            raise ValidationError("Title cannot be empty")
+        if len(self.title) > 200:
+            raise ValidationError("Title is too long, maximum length is 200 characters")
+        if self.publish_date is not None:
+            if self.publish_date > timezone.now().date():
+                raise ValidationError("Publish date cannot be in the future")
+        if self.saga is not None:
+            if self.saga.author != self.author:
+                raise ValidationError("Saga author must be the same as the book author")
+        if (self.isbn is not None) and (len(self.isbn) != 13):
+            raise ValidationError("ISBN must have 13 characters")
+        if (self.summary is not None) and (len(self.summary) > 1000):
+            raise ValidationError("Summary is too long, maximum length is 1000 characters")
+
+
     def save(self, *args, **kwargs):
+        # self.clean()
         self.full_clean()
         super().save(*args, **kwargs)
             
-class BookState(models.Model):
+class UserBookRelation(models.Model):
     """
     Model representing a book state (e.g. read, to read, reading).
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular book state')
-    book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
-    state = (
+    STATUS_CHOICES = (
         ('r', 'Read'),
         ('t', 'To read'),
         ('i', 'Reading'),
     )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES,
+                              help_text = "Estado actual del libro")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular book',)
+
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return f'{self.id} ({self.book.title})'
+        return f'{self.user.username} ({self.book.title})'
+
+    class Meta:
+        """
+        Metadata for the model.
+        """
+        # Para evitar que se puedan tener en la base de datos más de una relación entre un usuario y el mismo libro
+        unique_together = ('user', 'book')
+
+    def clean(self):
+        if self.status not in ['r', 't', 'i']:
+            raise ValidationError("Invalid status, must be 'r', 't' or 'i'")
+        if self.user is None:
+            raise ValidationError("User cannot be empty")
+        if self.book is None:
+            raise ValidationError("Book cannot be empty") 
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class Author(models.Model):
     """
@@ -130,6 +209,9 @@ class Author(models.Model):
     year_of_death = models.IntegerField(null = True, blank = True)
 
     class Meta:
+        """
+        Metadata for the model.
+        """
         ordering = ['last_name', 'first_name']
 
     def get_absolute_url(self):
@@ -137,7 +219,7 @@ class Author(models.Model):
         Returns the url to access a particular author instance.
         """
         return reverse('author-detail', args=[str(self.id)])
-    
+
     def __str__(self):
         """
         String for representing the Model object.
@@ -172,7 +254,15 @@ class Author(models.Model):
         if self.year_of_birth and self.year_of_death is not None:
             if self.year_of_birth > self.year_of_death:
                 raise ValidationError("Year of birth cannot be after year of death")
-        
+        if len(self.first_name) == 0:
+            raise ValidationError("First name cannot be empty")
+        if len(self.last_name) == 0:
+            raise ValidationError("Last name cannot be empty")
+        if len(self.first_name) > 100:
+            raise ValidationError("First name is too long, maximum length is 100 characters")
+        if len(self.last_name) > 100:
+            raise ValidationError("Last name is too long, maximum length is 100 characters")
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
@@ -188,10 +278,22 @@ class BookSaga(models.Model):
         """
         String for representing the Model object.
         """
-        return self.name
-    
+        return str(self.name)
+
     def get_absolute_url(self):
         """
         Returns the url to access a particular saga instance.
         """
         return reverse('saga-detail', args=[str(self.id)])
+
+    def clean(self):
+        if self.name is not None:
+            if len(self.name) == 0:
+                raise ValidationError("Saga cannot be empty.")
+            if len(self.name) > 200:
+                raise ValidationError("Saga name is too long, maximum length is 200 characters.")
+
+    def save(self, *args, **kwargs):
+        # self.clean()
+        self.full_clean()
+        super().save(*args, **kwargs)

@@ -1,13 +1,26 @@
-import os, argparse
-from django.contrib.auth.models import User
+import os
+import argparse
+import django
+# from django.contrib.auth.models import User
 os.environ['DJANGO_SETTINGS_MODULE'] = 'my_library.settings'
 
-import django
 django.setup()
 
 import book_catalog.models as models
 
+def clear_data():
+    print("Deleting data...")
+    # Borra tus datos aquí. Por ejemplo:
+    models.Book.objects.all().delete()
+    models.Author.objects.all().delete()
+    models.Language.objects.all().delete()
+    models.Genre.objects.all().delete()
+    models.BookSaga.objects.all().delete()
+    models.User.objects.all().delete()
+    models.UserBookRelation.objects.all().delete()
+
 def add_data():
+    clear_data()
     print("Creating data...")
     genre_romance = models.Genre.objects.create(name="Romance")
     genre_fiction = models.Genre.objects.create(name="Fiction")
@@ -52,25 +65,25 @@ def add_data():
     book.append(models.Book.objects.create(title='Tríada', author=author[5], publish_date='2022-07-19', language = language_spanish, saga = saga_memorias_de_idhun, saga_volume = 2))
     book.append(models.Book.objects.create(title='Panteón', author=author[5], publish_date='2022-07-19', language = language_spanish, saga = saga_memorias_de_idhun, saga_volume = 3))
 
-    user1 = User.objects.create_user(username = 'julio', email = 'myemail@crazymail.com', password = 'julio')
+    superuser = models.User.objects.create_superuser('admin', 'correo@ejemplo.com', '1234')
+    superuser.save()
+
+    user1 = models.User.objects.create_user(username = 'julio', email = 'myemail@crazymail.com', password = 'julio')
     user1.first_name = 'Julio'
     user1.last_name = 'García'
     user1.save()
 
-    user2 = User.objects.create_user(username = 'teresa', email = 'myemail@crazymail.com', password = 'teresa')
+    user2 = models.User.objects.create_user(username = 'teresa', email = 'myemail@crazymail.com', password = 'teresa')
     user2.first_name = 'Teresa'
     user2.last_name = 'Aranda'
     user2.save()
 
-def clear_data():
-    print("Deleting data...")
-    # Borra tus datos aquí. Por ejemplo:
-    models.Book.objects.all().delete()
-    models.Author.objects.all().delete()
-    models.Language.objects.all().delete()
-    models.Genre.objects.all().delete()
-    models.BookSaga.objects.all().delete()
-    User.objects.all().delete()
+    state1 = models.UserBookRelation.objects.create(user = user1, book = book[0], status = 'r')
+    state2 = models.UserBookRelation.objects.create(user = user1, book = book[1], status = 'r')
+    state3 = models.UserBookRelation.objects.create(user = user2, book = book[2], status = 'i')
+    state4 = models.UserBookRelation.objects.create(user = user2, book = book[3], status = 't')
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
