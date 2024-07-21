@@ -1,4 +1,5 @@
 from django import forms
+from .models import UserBookRelation
 
 class ChangeBookStatusForm(forms.Form):
     STATUS_CHOICES = (
@@ -7,3 +8,8 @@ class ChangeBookStatusForm(forms.Form):
         ('t', 'To read'),
     )
     status = forms.ChoiceField(choices=STATUS_CHOICES, label="Status", required=True)
+
+class ChangeBookStatusModelForm(forms.ModelForm):
+    class Meta:
+        model = UserBookRelation
+        fields = ['status']

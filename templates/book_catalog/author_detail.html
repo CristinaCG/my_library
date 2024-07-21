@@ -2,9 +2,11 @@
 
 {% block content %}
   <h1>Name: {{ author.first_name }} {{ author.last_name }}</h1>
-  <p><strong>Fecha de nacimiento:</strong> {{ author.date_of_birth }}</p>
-  {% if author.date_of_death %}
-    <p><strong>Fecha de fallecimiento:</strong> {{ author.date_of_death }}</p>
+  {% if author.year_of_birth %}
+    <p><strong>Fecha de nacimiento:</strong> {{ author.year_of_birth }}</p>
+  {% endif %}
+  {% if author.year_of_death %}
+    <p><strong>Fecha de fallecimiento:</strong> {{ author.year_of_death }}</p>
   {% endif %}
   <!-- <div style="margin-left:20px;margin-top:20px">
     <h4>Copias</h4>

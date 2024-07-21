@@ -148,7 +148,7 @@ class Book(models.Model):
             if self.saga.author != self.author:
                 raise ValidationError("Saga author must be the same as the book author")
         if (self.isbn is not None) and (len(self.isbn) != 13):
-            raise ValidationError("ISBN must have 13 characters")
+            raise ValidationError(f"ISBN must have 13 characters, current length is {len(self.isbn)}")
         if (self.summary is not None) and (len(self.summary) > 1000):
             raise ValidationError("Summary is too long, maximum length is 1000 characters")
 

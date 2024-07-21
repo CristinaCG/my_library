@@ -7,7 +7,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ChangeBookStatusForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 def index(request):
     """
@@ -63,24 +64,29 @@ class UerBookRelationListView(LoginRequiredMixin, generic.ListView):
         return super().get_queryset().filter(user=self.request.user)
     # template_name ='templates/book_catalog/userbookrelation_list.html'
 
-# @permision_required('book_catalog.can_mark_returned')
-# class ChangeBookStatusView(LoginRequiredMixin, generic.UpdateView):
-#     template_name = 'book_catalog/change_book_status.html'
-#     model = UserBookRelation
-#     fields = ['status']  # Asumiendo que quieres actualizar el campo 'status'
-#     success_url = '/book/'  # Asegúrate de cambiar esto a una URL adecuada
+class AuthorCreateView(CreateView):
+    model = Author
+    fields = '__all__'
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         # Asumiendo que tienes acceso al libro y al usuario en esta vista
-#         book_id = self.kwargs.get('book_id')
-#         user = self.request.user
-#         user_book_relation = UserBookRelation.objects.filter(book_id=book_id, user=user).first()
-#         context['user_book_relation'] = user_book_relation
-#         return context
+class AuthorUpdateView(UpdateView):
+    model = Author
+    fields = '__all__'
 
-#     def get_queryset(self):
-#         return super().get_queryset().filter(user=self.request.user)
+class AuthorDeleteView(DeleteView):
+    model = Author
+    success_url = reverse_lazy('authors')
+
+class BookCreateView(CreateView):
+    model = Book
+    fields = '__all__'
+
+class BookUpdateView(UpdateView):
+    model = Book
+    fields = '__all__'
+
+class BookDeleteView(DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
 
 def change_book_status(request, pk):
     """
@@ -104,6 +110,8 @@ def delete_book_status(request, pk):
     book = get_object_or_404(Book, pk=pk)
     UserBookRelation.objects.filter(user = request.user, book = book).delete()
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
+
+
 
 # def add_book(request):
 #     if request.method == 'POST':
