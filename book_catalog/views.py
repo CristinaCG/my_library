@@ -46,6 +46,14 @@ class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
     redirect_field_name = 'redirect_to'
     model = Author
 
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        author = self.get_object()
+        books = author.book_set.all().order_by('saga', 'saga_volume')
+        context['books'] = books
+        return context
+
+
 class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
@@ -106,8 +114,10 @@ def change_book_status(request, pk):
             UserBookRelation.objects.update_or_create(user = request.user, book = book, defaults = {'status': status})
             return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
     else:
-        form = ChangeBookStatusForm(initial = {'status': "t"})
-    return render(request, 'book_catalog/change_book_status.html', {'form': form, 'book': book})
+        status = UserBookRelation.objects.filter(user = request.user, book = book).first()
+        initial_status = status.status if status else 't'
+        form = ChangeBookStatusForm(initial = {'status': initial_status})
+    return render(request, 'book_catalog/change_book_status_form.html', {'form': form, 'book': book})
 
 def delete_book_status(request, pk):
     """

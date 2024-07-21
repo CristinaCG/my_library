@@ -7,7 +7,9 @@
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
+      {% comment %} {% if user_book_relation_exists %} {% endcomment %}
       <a href="{% url 'delete-book-status' book.id %}">Delete</a>
+      {% comment %} {% endif %} {% endcomment %}
       <button type="submit">Cambiar Estado</button>
     </form>
   </div>

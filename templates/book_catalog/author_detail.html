@@ -14,6 +14,21 @@
   {% if author.year_of_death %}
     <p><strong>Fecha de fallecimiento:</strong> {{ author.year_of_death }}</p>
   {% endif %}
+
+
+  <h2>Libros del Autor</h2>
+  <ul>
+    {% for book in books%}
+      <li>
+        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>{% if book.saga %}
+        <span style="color: gray;">
+            (<a href="{{ book.saga.get_absolute_url }}">{{ book.saga.name }} </a>#{{ book.saga_volume }})
+        </span>{% endif %}
+      </li>
+    {% empty %}
+      <li>Este autor no tiene libros listados.</li>
+    {% endfor %}
+  </ul>
   <!-- <div style="margin-left:20px;margin-top:20px">
     <h4>Copias</h4>
 
