@@ -87,13 +87,10 @@ class Book(models.Model):
     saga = models.ForeignKey('BookSaga', on_delete=models.PROTECT, null=True, blank=True)
     saga_volume = models.IntegerField(null=True, blank=True)
     author = models.ForeignKey('Author', on_delete=models.PROTECT, null=False)
-    # ForeignKey, ya que un libro tiene un solo autor, pero el mismo autor puede haber escrito muchos libros.
-    # 'Author' es un string, en vez de un objeto, porque la clase Author aún no ha sido declarada.
     publish_date = models.DateField(null=True, blank=True)
     summary = models.TextField(max_length=1000, help_text='Enter a brief description of the book', null=True, blank=True)
     isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book')
-    # ManyToManyField, porque un género puede contener muchos libros y un libro puede cubrir varios géneros.
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
@@ -101,6 +98,7 @@ class Book(models.Model):
         Metadata for the model.
         """
         ordering = ['title', 'author']
+        unique_together = ('title', 'author')
         constraints = [
             models.UniqueConstraint(fields=['saga', 'saga_volume'], name='unique_volume_in_saga')
         ]
@@ -197,7 +195,6 @@ class UserBookRelation(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
 
 class Author(models.Model):
     """
@@ -297,3 +294,6 @@ class BookSaga(models.Model):
         # self.clean()
         self.full_clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('name', 'author')

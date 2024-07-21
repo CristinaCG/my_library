@@ -33,12 +33,13 @@ def add_data():
     language_spanish = book_catalog_models.Language.objects.create(name="Spanish")
     # Añade tus datos aquí. Por ejemplo:
     author = []
-    author.append(book_catalog_models.Author.objects.create(first_name='Katherine', last_name='Center'))     # 0
-    author.append(book_catalog_models.Author.objects.create(first_name='Elisabet', last_name='Benavent'))    # 1
+    author.append(book_catalog_models.Author.objects.create(first_name='Katherine', last_name='Center'), year_of_birth = 1972)     # 0
+    author.append(book_catalog_models.Author.objects.create(first_name='Elisabet', last_name='Benavent'), year_of_birth=1984)    # 1
     author.append(book_catalog_models.Author.objects.create(first_name='Amy', last_name='Tintera'))          # 2
-    author.append(book_catalog_models.Author.objects.create(first_name='Jacobs', last_name='Anne'))          # 3
-    author.append(book_catalog_models.Author.objects.create(first_name='Moreno', last_name='Eloy'))          # 4
-    author.append(book_catalog_models.Author.objects.create(first_name='Gallego', last_name='Laura'))        # 5
+    author.append(book_catalog_models.Author.objects.create(first_name='Jacobs', last_name='Anne', year_of_birth=1941))         # 3
+    author.append(book_catalog_models.Author.objects.create(first_name='Moreno', last_name='Eloy', year_of_birth=1976))          # 4
+    author.append(book_catalog_models.Author.objects.create(first_name='Gallego', last_name='Laura', year_of_birth=1977))
+    author.append(book_catalog_models.Author.objects.create(first_name='Asimov', last_name='Isaac', year_of_death=1992))
     book = []
     book.append(book_catalog_models.Book.objects.create(title='La Guarda Espaldas', author=author[0], publish_date='2022-07-19', 
                                            summary = "PROTEGE A TU CLIENTE. PERO, POR ENCIMA DE TODO, PROTEGE TU CORAZÓN. La reina de las novelas reconfortantes llega a España con una .",
