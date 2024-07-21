@@ -1,6 +1,7 @@
 from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from .models import Author, Book, Genre, Language, BookSaga, UserBookRelation
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -25,6 +26,7 @@ def index(request):
 
 class BookListView(generic.ListView):
     model = Book
+    paginate_by = 10
 
 class BookDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
@@ -40,6 +42,7 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
 
 class AuthorListView(generic.ListView):
     model = Author
+    paginate_by = 10
 
 class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
@@ -102,6 +105,7 @@ class BookDeleteView(PermissionRequiredMixin,DeleteView):
     success_url = reverse_lazy('books')
     permission_required = 'book_catalog.delete_book'
 
+@login_required
 def change_book_status(request, pk):
     """
     View function for changing book status.
@@ -119,6 +123,7 @@ def change_book_status(request, pk):
         form = ChangeBookStatusForm(initial = {'status': initial_status})
     return render(request, 'book_catalog/change_book_status_form.html', {'form': form, 'book': book})
 
+@login_required
 def delete_book_status(request, pk):
     """
     View function for changing book status.

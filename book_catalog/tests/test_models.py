@@ -717,6 +717,17 @@ class BookModelTest(TestCase):
         self.assertIn("Book with this Saga and Saga volume already exists",
                       e.exception.message_dict['__all__'][0])
 
+    def test_book_saga_volume_without_saga(self):
+        """
+        Test the volume without saga
+        """
+        self.book.saga = None
+        self.book.saga_volume = 1
+        with self.assertRaises(ValidationError) as e:
+            self.book.save()
+        self.assertIn("Saga cannot be empty if saga volume is set",
+                      e.exception.message_dict['__all__'][0])
+
     def test_book_get_absolute_url(self):
         """
         Test the get_absolute_url method
@@ -734,6 +745,10 @@ class BookModelTest(TestCase):
         Test the display_title method
         """
         self.assertEqual(self.book.display_title(), 'Large Book (Small Saga, #1)')
+        self.book.saga = None
+        self.book.saga_volume = None
+        self.book.save()
+        self.assertEqual(self.book.display_title(), 'Large Book')
 
     def test_book_author_saga(self):
         """

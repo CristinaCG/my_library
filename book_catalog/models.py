@@ -187,10 +187,6 @@ class UserBookRelation(models.Model):
     def clean(self):
         if self.status not in ['r', 't', 'i']:
             raise ValidationError("Invalid status, must be 'r', 't' or 'i'")
-        if self.user is None:
-            raise ValidationError("User cannot be empty")
-        if self.book is None:
-            raise ValidationError("Book cannot be empty") 
 
     def save(self, *args, **kwargs):
         self.full_clean()
