@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Author, Book, Genre, Language, BookSaga, UserBookRelation
+from ..models import Author, Book, Genre, Language, BookSaga, UserBookRelation
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
