@@ -1,6 +1,12 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+{% if perms.book_catalog.change_author %}
+  <a href="{% url 'author-update' author.id %}" class="btn btn-primary">Edit</a>
+{% endif %}
+{% if perms.book_catalog.delete_author %}
+  <a href="{% url 'author-delete' author.id %}" class="btn btn-primary">Delete</a>
+{% endif %}
   <h1>Name: {{ author.first_name }} {{ author.last_name }}</h1>
   {% if author.year_of_birth %}
     <p><strong>Fecha de nacimiento:</strong> {{ author.year_of_birth }}</p>

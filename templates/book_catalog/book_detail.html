@@ -1,6 +1,12 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+{% if perms.book_catalog.change_book %}
+  <a href="{% url 'book-update' book.id %}" class="btn btn-primary">Edit</a>
+  {% endif %}
+  {% if perms.book_catalog.delete_book %}
+  <a href="{% url 'book-delete' book.id %}" class="btn btn-primary">Delete</a>
+{% endif %}
 {% include "book_catalog/book_detail_content.html" %}
 {% if user_book_relation %}
     <a href="{% url 'change-book-status' book.id %}">Estado actual: {{ user_book_relation.get_status_display }}</a>

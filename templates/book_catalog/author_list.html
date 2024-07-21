@@ -1,6 +1,9 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+  {% if perms.book_catalog.add_author %}
+    <a href="{% url 'author-create' %}" class="btn btn-primary">Create a new author</a>
+  {% endif %}
     <h1>Lista de autores</h1>
 
     {% if author_list %}

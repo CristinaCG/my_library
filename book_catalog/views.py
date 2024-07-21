@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render
 from .models import Author, Book, Genre, Language, BookSaga, UserBookRelation
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from .forms import ChangeBookStatusForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
@@ -64,29 +64,35 @@ class UerBookRelationListView(LoginRequiredMixin, generic.ListView):
         return super().get_queryset().filter(user=self.request.user)
     # template_name ='templates/book_catalog/userbookrelation_list.html'
 
-class AuthorCreateView(CreateView):
+class AuthorCreateView(PermissionRequiredMixin,CreateView):
     model = Author
     fields = '__all__'
+    permission_required = 'book_catalog.add_author'
 
-class AuthorUpdateView(UpdateView):
+class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
     model = Author
     fields = '__all__'
+    permission_required = 'book_catalog.change_author'
 
-class AuthorDeleteView(DeleteView):
+class AuthorDeleteView(PermissionRequiredMixin,DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
+    permission_required = 'book_catalog.delete_author'
 
-class BookCreateView(CreateView):
+class BookCreateView(PermissionRequiredMixin,CreateView):
     model = Book
     fields = '__all__'
+    permission_required = 'book_catalog.add_book'
 
-class BookUpdateView(UpdateView):
+class BookUpdateView(PermissionRequiredMixin,UpdateView):
     model = Book
     fields = '__all__'
+    permission_required = 'book_catalog.change_book'
 
-class BookDeleteView(DeleteView):
+class BookDeleteView(PermissionRequiredMixin,DeleteView):
     model = Book
     success_url = reverse_lazy('books')
+    permission_required = 'book_catalog.delete_book'
 
 def change_book_status(request, pk):
     """
