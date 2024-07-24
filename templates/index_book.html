@@ -1,4 +1,103 @@
-{% extends "base_generic.html" %}
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<div style="display: flex;">
+  <div class="sidebar">
+    {% if user.is_authenticated %}
+      <div class="col-md-9">
+        <h2>Lecturas actuales</h2>
+        <ul class="list-group">
+          {% for book in books_read %}
+            <li class="list-group-item" style="background-color: #f4f4f4;">
+              <h5 class="mb-1">{{ book.title }}</h5>
+              <p class="mb-1 ">
+                Autor: 
+                <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+              </p>
+              {% if book.saga %}
+              <p class="mb-1">
+                <small>
+                  Saga
+                  <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                    {{ book.saga.name }}
+                  </a>
+                  #{{ book.saga_volume }}
+                </small>
+              </p>
+              {% endif %}
+              {% comment %} <small class="text-muted">Fecha de finalización: {{ book.date_finished }}</small> {% endcomment %}
+            </li>
+          {% empty %}
+            <li class="list-group-item" style="background-color: #f4f4f4;">
+              No has agregado libros recientemente.
+            </li>
+          {% endfor %}
+        </ul>
+        <hr class="my-4">
+      </div>
+    {% endif %}
+    <div class="col-md-9">
+      <h2>Estadísticas de Lectura</h2>
+      <ul class="list-group">
+        <li class="list-group-item" style="background-color: #f4f4f4;">
+          Total de libros: {{ total_books }}
+        </li>
+        <li class="list-group-item" style="background-color: #f4f4f4;">
+          Total de autores: {{ total_authors }}
+        </li>
+        {% comment %} <li class="list-group-item">Libros leídos este año: {{ total_authors }}</li> {% endcomment %}
+        {% comment %} <li class="list-group-item">Promedio de libros por mes: {{ average_books_per_month }}</li> {% endcomment %}
+      </ul>
+    </div>
+  </div>
+  <div style="flex-grow: 1; padding: 20px;">
+    <div class="jumbotron">
+      <h1 class="display-4">Bienvenido a Tu Biblioteca Personal</h1>
+      <p class="lead">Administra y lleva un registro de todos los libros que has leído.</p>
+      <p>Mantén un seguimiento de tus lecturas y descubre nuevos libros para disfrutar.</p>
+        {% comment %} <a class="btn btn-primary btn-lg" href="{% url 'add_book' %}" role="button">Agregar un nuevo libro</a> {% endcomment %}
+    </div>
+    <hr class="my-4">
+    <div class="col-md-9">
+      <h2>Libros Recientes</h2>
+      <ul class="list-group">
+        {% for book in recent_books %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            <h5 class="mb-1">
+              <a class="no-underline"href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+            </h5>
+            <p class="mb-1 ">
+              Autor: 
+              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+            </p>
+            {% if book.saga %}
+            <p class="mb-1">
+              <small>
+                Saga
+                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                  {{ book.saga.name }}
+                </a>
+                #{{ book.saga_volume }}
+              </small>
+            </p>
+            {% endif %}
+            {% comment %} <small class="text-muted">Fecha de finalización: {{ book.date_finished }}</small> {% endcomment %}
+          </li>
+        {% empty %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            No has agregado libros recientemente.
+          </li>
+        {% endfor %}
+      </ul>
+      <hr class="my-4">
+    </div>
+    <div class="row">
+      
+    </div>
+</div>
+{% endblock %}
+
+{% comment %} {% extends "base_generic.html" %}
 
 {% block content %}
 <h1>GoodWatch Home</h1>
@@ -19,4 +118,4 @@
     <li><strong>Authors:</strong> {{ num_authors }}</li>
   </ul>
 
-{% endblock %}
+{% endblock %} {% endcomment %}

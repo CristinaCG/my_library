@@ -1,13 +1,30 @@
 {% block content %}
-  <h1>Title: {{ book.title }}</h1>
 
-  <p><strong>Author:</strong> <a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></p>
+<div style="flex-grow: 1; padding: 20px;">
   {% if book.saga %}
-  <p><strong>Saga:</strong> <a href="{{ book.saga.get_absolute_url }}">{{ book.saga.name }} </a>, <strong>Volume: </strong>{{ book.saga_volume }}</p>
+    <h4 class="text-body-secondary">
+      <a href="{{ book.saga.get_absolute_url }}" class="text-body-secondary no-underline">
+        {{ book.saga.name }}
+      </a>
+      <strong>#</strong>{{ book.saga_volume }}
+    </h4>
   {% endif %}
-  <p><strong>Summary:</strong> {{ book.summary }}</p>
-  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-  <p><strong>Language:</strong> {{ book.language }}</p>
-  <p><strong>Genero:</strong> {% for genre in book.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-
+  <h1 class="mb-3">
+    <big>
+    {{ book.title }}
+    </big>
+  </h1>
+  <p>
+    <h2>
+      <a href="{{ book.author.get_absolute_url }}" class="text-body-secondary no-underline">
+        {{ book.author }}
+      </a>
+    </h2>
+  </p>
+  {% if book.summary %}<p><strong>Summary:</strong> {{ book.summary }}</p>{% endif %}
+  {% if book.language %}<p><strong>Language:</strong> {{ book.language }}</p>{% endif %}
+  <p><strong>Genre:</strong>
+    {% for genre in book.genre.all %}{{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  {% if book.isbn %} <p><strong>ISBN:</strong> {{ book.isbn }}</p>{% endif %}
+</div>
 {% endblock %}

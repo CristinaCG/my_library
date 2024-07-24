@@ -1,22 +1,79 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-    <h1>Lista de libros</h1>
-
+<div style="display: flex;">
+  <div class="sidebar">
+    <div class="col-md-12">
+      <h2>Recent books</h2>
+      <ul class="list-group">
+        {% for book in recent_books %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            <h5 class="mb-1">{{ book.title }}</h5>
+            <p class="mb-1 ">
+              Author: 
+              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+            </p>
+            {% if book.saga %}
+            <p class="mb-1">
+              <small>
+                Saga
+                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                  {{ book.saga.name }}
+                </a>
+                #{{ book.saga_volume }}
+              </small>
+            </p>
+            {% endif %}
+            {% comment %} <small class="text-muted">Fecha de finalización: {{ book.date_finished }}</small> {% endcomment %}
+          </li>
+        {% empty %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            No recent books.
+          </li>
+        {% endfor %}
+      </ul>
+      <hr class="my-4">
+    </div>
+  </div>
+  <div style="flex-grow: 1; padding: 20px;">
+    <h1>Books list</h1>
     {% if userbookrelation_list %}
-    <ul>
-
-      {% for object in userbookrelation_list %}
-      <li>
-          <a href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>{% if object.book.saga %}
-          <span style="color: gray;">
-              (<a href="{{ object.book.saga.get_absolute_url }}">{{ object.book.saga.name }} </a>#{{ object.book.saga_volume }})
-          </span>{% endif %}, <a href="{{ object.book.author.get_absolute_url }}">{{ object.book.display_author }}</a>
-      </li>
-      {% endfor %}
-
-    </ul>
+      <table id="dynamicTable" class="table table-hover">
+        <thead>
+          <tr class="table-primary">
+            <th scope="col">Title</th>
+            <th scope="col">Saga</th>
+            <th scope="col">Author</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for object in userbookrelation_list %}
+            <tr class="table-secondary">
+              <td>
+                <a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>
+              </td>
+              <td>
+                {% if object.book.saga %}
+                  <a class="no-underline" href="{{ object.book.saga.get_absolute_url }}">
+                    {{ object.book.saga.name }}
+                  </a>
+                  #{{ object.book.saga_volume }}
+                {% endif %}
+              </td>
+              <td>
+                <a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a>
+              </td>
+              <td>
+                <a>{{ object.display_status }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% else %}
       <p>No hay libros en la biblioteca.</p>
     {% endif %}
+  </div>
+</div>
 {% endblock %}

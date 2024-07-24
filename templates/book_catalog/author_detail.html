@@ -1,34 +1,33 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-{% if perms.book_catalog.change_author %}
-  <a href="{% url 'author-update' author.id %}" class="btn btn-primary">Edit</a>
-{% endif %}
-{% if perms.book_catalog.delete_author %}
-  <a href="{% url 'author-delete' author.id %}" class="btn btn-primary">Delete</a>
-{% endif %}
-  <h1>Name: {{ author.first_name }} {{ author.last_name }}</h1>
-  {% if author.year_of_birth %}
-    <p><strong>Fecha de nacimiento:</strong> {{ author.year_of_birth }}</p>
-  {% endif %}
-  {% if author.year_of_death %}
-    <p><strong>Fecha de fallecimiento:</strong> {{ author.year_of_death }}</p>
-  {% endif %}
+<div style="display: flex;">
+  <div class="sidebar">
+    <!-- Primera columna -->
+    <div class="col-md-12">
+      <h2>Author's book list</h2>
+      <ul class="list-group">
+        {% for book in books%}
+          <li class="list-group-item d-flex align-items-center">
+            <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
+            {% if book.saga %}
+              <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li>No book list.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6">
+    {% include "book_catalog/author_detail_content.html" %}
+  </div>
+</div>
 
 
-  <h2>Libros del Autor</h2>
-  <ul>
-    {% for book in books%}
-      <li>
-        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>{% if book.saga %}
-        <span style="color: gray;">
-            (<a href="{{ book.saga.get_absolute_url }}">{{ book.saga.name }} </a>#{{ book.saga_volume }})
-        </span>{% endif %}
-      </li>
-    {% empty %}
-      <li>Este autor no tiene libros listados.</li>
-    {% endfor %}
-  </ul>
+
+
   <!-- <div style="margin-left:20px;margin-top:20px">
     <h4>Copias</h4>
 

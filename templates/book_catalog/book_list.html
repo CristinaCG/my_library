@@ -1,25 +1,70 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  {% if perms.book_catalog.add_book %}
-    <a href="{% url 'book-create' %}" class="btn btn-primary">Create a new book</a>
-  {% endif %}
-    <h1>Lista de libros</h1>
-
-    {% if book_list %}
-    <ul>
-
-      {% for book in book_list %}
-      <li>
-          <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>{% if book.saga %}
-          <span style="color: gray;">
-              (<a href="{{ book.saga.get_absolute_url }}">{{ book.saga.name }} </a>#{{ book.saga_volume }})
-          </span>{% endif %}, <a href="{{ book.author.get_absolute_url }}">{{ book.display_author }}</a>
-      </li>
-      {% endfor %}
-
-    </ul>
-    {% else %}
-      <p>No hay libros en la biblioteca.</p>
-    {% endif %}
+<div style="display: flex;">
+  <div class="sidebar">
+      <div class="col-md-12">
+        <h2>Recents books</h2>
+        <ul class="list-group">
+          {% for book in recent_books %}
+            <li class="list-group-item" style="background-color: #f4f4f4;">
+              <h5 class="mb-1">{{ book.title }}</h5>
+              <p class="mb-1 ">
+                Author: 
+                <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+              </p>
+              {% if book.saga %}
+              <p class="mb-1">
+                <small>
+                  Saga
+                  <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                    {{ book.saga.name }}
+                  </a>
+                  #{{ book.saga_volume }}
+                </small>
+              </p>
+              {% endif %}
+            </li>
+          {% empty %}
+            <li class="list-group-item" style="background-color: #f4f4f4;">
+              No recent books.
+            </li>
+          {% endfor %}
+        </ul>
+        <hr class="my-4">
+    </div>
+  </div>
+  <div style="flex-grow: 1; padding: 20px;">
+    <h1>Books list</h1>
+    <table id="dynamicTable" class="table table-hover">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">Title</th>
+          <th scope="col">Saga</th>
+          <th scope="col">Author</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in book_list %}
+          <tr class="table-secondary">
+            <th scope="row">
+              <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+            </th>
+            <td>
+              {% if book.saga %}
+                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                  {{ book.saga.name }}
+                </a>
+                #{{ book.saga_volume }}
+              {% endif %}
+            </td>
+            <td>
+              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

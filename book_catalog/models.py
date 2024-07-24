@@ -83,7 +83,7 @@ class Book(models.Model):
     """
     Model representing a book (but not a specific copy of a book).
     """
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, help_text='Inserte el título del libro.')
     saga = models.ForeignKey('BookSaga', on_delete=models.PROTECT, null=True, blank=True)
     saga_volume = models.IntegerField(null=True, blank=True)
     author = models.ForeignKey('Author', on_delete=models.PROTECT, null=False)
@@ -92,6 +92,7 @@ class Book(models.Model):
     isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book')
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
+    cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
 
     class Meta:
         """
@@ -191,6 +192,14 @@ class UserBookRelation(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def display_status(self):
+        if self.status == 'r':
+            return "Read"
+        if self.status == 't':
+            return "To Read"
+        if self.status == 'i':
+            return "Reading"
 
 class Author(models.Model):
     """

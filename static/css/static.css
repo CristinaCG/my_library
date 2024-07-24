@@ -1,0 +1,66 @@
+.no-underline {
+    text-decoration: none;
+}
+  .main-content {
+    flex-grow: 1;
+    padding: 20px;
+  }
+  .sidebar {
+  flex: 0 0 500px;
+  /* flex: 0 1 auto; */
+  width: 600px;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #f4f4f4;
+  padding: 20px;
+  }
+/* static/css/styles.css */
+
+.table-invisible {
+  visibility: hidden;
+}
+#dynamicTable {
+    border-collapse: separate; 
+}
+
+#dynamicTable thead th, #dynamicTable tbody td, #dynamicTable tbody th {
+    padding: 15px 20px !important; 
+}
+
+#dynamicTable tbody tr {
+    line-height: 2em !important;
+}
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+/* Estilo para el botón de la página seleccionada */
+#dynamicTable_paginate .paginate_button.current, 
+#dynamicTable_paginate .paginate_button.active {
+  border-radius: 0px; /*Bordes redondeados */
+  border: 0px solid #007bff; /*Borde*/
+}
+
+.row > .col-md-4, .row > .col-md-8 {
+  padding: 15px;
+}
+
+.btn-green {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+}
+
+.btn-blue {
+  background-color: #2196F3; /* Azul */
+  color: white;
+}
+
+.btn-yellow {
+  background-color: #FFEB3B; /* Amarillo */
+  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
+}
+
+.btn-red {
+  background-color: #F44336; /* Rojo */
+  color: white;
+}

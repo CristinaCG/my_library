@@ -29,7 +29,7 @@ admin.site.register(Author, AuthorAdmin)
 class BookAdmin(admin.ModelAdmin):
     list_display = ('display_title', 'display_author', 'publish_date')
     list_filter = ('author', 'saga')
-    fields = ['title', 'author', ('saga', 'saga_volume'), 'publish_date', 'summary', 'language', 'genre', 'isbn']
+    fields = ['title', 'author', ('saga', 'saga_volume'), 'cover_image', 'publish_date', 'summary', 'language', 'genre', 'isbn']
 
 
 # admin.site.register(BookState)

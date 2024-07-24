@@ -1,22 +1,68 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  {% if perms.book_catalog.add_author %}
-    <a href="{% url 'author-create' %}" class="btn btn-primary">Create a new author</a>
-  {% endif %}
-    <h1>Lista de autores</h1>
-
+<div style="display: flex;">
+  <div class="sidebar">
+    <div class="col-md-12">
+      <h2>Recent books</h2>
+      <ul class="list-group">
+        {% for book in recent_books %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            <h5 class="mb-1">{{ book.title }}</h5>
+            <p class="mb-1 ">
+              Author: 
+              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+            </p>
+            {% if book.saga %}
+            <p class="mb-1">
+              <small>
+                Saga
+                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                  {{ book.saga.name }}
+                </a>
+                #{{ book.saga_volume }}
+              </small>
+            </p>
+            {% endif %}
+            {% comment %} <small class="text-muted">Fecha de finalización: {{ book.date_finished }}</small> {% endcomment %}
+          </li>
+        {% empty %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            No recent books.
+          </li>
+        {% endfor %}
+      </ul>
+      <hr class="my-4">
+    </div>
+  </div>
+  <div style="flex-grow: 1; padding: 20px;">
+    <h1>Authors List</h1>
     {% if author_list %}
-    <ul>
-
-      {% for author in author_list %}
-      <li>
-        <a href="{{ author.get_absolute_url}}">{{ author.first_name }} {{ author.last_name }}</a>
-      </li>
-      {% endfor %}
-
-    </ul>
+      <table id="dynamicTable" class="table table-hover">
+        <thead>
+          <tr class="table-primary">
+            <th scope="col">Last name</th>
+            <th scope="col">Name</th>
+            <th scope="col">Number of books</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for author in author_list %}
+            <tr class="table-secondary">
+              <td>
+                <a class="no-underline" href="{{ author.get_absolute_url }}">{{ author.last_name }}</a>
+              </td>
+              <td>
+                <a class="no-underline" href="{{ author.get_absolute_url }}">{{ author.first_name }}</a>
+              </td>
+              <td>{{ author.book_set.count }}</td>
+          {% endfor %}
+        </tbody>
+      </table>
     {% else %}
       <p>No hay autores en la biblioteca.</p>
-    {% endif %}
+    {% endif %} 
+  </div>
+</div>
+
 {% endblock %}

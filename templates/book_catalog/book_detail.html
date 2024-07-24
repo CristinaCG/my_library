@@ -1,17 +1,63 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-{% if perms.book_catalog.change_book %}
-  <a href="{% url 'book-update' book.id %}" class="btn btn-primary">Edit</a>
-  {% endif %}
-  {% if perms.book_catalog.delete_book %}
-  <a href="{% url 'book-delete' book.id %}" class="btn btn-primary">Delete</a>
-{% endif %}
-{% include "book_catalog/book_detail_content.html" %}
-{% if user_book_relation %}
-    <a href="{% url 'change-book-status' book.id %}">Estado actual: {{ user_book_relation.get_status_display }}</a>
-{% else %}
-    <a href="{% url 'change-book-status' book.id %}">Añadir a mi lista</a>
-{% endif %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Primera columna -->
+    <div class="col-md-4 text-center">
+      {% if book.cover_image %}
+        <img src="{{ book.cover_image.url }}"
+        alt="{{ book.title }}"
+        class="img-fluid border rounded shadow"
+        style="max-width: 100%; height: auto; margin: auto; display: block;">
+      {% else %}
+        <p>No cover available.</p>
+      {% endif %}
+      {% if user_book_relation %}
+        <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookStatusModal">
+          {{ user_book_relation.display_status }}
+        </button>
+      {% else %}
+        <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookStatusModal">
+          Add to my list
+        </button>
+      {% endif %}
+      {% if perms.book_catalog.change_book %}
+      <a href="{% url 'book-update' book.id %}" class="btn btn-outline-dark mt-3">Edit</a>
+      {% endif %}
+      {% if perms.book_catalog.delete_book %}
+      <a href="{% url 'book-delete' book.id %}" class="btn btn-outline-dark mt-3">Delete</a>
+      {% endif %}
+    </div>
+    <!-- Segunda columna -->
+    <div class="col-md-6">
+      {% include "book_catalog/book_detail_content.html" %}
+    </div>
 
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="changeBookStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeBookStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <!-- Aquí se incluirá el formulario -->
+        <div id="modal-form-content">
+          <div style="margin-top: 20px;">
+            <form method="post">
+              {% csrf_token %}
+              <div style="display: flex; flex-direction: column;">
+                <a class="btn mt-3 btn-blue" href="{% url 'change-book-status' book.id 't' %}">I want to read it!</a>
+                <a class="btn mt-3 btn-yellow"href="{% url 'change-book-status' book.id 'i' %}">Reading...</a>
+                <a class="btn mt-3 btn-green" href="{% url 'change-book-status' book.id 'r' %}">Already read</a>
+                <a class="btn mt-3 btn-red"href="{% url 'change-book-status' book.id 'd' %}">Forget about it...</a>
+              </div>
+            </form>
+          </div>
+          {% comment %} {% include "book_catalog/change_book_status_form.html" %} {% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
