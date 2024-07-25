@@ -1,37 +1,53 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100">
+    <form method="post" action="{% url 'login' %}" style="width: 100%;">
+      <span class="login100-form-title p-b-49">
+        Login
+      </span> 
+      {% csrf_token %}
+      {% comment %} <div>
+        <label for="exampleInputEmail1" class="form-label mt-4">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div>
+        <label for="exampleInputPassword1" class="form-label mt-4">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" autocomplete="off">
+      </div> {% endcomment %}
+      <div class="wrap-input100" style="margin-bottom 23px;">
+        <label for="username" class="form-label mt-4">Username</label>
+        {% comment %} <span class="label-input100">Username</span> {% endcomment %}
+        <input type="text" class="form-control" name="username" placeholder="Type your username">
+        {% comment %} <input class="input100" type="text" name="username" placeholder="Type your username"> {% endcomment %}
+        {% if form.username.errors %}
+          <div class="error">{{ form.username.errors|join:", " }}</div>
+        {% endif %}
+        {% comment %} <span class="focus-input100" data-symbol="&#xf206;"></span> {% endcomment %}
+      </div>
+      <div class="wrap-input100">
+        <label for="password" class="form-label mt-4">Password</label>
+        {% comment %} <span class="label-input100">Password</span> {% endcomment %}
+        <input type="password" class="form-control" name="password" placeholder="Type your password" autocomplete="off">
+        {% comment %} <input class="input100" type="password" name="password" placeholder="Type your password"> {% endcomment %}
+        {% if form.password.errors %}
+          <div class="error">{{ form.password.errors|join:", " }}</div>
+        {% endif %}
+        {% comment %} <span class="focus-input100" data-symbol="&#xf206;"></span> {% endcomment %}
+      </div>
+      <div class="d-flex justify-content-left mt-2">
+        <a class="no-underline" href="{% url 'password_reset' %}">Forget your password?</a>
+      </div>
+      <div class="d-flex justify-content-center mt-4">
+        <input type="submit" class="btn btn-primary" value="Login">
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
 
-  {% if form.errors %}
-    <p>Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
-  {% endif %}
-
-  {% if next %}
-    {% if user.is_authenticated %}
-      <p>Su cuenta no tiene acceso a esta página. Para continuar,
-      inicie sesión con una cuenta que tenga acceso.</p>
-    {% else %}
-      <p>Por favor inicie sesión para ver esta página.</p>
-    {% endif %}
-  {% endif %}
-
-  <form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    <table>
-      <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
-      </tr>
-      <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
-      </tr>
-    </table>
-    <input type="submit" value="login">
-    <input type="hidden" name="next" value="{{ next }}">
-  </form>
-
-  {# Asume que configura la vista de restablecimiento de contraseña en su URLconf #}
-  <p><a href="{% url 'password_reset' %}">¿Olvidó su contraseña?</a></p>
-
+  </div>
+</div>
+</div>
 {% endblock %}

@@ -1,5 +1,18 @@
 {% extends "base_generic.html" %}
+
 {% block content %}
-<h1>Has cerrado sesión</h1>
-<p><a href="{% url 'login' %}">Haz clic aquí</a> para volver a iniciar sesión.</p>
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100">
+    {% comment %} <form method="post" action="{% url 'login' %}" style="width: 100%;"> {% endcomment %}
+      <span class="login100-form-title p-b-49">
+        Logout successful
+      </span>
+      <p><a href="{% url 'login' %}">Click hear</a> to login again.</p>
+  </div>
+</div>
+</div>
 {% endblock %}
+
+
+

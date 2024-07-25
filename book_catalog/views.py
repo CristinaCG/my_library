@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 
 def index(request):
     """
@@ -221,6 +223,20 @@ class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
     success_url = reverse_lazy('books')
     permission_required = 'book_catalog.delete_booksaga'
 
+# class LoginView(generic.View):
+#     def get(self, request):
+#         return render(request, 'registration/login.html')
+#     def post(self, request):
+#         username = request.POST.get('username')
+#         password = request.POST.get('password')
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#             return redirect('/success/')
+#         else:
+#             messages.error(request, 'Invalid credentials')
+#             return render(request, 'accounts/login.html')
+
 @login_required
 def change_book_status(request, pk, status: str):
     """
@@ -236,6 +252,15 @@ def change_book_status(request, pk, status: str):
             relation.save()
     elif not relation and status != 'd':
         UserBookRelation.objects.create(user = request.user, book = book, status = status)
+    return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
+
+@login_required
+def delete_book_status(request, pk):
+    """
+    View function for changing book status.
+    """
+    book = get_object_or_404(Book, pk=pk)
+    UserBookRelation.objects.filter(user = request.user, book = book).delete()
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
 
 @login_required
@@ -280,25 +305,3 @@ def search(request):
     }
     
     return render(request, 'search_results.html', context)
-
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        if user_form.is_valid():
-            user_form.save()
-            messages.success(request, '¡Tu perfil ha sido actualizado!')
-            return redirect('profile')
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-
-    return render(request, 'profile.html', {'user_form': user_form})
-
-@login_required
-def delete_book_status(request, pk):
-    """
-    View function for changing book status.
-    """
-    book = get_object_or_404(Book, pk=pk)
-    UserBookRelation.objects.filter(user = request.user, book = book).delete()
-    return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
