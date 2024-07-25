@@ -1,19 +1,96 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Saga: {{ booksaga.name }}</h1>
-
-  <p><strong>Author:</strong> {{ booksaga.author }}</p>
-
-  <h2>Books in this Saga:</h2>
-  <ul>
-    {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
-      <li>
-        <a href="{% url 'book-detail' book.pk %}">{{ book.title }}</a>
-        {% if book.saga_volume %}
-          - <span style="color: gray;">#{{ book.saga_volume }}</span>
+<div class="container mt-5">
+  <div class="row">
+    <!-- Primera columna -->
+    <div class="col-md-4 text-center">
+      {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
+        {% if book.cover_image %}
+      <img src="{{ book.cover_image.url }}"
+           alt="{{ book.title }}"
+           class="img-fluid border rounded shadow book-cover"
+           style="display: none;">
+           {% else %}
+          <p>No cover available.</p>
         {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
+      {% endfor %}
+      {% if user_book_relation  %}
+        <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
+          {{ user_book_relation }}
+      {% endif %}
+      {% if perms.book_catalog.change_book %}
+      <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3">Edit</a>
+      {% endif %}
+      {% if perms.book_catalog.delete_book %}
+      <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">Delete</a>
+      {% endif %}
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          let covers = document.querySelectorAll('.book-cover');
+          let currentIndex = 0;
+  
+          function showNextCover() {
+              covers[currentIndex].style.display = 'none';
+              currentIndex = (currentIndex + 1) % covers.length;
+              covers[currentIndex].style.display = 'block';
+          }
+  
+          if (covers.length > 0) {
+              covers[0].style.display = 'block';
+              setInterval(showNextCover, 3000); // Cambia la imagen cada 3 segundos
+          }
+      });
+    </script>
+    <!-- Segunda columna -->
+    <div class="col-md-8">
+      <div style="flex-grow: 1; padding: 20px;">
+      <h1 class="mb-3"><big>{{ booksaga.name }}</big></h1>
+      <p>
+        <h2>
+          <a href="{{ booksaga.author.get_absolute_url }}" class="text-body-secondary no-underline">
+            {{ booksaga.author }}
+          </a>
+        </h2>
+      </p>
+
+      <ul class="list-group">
+        {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
+          <li class="list-group-item d-flex align-items-center">
+            <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
+            {% if book.saga %}
+              <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li>No book list.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="changeBookSagaStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeBookSagaStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <!-- Aquí se incluirá el formulario -->
+        <div id="modal-form-content">
+          <div style="margin-top: 20px;">
+            <form method="post">
+              {% csrf_token %}
+              <div style="display: flex; flex-direction: column;">
+                <a class="btn mt-3 btn-blue" href="{% url 'change-booksaga-status' booksaga.id 't' %}">I want to read it!</a>
+                <a class="btn mt-3 btn-green" href="{% url 'change-booksaga-status' booksaga.id 'r' %}">Already read</a>
+                <a class="btn mt-3 btn-red"href="{% url 'change-booksaga-status' booksaga.id 'd' %}">Forget about it...</a>
+              </div>
+            </form>
+          </div>
+          {% comment %} {% include "book_catalog/change_book_status_form.html" %} {% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

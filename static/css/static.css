@@ -64,3 +64,28 @@
   background-color: #F44336; /* Rojo */
   color: white;
 }
+
+.btn-save {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px; /* Bordes redondeados */
+  transition: background-color 0.3s ease; /* Transición suave para el cambio de color */
+}
+
+.btn-save:hover {
+  background-color: #45a049; /* Color al pasar el ratón por encima */
+}
+
+.book-cover {
+  width: 400px;  /* Ajusta el ancho según tus necesidades */
+  height: 600px; /* Ajusta la altura según tus necesidades */
+  object-fit: cover; /* Asegura que la imagen se ajuste al contenedor */
+}

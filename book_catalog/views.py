@@ -1,11 +1,11 @@
 from typing import Any
 from django.db.models.query import QuerySet
-from django.shortcuts import render
+from django.db.models import Q
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Author, Book, Genre, Language, BookSaga, UserBookRelation
+from .models import Author, Book, BookSaga, UserBookRelation
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from .forms import ChangeBookStatusForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -16,7 +16,7 @@ def index(request):
     View function for home page of site.
     """
     # recent_books = Book.objects.all().order_by('-date_finished')[:5]
-    recent_books = Book.objects.all().order_by('-id')[:5]
+    recent_books = Book.objects.all().order_by('-publish_date')[:5]
     total_books = Book.objects.all().count()
     # books_this_year = Book.objects.filter(date_finished__year=datetime.now().year).count()
     total_authors=Author.objects.count()
@@ -42,10 +42,24 @@ def index(request):
 
 
 class BookListView(generic.ListView):
+    """
+    Generic class-based view listing books.
+    """
     model = Book
     template_name = 'book_list.html'
 
+    def get_context_data(self, **kwargs):
+        """
+        Recent book list
+        """
+        context = super().get_context_data(**kwargs)
+        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
+        return context
+
 class BookDetailView(LoginRequiredMixin, generic.DetailView):
+    """
+    Generic class-based view detail of a book.
+    """
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = Book
@@ -58,9 +72,23 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 class AuthorListView(generic.ListView):
+    """
+    Generic class-based view listing authors.
+    """
     model = Author
 
+    def get_context_data(self, **kwargs: Any):
+        """
+        Obtain an author list of authors that has books published recently
+        """
+        context = super().get_context_data(**kwargs)
+        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
+        return context
+
 class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
+    """
+    Generic class-based view detail of an author.
+    """
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = Author
@@ -73,11 +101,38 @@ class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
+    """
+    Generic class-based view detail of a book saga.
+    """
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = BookSaga
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        saga = self.get_object()
+        relations = [0]*len(saga.book_set.all())
+        for book in saga.book_set.all():
+            relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
+            if relation: 
+                if relation.status == 'r':
+                    relations[book.saga_volume-1] = 3
+                if relation.status == 'i':
+                    relations[book.saga_volume-1] = 2
+                if relation.status == 't':
+                    relations[book.saga_volume-1] = 1
+        print(relations)
+        if sum(relations) == 3*len(saga.book_set.all()):
+            context['user_book_relation'] = 'Read'
+        elif sum(relations) >= len(saga.book_set.all())+1+2:
+            context['user_book_relation'] = 'Reading'
+        elif sum(relations) >= len(saga.book_set.all()):
+            context['user_book_relation'] = 'To read'
+        else:
+            context['user_book_relation'] = 'Add to my list'
+        return context
 
-class UerBookRelationListView(LoginRequiredMixin, generic.ListView):
+class UserBookRelationListView(LoginRequiredMixin, generic.ListView):
     """
     Generic class-based view listing books of the current user.
     """
@@ -90,12 +145,23 @@ class UerBookRelationListView(LoginRequiredMixin, generic.ListView):
         return super().get_queryset().filter(user=self.request.user)
     # template_name ='templates/book_catalog/userbookrelation_list.html'
 
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
+        return context
+
 class AuthorCreateView(PermissionRequiredMixin,CreateView):
+    """
+    Generic class-based view for creating an author.
+    """
     model = Author
     fields = '__all__'
     permission_required = 'book_catalog.add_author'
 
 class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
+    """
+    Generic class-based view for updating an author.
+    """
     model = Author
     fields = '__all__'
     permission_required = 'book_catalog.change_author'
@@ -108,42 +174,52 @@ class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
         return context
 
 class AuthorDeleteView(PermissionRequiredMixin,DeleteView):
+    """
+    Generic class-based view for deleting an author.
+    """
     model = Author
     success_url = reverse_lazy('authors')
     permission_required = 'book_catalog.delete_author'
 
 class BookCreateView(PermissionRequiredMixin,CreateView):
+    """
+    Generic class-based view for creating a book.
+    """
     model = Book
     fields = '__all__'
     permission_required = 'book_catalog.add_book'
 
 class BookUpdateView(PermissionRequiredMixin,UpdateView):
+    """
+    Generic class-based view for updating a book.
+    """
     model = Book
     fields = '__all__'
     permission_required = 'book_catalog.change_book'
 
 class BookDeleteView(PermissionRequiredMixin,DeleteView):
+    """
+    Generic class-based view for deleting a book.
+    """
     model = Book
     success_url = reverse_lazy('books')
     permission_required = 'book_catalog.delete_book'
 
-# @login_required
-# def change_book_status(request, pk):
-#     """
-#     View function for changing book status.
-#     """
-#     book = get_object_or_404(Book, pk=pk)
-#     if request.method == 'POST':
-#         form = ChangeBookStatusForm(request.POST)
-#         if form.is_valid():
-#             status = form.cleaned_data['status']
-#             UserBookRelation.objects.update_or_create(user = request.user, book = book, defaults = {'status': status})
-#             return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
-#     else:
-#         status = UserBookRelation.objects.filter(user = request.user, book = book).first()
-#         initial_status = status.status if status else 't'
-#         form = ChangeBookStatusForm(initial = {'status': initial_status})
-#     return render(request, 'book_catalog/change_book_status_form.html', {'form': form, 'book': book})
+class BookSagaUpdateView(PermissionRequiredMixin,UpdateView):
+    """
+    Generic class-based view for updating a book saga.
+    """
+    model = BookSaga
+    fields = '__all__'
+    permission_required = 'book_catalog.change_booksaga'
+
+class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
+    """
+    Generic class-based view for deleting a book saga.
+    """
+    model = BookSaga
+    success_url = reverse_lazy('books')
+    permission_required = 'book_catalog.delete_booksaga'
 
 @login_required
 def change_book_status(request, pk, status: str):
@@ -162,32 +238,61 @@ def change_book_status(request, pk, status: str):
         UserBookRelation.objects.create(user = request.user, book = book, status = status)
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
 
-# @login_required
-# def change_book_status_to_read(request, pk):
-#     """
-#     View function for changing book status.
-#     """
-#     book = get_object_or_404(Book, pk=pk)
-#     status = UserBookRelation.objects.filter(user = request.user, book = book).first()
-#     if status:
-#         status.status = 'r'
-#         status.save()
-#     else:
-#         UserBookRelation.objects.create(user = request.user, book = book, status = 'r')
-#     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
+@login_required
+def change_booksaga_status(request, pk, status: str):
+    """
+    View function for changing book status.
+    """
+    booksaga = get_object_or_404(BookSaga, pk=pk)
+    for book in booksaga.book_set.all():
+        relation = UserBookRelation.objects.filter(user = request.user, book = book).first()
+        if relation:
+            if status == 'd':
+                relation.delete()
+            else:
+                relation.status = status
+                relation.save()
+        elif not relation and status != 'd':
+            UserBookRelation.objects.create(user = request.user, book = book, status = status)
+    return HttpResponseRedirect(reverse('saga-detail', args=[str(pk)]))
 
-    # if request.method == 'POST':
-    #     form = ChangeBookStatusForm(request.POST)
-    #     if form.is_valid():
-    #         status = form.cleaned_data['status']
-    #         UserBookRelation.objects.update_or_create(user = request.user, book = book, defaults = {'status': status})
-    #         return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
-    # else:
-    #     status = UserBookRelation.objects.filter(user = request.user, book = book).first()
-    #     initial_status = status.status if status else 't'
-    #     form = ChangeBookStatusForm(initial = {'status': initial_status})
-    # return render(request, 'book_catalog/change_book_status_form.html', {'form': form, 'book': book})
+def search(request):
+    """
+    View function for searching books, authors and sagas.
+    """
+    query = request.GET.get('query')
+    book_results = []
+    author_results = []
+    saga_results = []
+    
+    if query:
+        book_results = Book.objects.filter(title__icontains=query)
+        author_results = Author.objects.filter(
+            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+        saga_results = BookSaga.objects.filter(name__icontains=query)
+    
+    context = {
+        'query': query,
+        'book_results': book_results,
+        'author_results': author_results,
+        'saga_results': saga_results,
+    }
+    
+    return render(request, 'search_results.html', context)
 
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
+            messages.success(request, '¡Tu perfil ha sido actualizado!')
+            return redirect('profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+
+    return render(request, 'profile.html', {'user_form': user_form})
 
 @login_required
 def delete_book_status(request, pk):
@@ -197,15 +302,3 @@ def delete_book_status(request, pk):
     book = get_object_or_404(Book, pk=pk)
     UserBookRelation.objects.filter(user = request.user, book = book).delete()
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
-
-
-
-# def add_book(request):
-#     if request.method == 'POST':
-#         form = BookForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('some-view-name')
-#     else:
-#         form = BookForm()
-#     return render(request, 'add_book.html', {'form': form})

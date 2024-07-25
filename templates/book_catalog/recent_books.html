@@ -1,0 +1,30 @@
+<div class="col-md-12">
+    <h2>Recent books</h2>
+    <ul class="list-group">
+      {% for book in recent_books %}
+        <li class="list-group-item" style="background-color: #f4f4f4;">
+          <h5 class="mb-1">{{ book.title }}</h5>
+          <p class="mb-1 ">
+            Author: 
+            <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+          </p>
+          {% if book.saga %}
+          <p class="mb-1">
+            <small>
+              Saga
+              <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                {{ book.saga.name }}
+              </a>
+              #{{ book.saga_volume }}
+            </small>
+          </p>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="list-group-item" style="background-color: #f4f4f4;">
+          No recent books.
+        </li>
+      {% endfor %}
+    </ul>
+    <hr class="my-4">
+</div>
