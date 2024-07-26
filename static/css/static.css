@@ -14,7 +14,6 @@
   background-color: #f4f4f4;
   padding: 20px;
   }
-/* static/css/styles.css */
 
 .table-invisible {
   visibility: hidden;
@@ -38,7 +37,8 @@
 #dynamicTable_paginate .paginate_button.current, 
 #dynamicTable_paginate .paginate_button.active {
   border-radius: 0px; /*Bordes redondeados */
-  border: 0px solid #007bff; /*Borde*/
+  border: 0px solid #000000; /*Borde*/
+
 }
 
 .row > .col-md-4, .row > .col-md-8 {
@@ -46,28 +46,28 @@
 }
 
 .btn-green {
-  background-color: #4CAF50; /* Verde */
-  color: white;
+  background-color: #B8E0C0; /* Verde */
+  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
 }
 
 .btn-blue {
-  background-color: #2196F3; /* Azul */
-  color: white;
+  background-color: #B3CDE0; /* Azul */
+  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
 }
 
 .btn-yellow {
-  background-color: #FFEB3B; /* Amarillo */
+  background-color: #F9E3B4; /* Amarillo */
   color: black; /* Cambia el color del texto para mejor contraste si es necesario */
 }
 
 .btn-red {
-  background-color: #F44336; /* Rojo */
-  color: white;
+  background-color: #F4A6A6; /* Rojo */
+  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
 }
 
 .btn-save {
-  background-color: #4CAF50; /* Verde */
-  color: white;
+  background-color: #B8E0C0; /* Verde */
+  color: black;
   border: none;
   padding: 10px 20px;
   text-align: center;
@@ -81,7 +81,7 @@
 }
 
 .btn-save:hover {
-  background-color: #45a049; /* Color al pasar el ratón por encima */
+  background-color: #7b987c; /* Color al pasar el ratón por encima */
 }
 
 .book-cover {
@@ -89,17 +89,6 @@
   height: 600px; /* Ajusta la altura según tus necesidades */
   object-fit: cover; /* Asegura que la imagen se ajuste al contenedor */
 }
-
-/* static/accounts/css/styles.css */
-/* body {
-  font-family: Arial, sans-serif;
-  background-color: #f7f7f7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-} */
 
 .login-container {
   background-color: #fff;
@@ -134,7 +123,7 @@
 }
 
 button {
-  background-color: #5cb85c;
+  background-color: #B8E0C0;
   color: #fff;
   padding: 10px 15px;
   border: none;
@@ -143,7 +132,7 @@ button {
 }
 
 button:hover {
-  background-color: #4cae4c;
+  background-color: #7b987c;
 }
 
 .error {
@@ -216,31 +205,3 @@ button:hover {
   padding: 0 7px 0 43px;
   align-items: left;
 }
-/* .focus-input100 {
-  position: absolute;
-  display: block;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-} */
-
-/* input#id_title {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.5;
-  color: var(--bs-body-color);
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: #f7f7f9;
-  background-clip: padding-box;
-  border: 0 solid var(--bs-border-color);
-  border-radius: 0;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-
-} */

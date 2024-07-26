@@ -13,12 +13,14 @@
       {% else %}
         <p>No cover available.</p>
       {% endif %}
-      {% if user_book_relation %}
-        <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookStatusModal">
-          {{ user_book_relation.display_status }}
-        </button>
+      {% if user_book_relation.status == 'i' %}
+        <button type="button" class="btn mt-3 btn-yellow" data-toggle="modal" data-target="#changeBookStatusModal">{{ user_book_relation.display_status }}</button>
+      {% elif user_book_relation.status == 'r' %}
+        <button type="button" class="btn mt-3 btn-green" data-toggle="modal" data-target="#changeBookStatusModal">{{ user_book_relation.display_status }}</button>
+      {% elif user_book_relation.status == 't' %}
+        <button type="button" class="btn mt-3 btn-blue" data-toggle="modal" data-target="#changeBookStatusModal">{{ user_book_relation.display_status }}</button>
       {% else %}
-        <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookStatusModal">
+        <button type="button" class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookStatusModal">
           Add to my list
         </button>
       {% endif %}
@@ -33,7 +35,6 @@
     <div class="col-md-6">
       {% include "book_catalog/book_detail_content.html" %}
     </div>
-
   </div>
 </div>
 <!-- Modal -->
@@ -48,13 +49,12 @@
               {% csrf_token %}
               <div style="display: flex; flex-direction: column;">
                 <a class="btn mt-3 btn-blue" href="{% url 'change-book-status' book.id 't' %}">I want to read it!</a>
-                <a class="btn mt-3 btn-yellow"href="{% url 'change-book-status' book.id 'i' %}">Reading...</a>
+                <a class="btn mt-3 btn-yellow" href="{% url 'change-book-status' book.id 'i' %}">Reading...</a>
                 <a class="btn mt-3 btn-green" href="{% url 'change-book-status' book.id 'r' %}">Already read</a>
-                <a class="btn mt-3 btn-red"href="{% url 'change-book-status' book.id 'd' %}">Forget about it...</a>
+                <a class="btn mt-3 btn-red" href="{% url 'change-book-status' book.id 'd' %}">Forget about it...</a>
               </div>
             </form>
           </div>
-          {% comment %} {% include "book_catalog/change_book_status_form.html" %} {% endcomment %}
         </div>
       </div>
     </div>

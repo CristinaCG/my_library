@@ -156,7 +156,7 @@ class Book(models.Model):
         # self.clean()
         self.full_clean()
         super().save(*args, **kwargs)
-            
+
 class UserBookRelation(models.Model):
     """
     Model representing a book state (e.g. read, to read, reading).

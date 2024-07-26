@@ -137,6 +137,7 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
             relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
             if relation: 
                 if relation.status == 'r':
+                    print(book.saga_volume-1)
                     relations[book.saga_volume-1] = 3
                 if relation.status == 'i':
                     relations[book.saga_volume-1] = 2
@@ -144,11 +145,12 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
                     relations[book.saga_volume-1] = 1
         print(relations)
         if sum(relations) == 3*len(saga.book_set.all()):
-            context['user_saga_relation'] = 'Read'
+            context['user_saga_relation'] = 'r'
         elif sum(relations) >= len(saga.book_set.all())+1+2:
-            context['user_saga_relation'] = 'Reading'
+            context['user_saga_relation'] = 'i'
         elif sum(relations) >= len(saga.book_set.all()):
-            context['user_saga_relation'] = 'To read'
+            print('t')
+            context['user_saga_relation'] = 't'
         # else:
         #     context['user_saga_relation'] = 'Add to my list'
         return context
