@@ -1,0 +1,55 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div style="display: flex;">
+  <div class="sidebar">
+    <!-- Primera columna -->
+    <div class="col-md-12">
+      <h3>Options</h3>
+      <ul class="list-group">
+        <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
+        <li class="list-group-item"><a class="no-underline" href="{% url 'delete_profile' %}">Delete Profile</a></li>
+        <li class="list-group-item"><a class="no-underline" href="{% url 'change_password' %}">Change Password</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-6 mt-5">
+    <div style="flex-grow: 1; padding: 20px;">
+        <h1 class="mb-3">
+            <big>
+                User profile
+            </big>
+        </h1>
+        <div>
+            <fieldset>
+              <label class="form-label mt-4" for="username">User name</label>
+              <input class="form-control" id="username" type="text" placeholder="{{ user.username }}" readonly="">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="firstname">First name</label>
+              <input class="form-control" id="firstname" type="text" placeholder="{{ user.first_name }}" readonly="">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="lastname">Last name</label>
+              <input class="form-control" id="lastname" type="text" placeholder="{{ user.last_name }}" readonly="">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="email">Email</label>
+              <input class="form-control" id="email" type="email" placeholder="{{ user.email }}" readonly="">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="readOnlyInput1">Member since</label>
+              <input class="form-control" id="readOnlyInput1" type="date" placeholder="{{ user.date_joined }}" readonly="">
+            </fieldset>
+          </div>
+  </div>
+</div>
+{% endblock %}

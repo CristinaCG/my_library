@@ -1,5 +1,7 @@
 from django import forms
 # from .models import UserBookRelation
+from .models import Author, Book, BookSaga, UserBookRelation, Language
+
 
 class ChangeBookStatusForm(forms.Form):
     STATUS_CHOICES = (
@@ -11,3 +13,5 @@ class ChangeBookStatusForm(forms.Form):
 
 class SearchForm(forms.Form):
     query = forms.CharField(label='Search', max_length=100)
+
+        

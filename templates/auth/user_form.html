@@ -1,0 +1,72 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div style="display: flex;">
+  <div class="sidebar">
+    <!-- Primera columna -->
+    <div class="col-md-12">
+      {% comment %} <h3>Options</h3>
+      <ul class="list-group">
+        <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
+      </ul> {% endcomment %}
+    </div>
+  </div>
+  <div class="col-md-6 mt-5">
+    <div style="flex-grow: 1; padding: 20px;">
+      <form method="post" action="{% url 'edit_profile' %}" style="width: 100%;">
+      <span class="general-form-title mb-3">
+        Edit profile
+      </span> 
+      {% csrf_token %}
+            <div class="wrap-input100" style="margin-bottom 23px;">
+              <label for="firstname" class="form-label mt-4">First name</label>
+              <input type="text" class="form-control" id="firstname" name="first_name" placeholder="Type your first name"
+              autocomplete="on" value={% if user.first_name %} {{user.first_name}} {%else%} "" {%endif%}>
+              {% if form.first_name.errors %}
+              <div class="error">{{ form.first_name.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+            <div class="wrap-input100" style="margin-bottom 23px;">
+              <label for="lastname" class="form-label mt-4">Last name</label>
+              <input type="text" class="form-control" id="lastname" name="last_name" placeholder="Type your last name"
+              autocomplete="on" value={% if user.last_name %} {{user.last_name}} {%else%} "" {%endif%}>
+              {% if form.last_name.errors %}
+              <div class="error">{{ form.last_name.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+            <div class="wrap-input100" style="margin-bottom 23px;">
+              <label for="email" class="form-label mt-4">Email Address</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Type your email address"
+              autocomplete="on" value={% if user.email %} {{user.email}} {%else%} "" {%endif%}>
+              {% if form.email.errors %}
+              <div class="error">{{ form.email.errors|join:", " }}</div>
+              {% endif %}
+            </div>
+    
+            <input type="submit" class="btn-save" value="Save">
+        </form>
+            {% comment %} <div>
+                <label for="username" class="form-label mt-4">User name</label>
+                <input type="text" class="form-control" id="username" placeholder="{{user.username}}">
+            </div> {% endcomment %}
+          {% comment %} <div>
+            <fieldset>
+              <label class="form-label mt-4" for="firstname">First name</label>
+              <input class="form-control" id="firstname" type="text" placeholder="{{ user.first_name }}">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="lastname">Last name</label>
+              <input class="form-control" id="lastname" type="text" placeholder="{{ user.last_name }}" readonly="">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="email">Email</label>
+              <input class="form-control" id="email" type="email" placeholder="{{ user.email }}" readonly="">
+            </fieldset>
+          </div> {% endcomment %}
+  </div>
+</div>
+{% endblock %}

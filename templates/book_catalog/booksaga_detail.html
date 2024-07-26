@@ -15,9 +15,14 @@
           <p>No cover available.</p>
         {% endif %}
       {% endfor %}
-      {% if user_book_relation  %}
+      {% if user_saga_relation %}
         <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
-          {{ user_book_relation }}
+          {{ user_saga_relation }}
+        </button>
+      {% else %}
+        <button class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
+          Add to my list
+        </button>
       {% endif %}
       {% if perms.book_catalog.change_book %}
       <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3">Edit</a>

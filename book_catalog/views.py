@@ -1,17 +1,14 @@
 from typing import Any
-from django.db.models.query import QuerySet
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Author, Book, BookSaga, UserBookRelation
+from .models import Author, Book, BookSaga, UserBookRelation, Language, Genre
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
 
 def index(request):
     """
@@ -43,6 +40,7 @@ def index(request):
     )
 
 
+################# List Views #################
 class BookListView(generic.ListView):
     """
     Generic class-based view listing books.
@@ -58,6 +56,40 @@ class BookListView(generic.ListView):
         context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
         return context
 
+class AuthorListView(generic.ListView):
+    """
+    Generic class-based view listing authors.
+    """
+    model = Author
+
+    def get_context_data(self, **kwargs: Any):
+        """
+        Obtain an author list of authors that has books published recently
+        """
+        context = super().get_context_data(**kwargs)
+        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
+        return context
+
+class UserBookRelationListView(LoginRequiredMixin, generic.ListView):
+    """
+    Generic class-based view listing books of the current user.
+    """
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
+    model = UserBookRelation
+    # paginate_by = 10
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+    # template_name ='templates/book_catalog/userbookrelation_list.html'
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
+        return context
+
+################# Detail Views #################
+
 class BookDetailView(LoginRequiredMixin, generic.DetailView):
     """
     Generic class-based view detail of a book.
@@ -71,20 +103,6 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
         book = self.get_object()
         user_book_relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
         context['user_book_relation'] = user_book_relation
-        return context
-
-class AuthorListView(generic.ListView):
-    """
-    Generic class-based view listing authors.
-    """
-    model = Author
-
-    def get_context_data(self, **kwargs: Any):
-        """
-        Obtain an author list of authors that has books published recently
-        """
-        context = super().get_context_data(**kwargs)
-        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
         return context
 
 class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
@@ -125,32 +143,16 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
                     relations[book.saga_volume-1] = 1
         print(relations)
         if sum(relations) == 3*len(saga.book_set.all()):
-            context['user_book_relation'] = 'Read'
+            context['user_saga_relation'] = 'Read'
         elif sum(relations) >= len(saga.book_set.all())+1+2:
-            context['user_book_relation'] = 'Reading'
+            context['user_saga_relation'] = 'Reading'
         elif sum(relations) >= len(saga.book_set.all()):
-            context['user_book_relation'] = 'To read'
-        else:
-            context['user_book_relation'] = 'Add to my list'
+            context['user_saga_relation'] = 'To read'
+        # else:
+        #     context['user_saga_relation'] = 'Add to my list'
         return context
 
-class UserBookRelationListView(LoginRequiredMixin, generic.ListView):
-    """
-    Generic class-based view listing books of the current user.
-    """
-    login_url = '/accounts/login/'
-    redirect_field_name = 'redirect_to'
-    model = UserBookRelation
-    # paginate_by = 10
-
-    def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
-    # template_name ='templates/book_catalog/userbookrelation_list.html'
-
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
-        context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
-        return context
+################# Create Views #################
 
 class AuthorCreateView(PermissionRequiredMixin,CreateView):
     """
@@ -159,6 +161,16 @@ class AuthorCreateView(PermissionRequiredMixin,CreateView):
     model = Author
     fields = '__all__'
     permission_required = 'book_catalog.add_author'
+
+class BookCreateView(PermissionRequiredMixin,CreateView):
+    """
+    Generic class-based view for creating a book.
+    """
+    model = Book
+    fields = '__all__'
+    permission_required = 'book_catalog.add_book'
+
+################# Update Views #################
 
 class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
     """
@@ -175,22 +187,6 @@ class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
         context['books'] = books
         return context
 
-class AuthorDeleteView(PermissionRequiredMixin,DeleteView):
-    """
-    Generic class-based view for deleting an author.
-    """
-    model = Author
-    success_url = reverse_lazy('authors')
-    permission_required = 'book_catalog.delete_author'
-
-class BookCreateView(PermissionRequiredMixin,CreateView):
-    """
-    Generic class-based view for creating a book.
-    """
-    model = Book
-    fields = '__all__'
-    permission_required = 'book_catalog.add_book'
-
 class BookUpdateView(PermissionRequiredMixin,UpdateView):
     """
     Generic class-based view for updating a book.
@@ -198,6 +194,40 @@ class BookUpdateView(PermissionRequiredMixin,UpdateView):
     model = Book
     fields = '__all__'
     permission_required = 'book_catalog.change_book'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sagas = BookSaga.objects.all()
+        context['sagas'] = sagas
+        languages = Language.objects.all()
+        context['languages'] = languages
+        genres = Genre.objects.all()
+        context['genres'] = genres
+        authors = Author.objects.all()
+        context['authors'] = authors
+        return context
+
+class BookSagaUpdateView(PermissionRequiredMixin,UpdateView):
+    """
+    Generic class-based view for updating a book saga.
+    """
+    model = BookSaga
+    fields = '__all__'
+    permission_required = 'book_catalog.change_booksaga'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        authors = Author.objects.all()
+        context['authors'] = authors
+        return context
+################# Delete Views #################
+
+class AuthorDeleteView(PermissionRequiredMixin,DeleteView):
+    """
+    Generic class-based view for deleting an author.
+    """
+    model = Author
+    success_url = reverse_lazy('authors')
+    permission_required = 'book_catalog.delete_author'
 
 class BookDeleteView(PermissionRequiredMixin,DeleteView):
     """
@@ -207,14 +237,6 @@ class BookDeleteView(PermissionRequiredMixin,DeleteView):
     success_url = reverse_lazy('books')
     permission_required = 'book_catalog.delete_book'
 
-class BookSagaUpdateView(PermissionRequiredMixin,UpdateView):
-    """
-    Generic class-based view for updating a book saga.
-    """
-    model = BookSaga
-    fields = '__all__'
-    permission_required = 'book_catalog.change_booksaga'
-
 class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
     """
     Generic class-based view for deleting a book saga.
@@ -223,20 +245,7 @@ class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
     success_url = reverse_lazy('books')
     permission_required = 'book_catalog.delete_booksaga'
 
-# class LoginView(generic.View):
-#     def get(self, request):
-#         return render(request, 'registration/login.html')
-#     def post(self, request):
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return redirect('/success/')
-#         else:
-#             messages.error(request, 'Invalid credentials')
-#             return render(request, 'accounts/login.html')
-
+################# Form Views #################
 @login_required
 def change_book_status(request, pk, status: str):
     """
@@ -305,3 +314,4 @@ def search(request):
     }
     
     return render(request, 'search_results.html', context)
+

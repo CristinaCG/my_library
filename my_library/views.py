@@ -1,0 +1,118 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import generic
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from .forms import UpdateUserForm
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+
+class UserDetailView(LoginRequiredMixin, generic.DetailView):
+    model = User
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
+    template_name = 'auth/user_profile.html'
+
+    def get_object(self):
+        return self.request.user
+
+class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
+    """
+    Generic class-based view for deleting a book.
+    """
+    model = User
+    success_url = reverse_lazy('login')
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
+    template_name = 'auth/user_confirm_delete.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
+
+class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = User
+    fields = ['email', 'last_name', 'first_name']
+    template_name = 'auth/user_form.html'
+    success_url = reverse_lazy('user_profile')
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs: reverse_lazy):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
+# class UserChangePasswordView(LoginRequiredMixin, PasswordContextMixin,generic.UpdateView):
+#     # email_template_name = "registration/password_reset_email.html"
+#     # extra_email_context = None
+#     form_class = PasswordChangeForm
+#     html_email_template_name = None
+#     subject_template_name = "registration/password_reset_subject.txt"
+#     success_url = reverse_lazy("password_reset_done")
+#     template_name = "registration/password_reset_form.html"
+#     title = _("Password reset")
+#     token_generator = default_token_generator
+
+#     @method_decorator(csrf_protect)
+#     def dispatch(self, *args, **kwargs):
+#         return super().dispatch(*args, **kwargs)
+
+#     def form_valid(self, form):
+#         opts = {
+#             "use_https": self.request.is_secure(),
+#             "token_generator": self.token_generator,
+#             "from_email": self.from_email,
+#             "email_template_name": self.email_template_name,
+#             "subject_template_name": self.subject_template_name,
+#             "request": self.request,
+#             "html_email_template_name": self.html_email_template_name,
+#             "extra_email_context": self.extra_email_context,
+#         }
+#         form.save(**opts)
+#         return super().form_valid(form)
+    
+
+#     model = User
+#     fields = ['password']
+#     login_url = '/accounts/login/'
+#     redirect_field_name = 'redirect_to'
+#     template_name = 'auth/user_change_password.html'
+#     success_url = '/accounts/profile'
+
+#     def get_object(self, queryset=None):
+#         return self.request.user
+
+#     def form_valid(self, form):
+#         print('form_valid')
+#         # Check old password
+#         if not self.object.check_password(form.cleaned_data['old_password']):
+#             form.add_error('old_password', 'Old password is incorrect')
+#             return self.form_invalid(form)
+#         # Check new password
+#         if form.cleaned_data['new_password1'] != form.cleaned_data['new_password2']:
+#             form.add_error('new_password2', 'Passwords do not match')
+#             return self.form_invalid(form)
+#         # Save new password
+#         self.object = form.save(commit=False)
+#         self.object.set_password(self.object.password)
+#         self.object.save()
+#         return HttpResponseRedirect(self.get_success_url())
+
+
+
+    
