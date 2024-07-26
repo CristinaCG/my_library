@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import generic
+from django.views.generic import UpdateView, DetailView, DeleteView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -11,12 +11,13 @@ from django.views.generic.edit import FormView
 from .forms import UserRegisterForm
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
+from django import forms
 
 
 def not_logged_in(user):
     return not user.is_authenticated
 
-class UserDetailView(LoginRequiredMixin, generic.DetailView):
+class UserProfileDetailView(LoginRequiredMixin, DetailView):
     model = User
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
@@ -25,7 +26,12 @@ class UserDetailView(LoginRequiredMixin, generic.DetailView):
     def get_object(self):
         return self.request.user
 
-class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
+class UserProfileDeleteView(LoginRequiredMixin, DeleteView):
     """
     Generic class-based view for deleting a book.
     """
@@ -44,25 +50,26 @@ class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
         self.object.delete()
         return HttpResponseRedirect(success_url)
 
-class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = User
-    fields = ['email', 'last_name', 'first_name']
-    template_name = 'auth/user_form.html'
+class UserProfileUpdateView(UpdateView):
     success_url = reverse_lazy('user_profile')
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
+    fields = ['email', 'first_name', 'last_name']
 
     def get_object(self, queryset=None):
         return self.request.user
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs: reverse_lazy):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['email'].widget = forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Type your email address'})
+        form.fields['last_name'].widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your last name'})
+        form.fields['first_name'].widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your first name'})
+        return form
 
 @method_decorator(user_passes_test(not_logged_in, login_url=reverse_lazy('index')), name='dispatch')
 class UserRegisterView(FormView):
@@ -79,21 +86,22 @@ class UserRegisterView(FormView):
         form.save()
         return render(self.request, 'auth/user_register_done.html')
 
-def user_register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            print("hello")
-            user = form.save()
-            print(user)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            login(request, user)
-            messages.success(request, 'You have successfully registered')
-            return redirect('auth/user_register_form.html')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'auth/user_register_form.html', {'form': form})
+# class UserRegisterView(FormView):
+# def user_register(request):
+#     if request.method == 'POST':
+#         form = UserRegisterForm(request.POST)
+#         if form.is_valid():
+#             print("hello")
+#             user = form.save()
+#             print(user)
+#             user.set_password(form.cleaned_data['password'])
+#             user.save()
+#             login(request, user)
+#             messages.success(request, 'You have successfully registered')
+#             return redirect('auth/user_register_form.html')
+#     else:
+#         form = UserRegisterForm()
+#     return render(request, 'auth/user_register_form.html', {'form': form})
 
 # class UserChangePasswordView(LoginRequiredMixin, PasswordContextMixin,generic.UpdateView):
 #     # email_template_name = "registration/password_reset_email.html"

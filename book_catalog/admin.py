@@ -35,7 +35,7 @@ class BookAdmin(admin.ModelAdmin):
 # admin.site.register(BookState)
 @admin.register(UserBookRelation)
 class UserBookRelationAdmin(admin.ModelAdmin):
-    list_display = ('book', 'user', 'status')
+    list_display = ('book', 'user', 'status', 'reading_date', 'read_date')
     list_filter = ('user', 'status')
     fields = ['user', 'book', 'status']
 

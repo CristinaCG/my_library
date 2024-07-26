@@ -1,5 +1,6 @@
 from typing import Any
 from django.db.models import Q
+from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Author, Book, BookSaga, UserBookRelation, Language, Genre
@@ -9,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django import forms
 
 def index(request):
     """
@@ -28,7 +29,7 @@ def index(request):
         # 'average_books_per_month': average_books_per_month,
     }
     if request.user.is_authenticated:
-        books_read_id = UserBookRelation.objects.filter(user=request.user, status='r').order_by('-id')[:3]
+        books_read_id = UserBookRelation.objects.filter(user=request.user, status='i').order_by('-id')[:3]
         books_read = [Book.objects.get(pk=book.book_id) for book in books_read_id]
         # books_read = Book.objects.filter(pk__in=books_read)
         # average_books_per_month = books_read.count() / (datetime.now().month - books_read.aggregate(Min('date_finished'))['date_finished__min'].month + 1)
@@ -133,23 +134,20 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         saga = self.get_object()
         relations = [0]*len(saga.book_set.all())
-        for book in saga.book_set.all():
+        for i, book in enumerate(saga.book_set.all()):
             relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
             if relation: 
                 if relation.status == 'r':
-                    print(book.saga_volume-1)
-                    relations[book.saga_volume-1] = 3
+                    relations[i] = 3
                 if relation.status == 'i':
-                    relations[book.saga_volume-1] = 2
+                    relations[i] = 2
                 if relation.status == 't':
-                    relations[book.saga_volume-1] = 1
-        print(relations)
+                    relations[i] = 1
         if sum(relations) == 3*len(saga.book_set.all()):
             context['user_saga_relation'] = 'r'
         elif sum(relations) >= len(saga.book_set.all())+1+2:
             context['user_saga_relation'] = 'i'
         elif sum(relations) >= len(saga.book_set.all()):
-            print('t')
             context['user_saga_relation'] = 't'
         # else:
         #     context['user_saga_relation'] = 'Add to my list'
@@ -164,6 +162,15 @@ class AuthorCreateView(PermissionRequiredMixin,CreateView):
     model = Author
     fields = '__all__'
     permission_required = 'book_catalog.add_author'
+    template_name = 'book_catalog/author_form.html'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['first_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['last_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['year_of_birth'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['year_of_death'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        return form
 
 class BookCreateView(PermissionRequiredMixin,CreateView):
     """
@@ -173,17 +180,33 @@ class BookCreateView(PermissionRequiredMixin,CreateView):
     fields = '__all__'
     permission_required = 'book_catalog.add_book'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        sagas = BookSaga.objects.all()
-        context['sagas'] = sagas
-        languages = Language.objects.all()
-        context['languages'] = languages
-        genres = Genre.objects.all()
-        context['genres'] = genres
-        authors = Author.objects.all()
-        context['authors'] = authors
-        return context
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        author_choices = [(author.id, author) for author in Author.objects.all()]
+        saga_choices = [('', '---------')] + [(saga.id, saga) for saga in BookSaga.objects.all()]
+        language_choices = [(language.id, language) for language in Language.objects.all()]
+        genre_choices = [(genre.id, genre) for genre in Genre.objects.all()]
+        form.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['title'].order = 1
+        form.fields['author'].widget = forms.Select(attrs={'class': 'form-select'}, choices=author_choices)
+        form.fields['author'].order = 2
+        form.fields['saga'].widget = forms.Select(attrs={'class': 'form-select'}, choices=saga_choices)
+        form.fields['saga'].order = 3
+        form.fields['saga_volume'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        form.fields['saga_volume'].order = 4
+        form.fields['publish_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        form.fields['publish_date'].order = 5
+        form.fields['summary'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        form.fields['summary'].order = 6
+        form.fields['isbn'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['isbn'].order = 7
+        form.fields['language'].widget = forms.Select(attrs={'class': 'form-select'}, choices=language_choices)
+        form.fields['language'].order = 8
+        form.fields['genre'].widget = forms.SelectMultiple(attrs={'class': 'form-select'}, choices=genre_choices)
+        form.fields['genre'].order = 9
+        form.fields['cover_image'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
+        form.fields['cover_image'].order = 10
+        return form
 
 class BookSagaCreateView(PermissionRequiredMixin,CreateView):
     """
@@ -199,16 +222,23 @@ class BookSagaCreateView(PermissionRequiredMixin,CreateView):
         context['authors'] = authors
         return context
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        author_choices = [(author.id, author) for author in Author.objects.all()]
+        form.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['author'].widget = forms.Select(attrs={'class': 'form-select'}, choices=author_choices)
+        return form
 
 ################# Update Views #################
 
-class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
+class AuthorUpdateView(PermissionRequiredMixin, UpdateView):
     """
     Generic class-based view for updating an author.
     """
     model = Author
-    fields = '__all__'
+    fields = ['first_name', 'last_name', 'year_of_birth', 'year_of_death']
     permission_required = 'book_catalog.change_author'
+    template_name = 'book_catalog/author_form.html'
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
@@ -217,38 +247,90 @@ class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
         context['books'] = books
         return context
 
-class BookUpdateView(PermissionRequiredMixin,UpdateView):
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['first_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['last_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['year_of_birth'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['year_of_death'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        return form
+
+    def get_success_url(self):
+        return reverse('author-detail', args=[str(self.object.pk)])
+
+class BookUpdateView(PermissionRequiredMixin, UpdateView):
     """
     Generic class-based view for updating a book.
     """
     model = Book
     fields = '__all__'
     permission_required = 'book_catalog.change_book'
+    template_name = 'book_catalog/book_form.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        sagas = BookSaga.objects.all()
-        context['sagas'] = sagas
-        languages = Language.objects.all()
-        context['languages'] = languages
-        genres = Genre.objects.all()
-        context['genres'] = genres
-        authors = Author.objects.all()
-        context['authors'] = authors
-        return context
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        author_choices = [(author.id, author) for author in Author.objects.all()]
+        saga_choices = [(saga.id, saga) for saga in BookSaga.objects.all()]
+        language_choices = [(language.id, language) for language in Language.objects.all()]
+        genre_choices = [(genre.id, genre) for genre in Genre.objects.all()]
+        form.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['title'].order = 1
+        form.fields['author'].widget = forms.Select(attrs={'class': 'form-select'}, choices=author_choices)
+        form.fields['author'].order = 2
+        form.fields['saga'].widget = forms.Select(attrs={'class': 'form-select'}, choices=saga_choices)
+        form.fields['saga'].order = 3
+        form.fields['saga_volume'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        form.fields['saga_volume'].order = 4
+        form.fields['publish_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        form.fields['publish_date'].order = 5
+        form.fields['summary'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        form.fields['summary'].order = 6
+        form.fields['isbn'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['isbn'].order = 7
+        form.fields['language'].widget = forms.Select(attrs={'class': 'form-select'}, choices=language_choices)
+        form.fields['language'].order = 8
+        form.fields['genre'].widget = forms.SelectMultiple(attrs={'class': 'form-select'}, choices=genre_choices)
+        form.fields['genre'].order = 9
+        form.fields['cover_image'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
+        form.fields['cover_image'].order = 10
+        return form
 
-class BookSagaUpdateView(PermissionRequiredMixin,UpdateView):
+    def get_success_url(self):
+        return reverse('book-detail', args=[str(self.object.pk)])
+
+class BookSagaUpdateView(PermissionRequiredMixin, UpdateView):
     """
     Generic class-based view for updating a book saga.
     """
     model = BookSaga
-    fields = '__all__'
+    fields = ['name']
+    template_name = 'book_catalog/booksaga_form.html'
     permission_required = 'book_catalog.change_booksaga'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        authors = Author.objects.all()
-        context['authors'] = authors
-        return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        return form
+    def get_success_url(self):
+        return reverse('saga-detail', args=[str(self.object.pk)])
+
+class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Generic class-based view for updating a book saga.
+    """
+    model = UserBookRelation
+    fields = ['status', 'read_date', 'reading_date', 'rate', 'review']
+    template_name = 'book_catalog/userbookrelation_form.html'
+    success_url = reverse_lazy('my-books')
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['status'].widget = forms.Select(attrs={'class': 'form-select'}, choices=UserBookRelation.STATUS_CHOICES)
+        form.fields['read_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        form.fields['reading_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        form.fields['rate'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        form.fields['review'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        return form
 
 ################# Delete Views #################
 
@@ -278,6 +360,7 @@ class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
 
 ################# Form Views #################
 
+
 @login_required
 def change_book_status(request, pk, status: str):
     """
@@ -287,22 +370,29 @@ def change_book_status(request, pk, status: str):
     relation = UserBookRelation.objects.filter(user = request.user, book = book).first()
     if relation:
         if status == 'd':
-            relation.delete()
+            relation.status = None
+            relation.read_date = None
+            relation.reading_date = None
+            relation.save()
         else:
             relation.status = status
+            if status == 'r':
+                relation.read_date = timezone.now()
+            if status == 'i':
+                relation.reading_date = timezone.now()
             relation.save()
     elif not relation and status != 'd':
         UserBookRelation.objects.create(user = request.user, book = book, status = status)
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
 
-@login_required
-def delete_book_status(request, pk):
-    """
-    View function for changing book status.
-    """
-    book = get_object_or_404(Book, pk=pk)
-    UserBookRelation.objects.filter(user = request.user, book = book).delete()
-    return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
+# @login_required
+# def delete_book_status(request, pk):
+#     """
+#     View function for changing book status.
+#     """
+#     book = get_object_or_404(Book, pk=pk)
+#     UserBookRelation.objects.filter(user = request.user, book = book).delete()
+#     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
 
 @login_required
 def change_booksaga_status(request, pk, status: str):

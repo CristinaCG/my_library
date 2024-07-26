@@ -13,11 +13,11 @@
   </div>
   <div class="col-md-6 mt-5">
     <div style="flex-grow: 1; padding: 20px;">
-      <form method="post" action="{% url 'edit_profile' %}" style="width: 100%;">
+      <form method="post" action="" style="width: 100%;">
         <h1> Edit profile</h1>
       </span> 
       {% csrf_token %}
-            <div class="wrap-input100" style="margin-bottom 23px;">
+            {% comment %} <div class="wrap-input100" style="margin-bottom 23px;">
               <label for="firstname" class="form-label mt-4">First name</label>
               <input type="text" class="form-control" id="firstname" name="first_name" placeholder="Type your first name"
               autocomplete="on" value={% if user.first_name %} {{user.first_name}} {%else%} "" {%endif%}>
@@ -40,8 +40,10 @@
               {% if form.email.errors %}
               <div class="error">{{ form.email.errors|join:", " }}</div>
               {% endif %}
-            </div>
-    
+            </div> {% endcomment %}
+            <table>
+              {{ form.as_p }}
+              </table>
             <input type="submit" class="btn-save mt-3" value="Save">
         </form>
   </div>

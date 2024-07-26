@@ -15,6 +15,9 @@
             <th scope="col">Saga</th>
             <th scope="col">Author</th>
             <th scope="col">Status</th>
+            <th scope="col">Date added</th>
+            <th scope="col">Date read</th>
+            <th scope="col">Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -22,6 +25,7 @@
             <tr class="table-secondary">
               <td>
                 <a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>
+
               </td>
               <td>
                 {% if object.book.saga %}
@@ -36,6 +40,15 @@
               </td>
               <td>
                 <a>{{ object.display_status }}</a>
+              </td>
+              <td>
+                {% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}
+              </td>
+              <td>
+                {% if object.read_date %}<a>{{ object.read_date }}</a>{% else %}{% endif %}
+              </td>
+              <td>
+                <a class="btn btn-primary" href="{% url 'change-userbookrelation' object.id %}">Editar</a>
               </td>
             </tr>
           {% endfor %}

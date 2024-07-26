@@ -5,13 +5,13 @@
   <div class="sidebar">
     {% if user.is_authenticated %}
       <div class="col-md-9">
-        <h2>Lecturas actuales</h2>
+        <h2>Currently reading...</h2>
         <ul class="list-group">
           {% for book in books_read %}
             <li class="list-group-item" style="background-color: #f4f4f4;">
               <h5 class="mb-1">{{ book.title }}</h5>
               <p class="mb-1 ">
-                Autor: 
+                Author: 
                 <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
               </p>
               {% if book.saga %}
@@ -29,7 +29,7 @@
             </li>
           {% empty %}
             <li class="list-group-item" style="background-color: #f4f4f4;">
-              No has agregado libros recientemente.
+              You need a new book!
             </li>
           {% endfor %}
         </ul>
@@ -37,13 +37,13 @@
       </div>
     {% endif %}
     <div class="col-md-9">
-      <h2>Estadísticas de Lectura</h2>
+      <h2>Reading statistics</h2>
       <ul class="list-group">
         <li class="list-group-item" style="background-color: #f4f4f4;">
-          Total de libros: {{ total_books }}
+          Total books: {{ total_books }}
         </li>
         <li class="list-group-item" style="background-color: #f4f4f4;">
-          Total de autores: {{ total_authors }}
+          Total authors: {{ total_authors }}
         </li>
         {% comment %} <li class="list-group-item">Libros leídos este año: {{ total_authors }}</li> {% endcomment %}
         {% comment %} <li class="list-group-item">Promedio de libros por mes: {{ average_books_per_month }}</li> {% endcomment %}
@@ -59,7 +59,7 @@
     </div>
     <hr class="my-4">
     <div class="col-md-9">
-      <h2>Libros Recientes</h2>
+      <h2>Recent books</h2>
       <ul class="list-group">
         {% for book in recent_books %}
           <li class="list-group-item" style="background-color: #f4f4f4;">
@@ -67,7 +67,6 @@
               <a class="no-underline"href="{{ book.get_absolute_url }}">{{ book.title }}</a>
             </h5>
             <p class="mb-1 ">
-              Autor: 
               <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
             </p>
             {% if book.saga %}
@@ -85,7 +84,7 @@
           </li>
         {% empty %}
           <li class="list-group-item" style="background-color: #f4f4f4;">
-            No has agregado libros recientemente.
+            No books for now.
           </li>
         {% endfor %}
       </ul>

@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 import uuid
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 # Create your models here.
 class Genre(models.Model):
@@ -83,14 +85,14 @@ class Book(models.Model):
     """
     Model representing a book (but not a specific copy of a book).
     """
-    title = models.CharField(max_length=200, help_text='Inserte el título del libro.')
+    title = models.CharField(max_length=200,)
     saga = models.ForeignKey('BookSaga', on_delete=models.PROTECT, null=True, blank=True)
     saga_volume = models.IntegerField(null=True, blank=True)
     author = models.ForeignKey('Author', on_delete=models.PROTECT, null=False)
     publish_date = models.DateField(null=True, blank=True)
-    summary = models.TextField(max_length=1000, help_text='Enter a brief description of the book', null=True, blank=True)
+    summary = models.TextField(max_length=1000, null=True, blank=True)
     isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
-    genre = models.ManyToManyField(Genre, help_text='Select a genre for this book')
+    genre = models.ManyToManyField(Genre, )
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
     cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
 
@@ -168,9 +170,12 @@ class UserBookRelation(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES,
-                              help_text = "Estado actual del libro")
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, null=True, blank=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular book',)
+    reading_date = models.DateField(null=True, blank=True)
+    read_date = models.DateField(null=True, blank=True)
+    rate = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    review = models.TextField(max_length=1000, help_text='Enter a brief review of the book', null=True, blank=True)
 
     def __str__(self):
         """
@@ -273,7 +278,7 @@ class BookSaga(models.Model):
     """
     Model representing a book saga (e.g. Harry Potter, The Lord of the Rings).
     """
-    name = models.CharField(max_length=200, help_text='Enter the name of the saga')
+    name = models.CharField(max_length=200,)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='saga', null = False)
 
     def __str__(self):

@@ -6,19 +6,22 @@
 
   <div class="sidebar">
     <div class="col-md-12 mt-3">
-      <h2>Author's book list</h2>
-      <ul class="list-group">
-        {% for book in books %}
-          <li class="list-group-item d-flex align-items-center">
-            <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
-            {% if book.saga %}
-              <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
-            {% endif %}
-          </li>
-        {% empty %}
-          <li>Este autor no tiene libros listados.</li>
-        {% endfor %}
-      </ul>
+      {% if author.id %}
+        <h2>Author's book list</h2>
+        <ul class="list-group">
+
+          {% for book in books %}
+            <li class="list-group-item d-flex align-items-center">
+              <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
+              {% if book.saga %}
+                <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
+              {% endif %}
+            </li>
+          {% empty %}
+            <li>Este autor no tiene libros listados.</li>
+          {% endfor %}
+        </ul>
+      {% endif%}
     </div>
   </div>
 
@@ -26,41 +29,9 @@
     <h1>{% if author.id %}Edit Author{% else %}New Author{% endif %}</h1>
     <form action="" method="post">
         {% csrf_token %}
-        <div class="wrap-input100">
-            <label for="firstname" class="form-label mt-4">First name</label>
-            <input type="text" class="form-control" id="firstname" name="first_name" placeholder="Type the first name"
-            autocomplete="on" value={% if author.first_name %} "{{author.first_name}}" {%else%} "" {%endif%}>
-            {% if form.first_name.errors %}
-            <div class="error">{{ form.first_name.errors|join:", " }}</div>
-            {% endif %}
-        </div>
-          <div class="wrap-input100">
-            <label for="lastname" class="form-label mt-4">Last name</label>
-            <input type="text" class="form-control" id="lastname" name="last_name" placeholder="Type the last name"
-            autocomplete="on" value={% if author.last_name %} "{{author.last_name}}" {%else%} "" {%endif%}>
-            {% if form.last_name.errors %}
-            <div class="error">{{ form.last_name.errors|join:", " }}</div>
-            {% endif %}
-          </div>
-          <div class="wrap-input100">
-            <label for="yearofbirth" class="form-label mt-4">Year of birth</label>
-            <input type="text" class="form-control" id="yearofbirth" name="year_of_birth" placeholder="Type the year of birth"
-            autocomplete="on" value={% if author.year_of_birth %} "{{author.year_of_birth}}" {%else%} "" {%endif%}>
-            {% if form.year_of_birth.errors %}
-            <div class="error">{{ form.year_of_birth.errors|join:", " }}</div>
-            {% endif %}
-          </div>
-          <div class="wrap-input100">
-            <label for="yearofdeath" class="form-label mt-4">Year of death</label>
-            <input type="text" class="form-control" id="yearofdeath" name="year_of_death" placeholder="Type the year of death"
-            autocomplete={{author.year_of_death}} value={% if author.year_of_death %} "{{author.year_of_death}}" {%else%} "" {%endif%}>
-            {% if form.year_of_death.errors %}
-            <div class="error">{{ form.year_of_death.errors|join:", " }}</div>
-            {% endif %}
-          </div>
-          {% comment %} <table>
-          {{ form.as_table }}
-          </table> {% endcomment %}
+          <table>
+          {{ form.as_p }}
+          </table>
           <input type="submit" class="btn-save mt-3" value="Save">
       </form>
   </div>
