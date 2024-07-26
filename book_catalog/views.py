@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+
 def index(request):
     """
     View function for home page of site.
@@ -39,8 +40,8 @@ def index(request):
         context = context,
     )
 
-
 ################# List Views #################
+
 class BookListView(generic.ListView):
     """
     Generic class-based view listing books.
@@ -170,6 +171,33 @@ class BookCreateView(PermissionRequiredMixin,CreateView):
     fields = '__all__'
     permission_required = 'book_catalog.add_book'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sagas = BookSaga.objects.all()
+        context['sagas'] = sagas
+        languages = Language.objects.all()
+        context['languages'] = languages
+        genres = Genre.objects.all()
+        context['genres'] = genres
+        authors = Author.objects.all()
+        context['authors'] = authors
+        return context
+
+class BookSagaCreateView(PermissionRequiredMixin,CreateView):
+    """
+    Generic class-based view for creating an author.
+    """
+    model = BookSaga
+    fields = '__all__'
+    permission_required = 'book_catalog.add_booksaga'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        authors = Author.objects.all()
+        context['authors'] = authors
+        return context
+
+
 ################# Update Views #################
 
 class AuthorUpdateView(PermissionRequiredMixin,UpdateView):
@@ -219,6 +247,7 @@ class BookSagaUpdateView(PermissionRequiredMixin,UpdateView):
         authors = Author.objects.all()
         context['authors'] = authors
         return context
+
 ################# Delete Views #################
 
 class AuthorDeleteView(PermissionRequiredMixin,DeleteView):
@@ -246,6 +275,7 @@ class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
     permission_required = 'book_catalog.delete_booksaga'
 
 ################# Form Views #################
+
 @login_required
 def change_book_status(request, pk, status: str):
     """
@@ -314,4 +344,3 @@ def search(request):
     }
     
     return render(request, 'search_results.html', context)
-

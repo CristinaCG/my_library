@@ -3,11 +3,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
-from .forms import UpdateUserForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import login
+from django.views.generic.edit import FormView
+from .forms import UserRegisterForm
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
 
+
+def not_logged_in(user):
+    return not user.is_authenticated
 
 class UserDetailView(LoginRequiredMixin, generic.DetailView):
     model = User
@@ -56,6 +63,37 @@ class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         return context
+
+@method_decorator(user_passes_test(not_logged_in, login_url=reverse_lazy('index')), name='dispatch')
+class UserRegisterView(FormView):
+    form_class = UserRegisterForm
+    template_name = 'auth/user_register_form.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        print(user)
+        user.set_password(form.cleaned_data['password'])
+        user.save()
+        login(self.request, user)
+        form.save()
+        return render(self.request, 'auth/user_register_done.html')
+
+def user_register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            print("hello")
+            user = form.save()
+            print(user)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            login(request, user)
+            messages.success(request, 'You have successfully registered')
+            return redirect('auth/user_register_form.html')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'auth/user_register_form.html', {'form': form})
 
 # class UserChangePasswordView(LoginRequiredMixin, PasswordContextMixin,generic.UpdateView):
 #     # email_template_name = "registration/password_reset_email.html"

@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+<<div class="container mt-5">
   <h1>Search Results</h1>
 
   <div style="flex-grow: 1; padding: 20px;">
@@ -79,63 +80,11 @@
               {% endfor %}
             {% endfor %}
         {% endif%}
-
-          {% comment %} {% if saga_results %}
-            <ul>
-              {% for saga in saga_results %}
-                <li>{{ saga.name }}</li>
-              {% endfor %}
-            </ul>
-          {% endif%}
-          {% if author_results %}
-            <ul>
-              {% for author in author_results %}
-                <li>{{ author.first_name }} {{ author.last_name }}</li>
-              {% endfor %}
-            </ul>
-          {% endif%} {% endcomment %}
         </tbody>
       </table>
     {% else %}
       <p>No hay autores en la biblioteca.</p>
     {% endif %} 
   </div>
-  {% comment %} {% if query %}
-    <p>You searched for: <strong>{{ query }}</strong></p>
-    
-    {% if book_results %}
-      <ul>
-        {% for book in book_results %}
-          <li>{{ book.title }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No books found.</p>
-    {% endif %}
-    
-    <h2>Authors</h2>
-    {% if author_results %}
-      <ul>
-        {% for author in author_results %}
-          <li>{{ author.first_name }} {{ author.last_name }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No authors found.</p>
-    {% endif %}
-    
-    <h2>Sagas</h2>
-    {% if saga_results %}
-      <ul>
-        {% for saga in saga_results %}
-          <li>{{ saga.name }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No sagas found.</p>
-    {% endif %}
-    
-  {% else %}
-    <p>Please enter a search term.</p>
-  {% endif %} {% endcomment %}
+</div>
 {% endblock %}

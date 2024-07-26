@@ -1,0 +1,46 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div style="display: flex;">
+  <div class="sidebar">
+    <!-- Primera columna -->
+    <div class="col-md-12">
+      {% comment %} <h3>Options</h3>
+      <ul class="list-group">
+        <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
+      </ul> {% endcomment %}
+    </div>
+  </div>
+  <div class="col-md-6 mt-5">
+    <div style="flex-grow: 1; padding: 20px;">
+      <form method="post" action="{% url 'register' %}" style="width: 100%;">
+        <h1> New user</h1>
+        {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn-save mt-3" value="Save">
+        </form>
+            {% comment %} <div>
+                <label for="username" class="form-label mt-4">User name</label>
+                <input type="text" class="form-control" id="username" placeholder="{{user.username}}">
+            </div> {% endcomment %}
+          {% comment %} <div>
+            <fieldset>
+              <label class="form-label mt-4" for="firstname">First name</label>
+              <input class="form-control" id="firstname" type="text" placeholder="{{ user.first_name }}">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="lastname">Last name</label>
+              <input class="form-control" id="lastname" type="text" placeholder="{{ user.last_name }}" readonly="">
+            </fieldset>
+          </div>
+          <div>
+            <fieldset>
+              <label class="form-label mt-4" for="email">Email</label>
+              <input class="form-control" id="email" type="email" placeholder="{{ user.email }}" readonly="">
+            </fieldset>
+          </div> {% endcomment %}
+  </div>
+</div>
+{% endblock %}

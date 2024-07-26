@@ -24,19 +24,4 @@
     {% include "book_catalog/author_detail_content.html" %}
   </div>
 </div>
-
-
-
-
-  <!-- <div style="margin-left:20px;margin-top:20px">
-    <h4>Copias</h4>
-
-    {% for copy in book.bookinstance_set.all %}
-    <hr>
-    <p class="{% if copy.status == 'a' %}text-success{% elif copy.status == 'm' %}text-danger{% else %}text-warning{% endif %}">{{ copy.get_status_display }}</p>
-    {% if copy.status != 'a' %}<p><strong>Pendiente de devolución:</strong> {{copy.due_back}}</p>{% endif %}
-    <p><strong>Imprimir:</strong> {{copy.imprint}}</p>
-    <p class="text-muted"><strong>Id:</strong> {{copy.id}}</p>
-    {% endfor %}
-  </div> -->
 {% endblock %}

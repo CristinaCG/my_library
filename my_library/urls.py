@@ -20,7 +20,7 @@ from django.views.generic import RedirectView
 from book_catalog import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import UserDetailView, UserDeleteView, UserUpdateView
+from .views import UserDetailView, UserDeleteView, UserUpdateView, UserRegisterView, user_register
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordChangeView
 
 
@@ -38,6 +38,10 @@ urlpatterns += [
     # path('accounts/profile/update', profile, name='edit_profile'),
     path('accounts/profile/delete', UserDeleteView.as_view(), name='delete_profile'),
     path('accounts/profile/change_password', PasswordChangeView.as_view(), name='change_password'),
+    # path('accounts/register', user_register, name='register'),
+    path('accounts/register', UserRegisterView.as_view(), name='register'),
+    path('accounts/register/done', UserRegisterView.as_view(), name='register-done'),
+
     # path('accounts/profile/update', UserUpdateView.as_view(), name='edit_profile'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
