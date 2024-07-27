@@ -19,6 +19,7 @@ urlpatterns = [
     path('userbookrelation/<uuid:pk>/update/', views.UserBookRelationUpdateView.as_view(), name='change-userbookrelation'),
     path('book/<int:pk>/update/', views.BookUpdateView.as_view(), name='book-update'),
     path('book/<int:pk>/delete/', views.BookDeleteView.as_view(), name='book-delete'),
+    path('book/<int:pk>/update-rate/<int:rate>', views.rate_book, name='rate-book'),
     #saga view
     path('saga/create/', views.BookSagaCreateView.as_view(), name='saga-create'),
     path('saga/<int:pk>', views.BookSagaDetailView.as_view(), name='saga-detail'),

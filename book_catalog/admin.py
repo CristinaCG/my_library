@@ -29,13 +29,15 @@ admin.site.register(Author, AuthorAdmin)
 class BookAdmin(admin.ModelAdmin):
     list_display = ('display_title', 'display_author', 'publish_date')
     list_filter = ('author', 'saga')
-    fields = ['title', 'author', ('saga', 'saga_volume'), 'cover_image', 'publish_date', 'summary', 'language', 'genre', 'isbn']
+    fields = ['title', 'author', ('saga', 'saga_volume'),
+              'cover_image', 'publish_date', 'summary', 'language',
+              'genre', 'isbn']
 
 
 # admin.site.register(BookState)
 @admin.register(UserBookRelation)
 class UserBookRelationAdmin(admin.ModelAdmin):
-    list_display = ('book', 'user', 'status', 'reading_date', 'read_date')
+    list_display = ('book', 'user', 'status', 'rating', 'reading_date', 'read_date')
     list_filter = ('user', 'status')
-    fields = ['user', 'book', 'status']
+    fields = ['user', 'book', 'status', 'rating', 'reading_date', 'read_date', 'review']
 

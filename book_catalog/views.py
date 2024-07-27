@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django import forms
+from django.db.models import Avg
 
 def index(request):
     """
@@ -79,6 +80,7 @@ class UserBookRelationListView(LoginRequiredMixin, generic.ListView):
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = UserBookRelation
+    template_name = 'book_catalog/userbookrelation_list.html'
     # paginate_by = 10
 
     def get_queryset(self):
@@ -99,12 +101,17 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = Book
+    template_name = 'book_catalog/book_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        book = self.get_object()
+        book = self.object
         user_book_relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
-        context['user_book_relation'] = user_book_relation
+        context['my_book'] = user_book_relation
+        context['average_rating'] = book.average_rating()
+        context['average_rating_over_100'] = int(book.average_rating()*20)
+        context['total_rates'] = book.number_of_ratings()
+
         return context
 
 class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
@@ -206,6 +213,8 @@ class BookCreateView(PermissionRequiredMixin,CreateView):
         form.fields['genre'].order = 9
         form.fields['cover_image'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
         form.fields['cover_image'].order = 10
+        if 'rate_mean' in form.fields:
+            del form.fields['rate_mean']
         return form
 
 class BookSagaCreateView(PermissionRequiredMixin,CreateView):
@@ -264,6 +273,7 @@ class BookUpdateView(PermissionRequiredMixin, UpdateView):
     """
     model = Book
     fields = '__all__'
+    
     permission_required = 'book_catalog.change_book'
     template_name = 'book_catalog/book_form.html'
 
@@ -293,6 +303,8 @@ class BookUpdateView(PermissionRequiredMixin, UpdateView):
         form.fields['genre'].order = 9
         form.fields['cover_image'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
         form.fields['cover_image'].order = 10
+        if 'rate_mean' in form.fields:
+            del form.fields['rate_mean']
         return form
 
     def get_success_url(self):
@@ -373,7 +385,11 @@ def change_book_status(request, pk, status: str):
             relation.status = None
             relation.read_date = None
             relation.reading_date = None
-            relation.save()
+            try:
+                relation.save()
+                print("Datos eliminados correctamente.")
+            except Exception as e:
+                print(f"Error al guardar la relación: {e}")
         else:
             relation.status = status
             if status == 'r':
@@ -404,7 +420,8 @@ def change_booksaga_status(request, pk, status: str):
         relation = UserBookRelation.objects.filter(user = request.user, book = book).first()
         if relation:
             if status == 'd':
-                relation.delete()
+                relation.status = None
+                relation.save()
             else:
                 relation.status = status
                 relation.save()
@@ -436,3 +453,18 @@ def search(request):
     }
     
     return render(request, 'search_results.html', context)
+
+def rate_book(request, pk, rate: int):
+    """
+    View function for updating book rate.
+    """
+    if rate >= 0 and rate <= 5:
+        book = get_object_or_404(Book, pk=pk)
+        relation = UserBookRelation.objects.filter(user = request.user, book = book).first()
+        if relation:
+            relation.rating = rate
+            relation.save()
+        else:
+            UserBookRelation.objects.create(user = request.user, book = book, rate = rate)
+    return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
+

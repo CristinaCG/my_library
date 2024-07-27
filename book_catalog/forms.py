@@ -20,6 +20,14 @@ class ChangeBookStatusForm(forms.ModelForm):
 class SearchForm(forms.Form):
     query = forms.CharField(label='Search', max_length=100)
 
+# class RatingForm(forms.ModelForm):
+#     class Meta:
+#         model=UserBookRelation
+#         fields = ['rate']
+#         widgets = {
+#             'rate': forms.NumberInput(attrs={'min': 0, 'max': 5}),
+#         }
+
 # class UserBookRelationForm(forms.ModelForm):
 #     class Meta:
 #         model = UserBookRelation

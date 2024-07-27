@@ -14,6 +14,7 @@
             <th scope="col">Title</th>
             <th scope="col">Saga</th>
             <th scope="col">Author</th>
+            <th scope="col">Your Rating</th>
             <th scope="col">Status</th>
             <th scope="col">Date added</th>
             <th scope="col">Date read</th>
@@ -39,9 +40,11 @@
                 <a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a>
               </td>
               <td>
+                <a>{{ object.rate }}</a>
+              <td>
+              <td>
                 <a>{{ object.display_status }}</a>
               </td>
-              <td>
                 {% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}
               </td>
               <td>

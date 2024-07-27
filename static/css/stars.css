@@ -1,0 +1,54 @@
+/* static/css/stars.css */
+/* General star styles */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    margin: 20px;
+  }
+  
+  .star {
+    font-size: 2em;
+    color: #ccc;
+    cursor: pointer;
+  }
+  
+  .star:hover,
+  .star:hover ~ .star {
+    color: gold;
+  }
+  
+  /* Static stars for visualization */
+  .stars-outer {
+    position: relative;
+    display: inline-block;
+    font-size: 2em;
+    color: #ccc;
+  }
+  
+  .stars-inner {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: gold;
+  }
+  
+  .stars-outer::before,
+  .stars-inner::before {
+    content: '★★★★★';
+    display: block;
+  }
+  .rating-text {
+    font-size: 2em; /* Tamaño del texto igual al de las estrellas */
+    margin-left: 10px; /* Espacio entre las estrellas y el texto */
+  }
+  .metrics {
+    margin-top: 10px; /* Espacio entre la línea de estrellas y las métricas */
+  }
+  
+  .metric-item {
+    font-size: 1.2em; /* Tamaño de fuente para las métricas */
+    margin-right: 20px; /* Espacio entre cada métrica */
+  }

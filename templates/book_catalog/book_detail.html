@@ -1,6 +1,9 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+{% load static %}
+
+<link href="{% static 'css/stars.css' %}" rel="stylesheet">
 <div class="container mt-5">
   <div class="row">
     <!-- Primera columna -->
@@ -16,12 +19,12 @@
         {% endif %}
       </div>
       <div class="mt-3 text-center">
-        {% if user_book_relation.status == 'i' %}
-          <button type="button" class="btn btn-yellow" data-toggle="modal" data-target="#changeBookStatusModal">{{ user_book_relation.display_status }}</button>
-        {% elif user_book_relation.status == 'r' %}
-          <button type="button" class="btn btn-green" data-toggle="modal" data-target="#changeBookStatusModal">{{ user_book_relation.display_status }}</button>
-        {% elif user_book_relation.status == 't' %}
-          <button type="button" class="btn btn-blue" data-toggle="modal" data-target="#changeBookStatusModal">{{ user_book_relation.display_status }}</button>
+        {% if my_book.status == 'i' %}
+          <button type="button" class="btn btn-yellow" data-toggle="modal" data-target="#changeBookStatusModal">{{ my_book.display_status }}</button>
+        {% elif my_book.status == 'r' %}
+          <button type="button" class="btn btn-green" data-toggle="modal" data-target="#changeBookStatusModal">{{ my_book.display_status }}</button>
+        {% elif my_book.status == 't' %}
+          <button type="button" class="btn btn-blue" data-toggle="modal" data-target="#changeBookStatusModal">{{ my_book.display_status }}</button>
         {% else %}
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeBookStatusModal">
             Add to my list
@@ -33,7 +36,22 @@
         {% if perms.book_catalog.delete_book %}
         <a href="{% url 'book-delete' book.id %}" class="btn btn-outline-dark">Delete</a>
         {% endif %}
-      </div>
+        <div class="mt-3">
+          <form method="post">
+            {% csrf_token %}
+            <div class="rating" style="justify-content: center;">
+                <a class="star no-underline" href="{% url 'rate-book' book.id 5 %}">&#9733;</a>
+                <a class="star no-underline" href="{% url 'rate-book' book.id 4 %}">&#9733;</a>
+                <a class="star no-underline" href="{% url 'rate-book' book.id 3 %}">&#9733;</a>
+                <a class="star no-underline" href="{% url 'rate-book' book.id 2 %}">&#9733;</a>
+                <a class="star no-underline" href="{% url 'rate-book' book.id 1 %}">&#9733;</a>
+            </div>
+          </form>
+        </div>
+          {% if my_book.rating %}
+          <p> Your rating: <span id="rating">{{ my_book.rating }}/5</span></p>
+          {% endif %}
+        </div>
     </div>
     <!-- Segunda columna -->
     <div class="col-md-6">
@@ -64,4 +82,5 @@
     </div>
   </div>
 </div>
+<
 {% endblock %}

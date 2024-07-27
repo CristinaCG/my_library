@@ -133,6 +133,15 @@ class Book(models.Model):
         else:
             return f"{self.title}"
 
+    def average_rating(self):
+        ratings = UserBookRelation.objects.filter(book=self)
+        if ratings:
+            return ratings.aggregate(models.Avg('rating'))['rating__avg']
+        return 0
+
+    def number_of_ratings(self):
+        return UserBookRelation.objects.filter(book=self).count()
+
     def clean(self):
         if (self.saga is not None) and (self.saga_volume is None):
             raise ValidationError("Saga volume cannot be empty if saga is set")
@@ -174,8 +183,8 @@ class UserBookRelation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular book',)
     reading_date = models.DateField(null=True, blank=True)
     read_date = models.DateField(null=True, blank=True)
-    rate = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    review = models.TextField(max_length=1000, help_text='Enter a brief review of the book', null=True, blank=True)
+    rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)  # Por ejemplo, 1 a 5 estrellas
+    review = models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         """
@@ -191,7 +200,7 @@ class UserBookRelation(models.Model):
         unique_together = ('user', 'book')
 
     def clean(self):
-        if self.status not in ['r', 't', 'i']:
+        if self.status not in ['r', 't', 'i', None]:
             raise ValidationError("Invalid status, must be 'r', 't' or 'i'")
 
     def save(self, *args, **kwargs):
