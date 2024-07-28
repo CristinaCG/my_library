@@ -13,21 +13,40 @@
       <table id="dynamicTable" class="table table-hover">
         <thead>
           <tr class="table-primary">
+            <th scope="col"></th>
             <th scope="col">Last name</th>
-            <th scope="col">Name</th>
-            <th scope="col">Number of books</th>
+            <th scope="col">First name</th>
+            <th scope="col" style="width: 100px;">Number of books</th>
+            <th scope="col">Rating</th>
           </tr>
         </thead>
         <tbody>
           {% for author in author_list %}
             <tr class="table-secondary">
+              <!-- photo -->
+              <td scope="row">
+                <div class="text-center">
+                  {% if author.photo %}
+                    <img src="{{ author.photo.url }}"
+                      alt="{{ author.photo }}"
+                      class="img-fluid border rounded shadow"
+                      style="width: 50px; height: auto;">
+                  {% else %}
+                  {% endif %}
+                </div>
+              </td>
+              <!-- first name -->
               <td>
                 <a class="no-underline" href="{{ author.get_absolute_url }}">{{ author.last_name }}</a>
               </td>
+              <!-- last name-->
               <td>
                 <a class="no-underline" href="{{ author.get_absolute_url }}">{{ author.first_name }}</a>
               </td>
+              <!-- number of books -->
               <td>{{ author.book_set.count }}</td>
+              <!-- rating -->
+              <td class="text-center"><a>{% if author.average_rating %} {{ author.average_rating|floatformat:1 }} {% endif %}</a></td>
             </tr>
           {% endfor %}
         </tbody>

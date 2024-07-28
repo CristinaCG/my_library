@@ -1,0 +1,102 @@
+[
+    {
+        "user": 1,
+        "book": 63,
+        "status": "r",
+        "reading_date": "2024-06-29",
+        "read_date": null,
+        "rating": 5,
+        "review": null,
+        "review_date": "2023-12-02"
+    },
+    {
+        "user": 3,
+        "book": 74,
+        "status": "t",
+        "reading_date": "2024-07-26",
+        "read_date": "2024-02-07",
+        "rating": null,
+        "review": null,
+        "review_date": "2024-05-14"
+    },
+    {
+        "user": 1,
+        "book": 49,
+        "status": "t",
+        "reading_date": "2024-06-20",
+        "read_date": null,
+        "rating": null,
+        "review": null,
+        "review_date": null
+    },
+    {
+        "user": 3,
+        "book": 40,
+        "status": "i",
+        "reading_date": "2024-01-15",
+        "read_date": null,
+        "rating": null,
+        "review": null,
+        "review_date": null
+    },
+    {
+        "user": 6,
+        "book": 27,
+        "status": "t",
+        "reading_date": null,
+        "read_date": null,
+        "rating": null,
+        "review": "Hold product group key region free. Nation stay wear.\nCitizen after him join eight worker. Security major lose source human exactly. Owner tax candidate. Treat large upon campaign clear early leave.",
+        "review_date": "2024-01-07"
+    },
+    {
+        "user": 5,
+        "book": 59,
+        "status": "t",
+        "reading_date": null,
+        "read_date": "2023-08-24",
+        "rating": 3,
+        "review": "Church to vote small increase. Industry put process list. Church when center social. Able financial myself reveal.",
+        "review_date": "2023-10-20"
+    },
+    {
+        "user": 5,
+        "book": 8,
+        "status": "i",
+        "reading_date": null,
+        "read_date": null,
+        "rating": null,
+        "review": null,
+        "review_date": "2024-04-08"
+    },
+    {
+        "user": 1,
+        "book": 36,
+        "status": "t",
+        "reading_date": "2024-07-25",
+        "read_date": "2024-05-13",
+        "rating": 5,
+        "review": null,
+        "review_date": "2023-09-23"
+    },
+    {
+        "user": 4,
+        "book": 18,
+        "status": "r",
+        "reading_date": "2024-03-18",
+        "read_date": "2024-06-25",
+        "rating": null,
+        "review": "Structure notice why reach grow this. Wide outside involve. Realize also subject beautiful good measure tonight.",
+        "review_date": null
+    },
+    {
+        "user": 3,
+        "book": 80,
+        "status": "r",
+        "reading_date": "2023-10-06",
+        "read_date": "2023-10-07",
+        "rating": 3,
+        "review": "Kid board trip in recently appear if. Room camera special. Know news cultural smile Mrs.\nCrime high letter care church around article. Environmental mission star. Indeed data up all.",
+        "review_date": null
+    }
+]

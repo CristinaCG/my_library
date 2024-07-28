@@ -4,9 +4,7 @@ from django.views.generic import UpdateView, DetailView, DeleteView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.shortcuts import render
 from django.contrib.auth import login
 from django.views.generic.edit import FormView
 from .forms import UserRegisterForm
@@ -24,7 +22,6 @@ class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
     redirect_authenticated_user = True
     form_class = AuthenticationForm
-
 
     def form_invalid(self, form):
         username = form.cleaned_data.get('username')

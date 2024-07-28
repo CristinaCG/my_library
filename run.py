@@ -7,19 +7,6 @@ django.setup()
 from django.contrib.auth.models import Permission, Group, User
 import book_catalog.models as book_catalog_models
 
-
-def clear_data():
-    print("Deleting data...")
-    # Borra tus datos aquí. Por ejemplo:
-    # book_catalog_models.Book.objects.all().delete()
-    # book_catalog_models.Author.objects.all().delete()
-    # book_catalog_models.Language.objects.all().delete()
-    # book_catalog_models.Genre.objects.all().delete()
-    # book_catalog_models.BookSaga.objects.all().delete()
-    book_catalog_models.User.objects.all().delete()
-    book_catalog_models.UserBookRelation.objects.all().delete()
-    Group.objects.all().delete()
-
 def add_users():
     Group.objects.create(name='staff')
     models_list = ['author', 'book', 'book saga', 'genre', 'language']

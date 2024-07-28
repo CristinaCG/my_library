@@ -1,6 +1,6 @@
-# Nombre del Proyecto
+# Good Watch
 
-Una breve descripción de tu proyecto va aquí.
+Es una aplicación para lanzar una biblioteca local y poder manejar.
 
 ## Instalación
 
@@ -35,9 +35,18 @@ Luego, abre un navegador y ve a `http://localhost:8000`.
 python manage.py test
 ```
 
-## Contribuir
+## Import data
 
-Si quieres contribuir a este proyecto, por favor realiza un fork del repositorio, crea una rama con tus cambios y envía un pull request.
+```
+python tools/delete_all.py
+python tools/create_users.py
+python manage.py loaddata media/data/languages.json
+python manage.py loaddata media/data/genres.json
+python manage.py loaddata media/data/authors.json
+python manage.py loaddata media/data/booksagas.json
+python manage.py loaddata media/data/author-*
+python tools/reading.py 
+```
 
 ## Licencia
 

@@ -13,12 +13,12 @@
             <img src="{{ book.cover_image.url }}"
                 alt="{{ book.title }}"
                 class="img-fluid border rounded shadow book-cover"
-                style="display: none;">
+                style="width: 100%; height: auto; margin: auto; display: block;">
           {% else %}
             <img src="{% static 'images/portada_provisional.png' %}"
               alt="{% static 'images/portada_provisional.png' %}"
               class="img-fluid border rounded shadow"
-              style="max-width: 100%; height: auto; margin: auto; display: block;">
+              style="width: 100%; height: auto; margin: auto; display: block;">
           {% endif %}
         {% endfor %}
       </div>

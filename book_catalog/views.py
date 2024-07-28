@@ -14,6 +14,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django import forms
 from django.db.models import Avg
+from django.contrib.auth.models import Group
 
 def index(request):
     """
@@ -32,24 +33,17 @@ def index(request):
         # 'average_books_per_month': average_books_per_month,
     }
     if request.user.is_authenticated:
-        books_read_id = UserBookRelation.objects.filter(user=request.user, status='i').order_by('-id')[:3]
-        books_read = [Book.objects.get(pk=book.book_id) for book in books_read_id]
-        reading_id = UserBookRelation.objects.filter(user=request.user,
-                                                status='r',
-                                                read_date__year=timezone.now().year).order_by('-read_date')
-        reading_books = [Book.objects.get(pk=reading.book_id) for reading in reading_id]
-        context['books_this_year'] = len(reading_books)
-        # books_read = Book.objects.filter(pk__in=books_read)
-        # average_books_per_month = books_read.count() / (datetime.now().month - books_read.aggregate(Min('date_finished'))['date_finished__min'].month + 1)
-        context['books_read'] = books_read
-        # check if user is in staff group
-        request.user.is_staff = request.user.groups.filter(name='staff').exists()
+        books_reading_id = UserBookRelation.objects.filter(user=request.user, status='i').order_by('-id')[:3]
+        books_reading = [Book.objects.get(pk=book.book_id) for book in books_reading_id]
+        context['my_books_reading'] = books_reading
 
-    return render(
-        request,
-        'index_book.html',
-        context = context,
-    )
+        books_read_id = UserBookRelation.objects.filter(user=request.user, status='r').order_by('-id')
+        context['my_books_read'] = len(books_read_id)
+
+        reading_id = UserBookRelation.objects.filter(user=request.user, status='r', read_date__year=timezone.now().year)
+        context['my_books_this_year'] = len(reading_id)
+
+    return render(request, 'index_book.html', context = context,)
 
 ################# List Views #################
 

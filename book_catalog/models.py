@@ -341,6 +341,7 @@ class BookSaga(models.Model):
     """
     name = models.CharField(max_length=200,)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='saga', null = False)
+    description = models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         """
