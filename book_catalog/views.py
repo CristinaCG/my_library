@@ -120,7 +120,6 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
         reviews = book.get_reviews()
         if reviews:
             for review in reviews:
-                print(UserBookRelation.objects.filter(user=self.request.user).values_list('review'))
                 review.user.review_count = UserBookRelation.objects.filter(user=self.request.user).exclude(review__isnull=True).values_list('review').count()
                 review.user.average_rating = UserBookRelation.objects.filter(user=self.request.user).exclude(rating__isnull=True).values_list('rating').count()
                 review.rating_over_100 = int(review.rating*20) if review.rating else 0

@@ -106,7 +106,6 @@ class UserRegisterView(FormView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        print(user)
         user.set_password(form.cleaned_data['password'])
         user.save()
         login(self.request, user)

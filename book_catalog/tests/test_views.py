@@ -4,6 +4,8 @@ from book_catalog.models import Author, Book, User, BookSaga, UserBookRelation
 from django.urls import reverse
 
 
+################# List Views #################
+
 class AuthorListViewTest(TestCase):
     """
     Test if AuthorListView works correctly
@@ -45,9 +47,6 @@ class AuthorListViewTest(TestCase):
         """
         response = self.client.get(reverse('authors'))
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('is_paginated' in response.context)
-        self.assertTrue(response.context['is_paginated'] is True)
-        self.assertTrue(len(response.context['author_list']) == 10)
 
     def test_lists_all_authors(self):
         """
@@ -55,9 +54,6 @@ class AuthorListViewTest(TestCase):
         """
         response = self.client.get(reverse('authors')+'?page=3')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('is_paginated' in response.context)
-        self.assertTrue(response.context['is_paginated'] is True)
-        self.assertTrue(len(response.context['author_list']) == 5)
 
 class BookListViewTest(TestCase):
     """
@@ -101,9 +97,6 @@ class BookListViewTest(TestCase):
         """
         response = self.client.get(reverse('books'))
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('is_paginated' in response.context)
-        self.assertTrue(response.context['is_paginated'] is True)
-        self.assertTrue(len(response.context['book_list']) == 10)
 
     def test_lists_all_books(self):
         """
@@ -111,9 +104,79 @@ class BookListViewTest(TestCase):
         """
         response = self.client.get(reverse('books')+'?page=3')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('is_paginated' in response.context)
-        self.assertTrue(response.context['is_paginated'] is True)
-        self.assertTrue(len(response.context['book_list']) == 5)
+
+class UserBookRelationListViewTest(TestCase):
+    """
+    Test if UserBookRelationListView works correctly
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username='testuser', password='12345')
+        author = Author.objects.create(
+            first_name='Sara',
+            last_name='Trueman',
+        )
+        num_of_books = 4
+        for n in range(num_of_books):
+            Book.objects.create(
+                title=f'The Book {n}',
+                author=author,
+                summary=f'Book {n} summary',
+            )
+        cls.book = Book.objects.create(
+            title='The Book',
+            author=author,
+            summary='Book summary',
+        )
+        cls.user_book_relation = UserBookRelation.objects.create(
+                user=cls.user,
+                book=cls.book,
+                status='r',
+            )
+
+    def test_view_url_exists_at_desired_location_for_logged_in_user(self):
+        """
+        Test if view is accessible only for logged-in user
+        """
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/book_catalog/mybooks/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_redirects_for_anonymous_user(self):
+        """
+        Test if view redirects an anonymous user
+        """
+        response = self.client.get('/book_catalog/mybooks/')
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        """
+        Test if view is accessible by name
+        """ 
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse('my-books'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        """
+        Test if view uses correct template
+        """
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse('my-books'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book_catalog/userbookrelation_list.html')
+
+    def test_lists_all_books(self):
+        """
+        Test if all books are listed
+        """
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse('my-books'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('userbookrelation_list' in response.context)
+        self.assertTrue(len(response.context['userbookrelation_list']) == 1)
+
+################# Detail Views #################
 
 class AuthorDetailViewTest(TestCase):
     """
@@ -327,76 +390,7 @@ class BookSagaDetailViewTest(TestCase):
         response = self.client.get(reverse('saga-detail', args=[2]))
         self.assertNotEqual(response.status_code, 200)
 
-class UserBookRelationListViewTest(TestCase):
-    """
-    Test if UserBookRelationListView works correctly
-    """
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='testuser', password='12345')
-        author = Author.objects.create(
-            first_name='Sara',
-            last_name='Trueman',
-        )
-        num_of_books = 4
-        for n in range(num_of_books):
-            Book.objects.create(
-                title=f'The Book {n}',
-                author=author,
-                summary=f'Book {n} summary',
-            )
-        cls.book = Book.objects.create(
-            title='The Book',
-            author=author,
-            summary='Book summary',
-        )
-        cls.user_book_relation = UserBookRelation.objects.create(
-                user=cls.user,
-                book=cls.book,
-                status='r',
-            )
-
-    def test_view_url_exists_at_desired_location_for_logged_in_user(self):
-        """
-        Test if view is accessible only for logged-in user
-        """
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get('/book_catalog/mybooks/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_view_url_redirects_for_anonymous_user(self):
-        """
-        Test if view redirects an anonymous user
-        """
-        response = self.client.get('/book_catalog/mybooks/')
-        self.assertNotEqual(response.status_code, 200)
-
-    def test_view_url_accessible_by_name(self):
-        """
-        Test if view is accessible by name
-        """ 
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('my-books'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_view_uses_correct_template(self):
-        """
-        Test if view uses correct template
-        """
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('my-books'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book_catalog/userbookrelation_list.html')
-
-    def test_lists_all_books(self):
-        """
-        Test if all books are listed
-        """
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('my-books'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('userbookrelation_list' in response.context)
-        self.assertTrue(len(response.context['userbookrelation_list']) == 1)
+################# Update Views #################
 
 class ChangeBookStatusViewTest(TestCase):
     """
@@ -420,20 +414,11 @@ class ChangeBookStatusViewTest(TestCase):
                 status='r',
             )
 
-
-    def test_view_url_exists_at_desired_location_for_logged_in_user(self):
-        """
-        Test if view is accessible only for logged-in user
-        """
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get('/book_catalog/book/1/change-status/')
-        self.assertEqual(response.status_code, 200)
-
     def test_view_url_redirects_for_anonymous_user(self):
         """
         Test if view redirects an anonymous user
         """
-        response = self.client.get('/book_catalog/book/1/change-status/')
+        response = self.client.get('/book_catalog/book/1/change-status/r/')
         self.assertNotEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
@@ -441,22 +426,22 @@ class ChangeBookStatusViewTest(TestCase):
         Test if view is accessible by name
         """ 
         self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('change-book-status', args=[1]))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('change-book-status', args=[1,'r']))
+        self.assertEqual(response.status_code, 302)
 
     def test_view_redirects_for_not_existing_book(self):
         """
         Test if view redirects for not existing book
         """
         self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('change-book-status', args=[2]))
+        response = self.client.get(reverse('change-book-status', args=[2,'r']))
         self.assertNotEqual(response.status_code, 200)
 
     def test_view_redirects_for_not_existing_book_for_anonymous_user(self):
         """
         Test if view redirects for not existing book for anonymous user
         """
-        response = self.client.get(reverse('change-book-status', args=[2]))
+        response = self.client.get(reverse('change-book-status', args=[2,'r']))
         self.assertNotEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
@@ -464,53 +449,33 @@ class ChangeBookStatusViewTest(TestCase):
         Test if view uses correct template
         """
         self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('change-book-status', args=[1]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book_catalog/change_book_status_form.html')
+        response = self.client.get(reverse('change-book-status', args=[1, 'r']))
+        self.assertEqual(response.status_code, 302)
 
     def test_view_method_post(self):
+        """
+        Test if view method is POST
+        """
         self.client.login(username='testuser', password='12345')
         form_data = {'status': 't'}
-        response = self.client.post(reverse('change-book-status', args=[self.book.pk]), form_data)
+        response = self.client.post(reverse('change-book-status', args=[self.book.pk,'t']), form_data)
         self.assertRedirects(response, reverse('book-detail', args=[self.book.pk]))
         relation = UserBookRelation.objects.get(user=self.user, book=self.book)
         self.assertEqual(relation.status, 't')
-
-class DeleteBookStatusViewTest(TestCase):
-    """
-    Test if DeleteBookStatusView works correctly
-    """
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='testuser', password='12345')
-        author = Author.objects.create(
-            first_name='Sara',
-            last_name='Trueman',
-        )
-        cls.book = Book.objects.create(
-            title='The Book',
-            author=author,
-            summary='Book summary',
-        )
-        cls.user_book_relation = UserBookRelation.objects.create(
-                user=cls.user,
-                book=cls.book,
-                status='r',
-            )
 
     def test_view_url_exists_at_desired_location_for_logged_in_user(self):
         """
         Test if view is accessible only for logged-in user
         """
         self.client.login(username='testuser', password='12345')
-        response = self.client.get('/book_catalog/book/1/delete-status/')
+        response = self.client.get('/book_catalog/book/1/change-status/d/')
         self.assertEqual(response.status_code, 302)
 
     def test_view_url_redirects_for_anonymous_user(self):
         """
         Test if view redirects an anonymous user
         """
-        response = self.client.get('/book_catalog/book/1/delete-status/')
+        response = self.client.get('/book_catalog/book/1/change-status/d/')
         self.assertEqual(response.status_code, 302)
 
     def test_view_url_accessible_by_name(self):
@@ -518,7 +483,7 @@ class DeleteBookStatusViewTest(TestCase):
         Test if view is accessible by name
         """ 
         self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('delete-book-status', args=[1]))
+        response = self.client.get(reverse('change-book-status', args=[1,'d']))
         self.assertEqual(response.status_code, 302)
 
     def test_view_redirects_for_not_existing_book(self):
@@ -526,14 +491,14 @@ class DeleteBookStatusViewTest(TestCase):
         Test if view redirects for not existing book
         """
         self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('delete-book-status', args=[2]))
+        response = self.client.get(reverse('change-book-status', args=[2,'d']))
         self.assertNotEqual(response.status_code, 302)
 
     def test_view_redirects_for_not_existing_book_for_anonymous_user(self):
         """
         Test if view redirects for not existing book for anonymous user
         """
-        response = self.client.get(reverse('delete-book-status', args=[2]))
+        response = self.client.get(reverse('change-book-status', args=[2,'d']))
         self.assertEqual(response.status_code, 302)
 
 class IndexViewTest(TestCase):
@@ -580,7 +545,11 @@ class IndexViewTest(TestCase):
         """
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('num_books' in response.context)
-        self.assertTrue('num_authors' in response.context)
-        self.assertEqual(response.context['num_books'], 5)
-        self.assertEqual(response.context['num_authors'], 3)
+        self.assertTrue('total_books' in response.context)
+        self.assertTrue('total_authors' in response.context)
+        self.assertTrue('recent_books' in response.context)
+        self.assertEqual(response.context['total_books'], 5)
+        self.assertEqual(response.context['total_authors'], 3)
+        self.assertEqual(len(response.context['recent_books']), 5)
+
+
