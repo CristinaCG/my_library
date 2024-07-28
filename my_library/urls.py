@@ -20,7 +20,7 @@ from django.views.generic import RedirectView
 from book_catalog import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import UserProfileDetailView, UserProfileDeleteView, UserProfileUpdateView, UserRegisterView
+from .views import UserProfileDetailView, UserProfileDeleteView, UserProfileUpdateView, UserRegisterView, CustomLoginView
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordChangeView
 
 
@@ -31,6 +31,7 @@ urlpatterns = [
 urlpatterns += [
     path('book_catalog/', include('book_catalog.urls')),
     path('', RedirectView.as_view(url='/book_catalog/', permanent=True)),
+    path('accounts/login/', CustomLoginView.as_view(), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     # path('profile/', views.profile_view, name='user'), 
     path('accounts/profile/', UserProfileDetailView.as_view(), name='user_profile'),
@@ -45,5 +46,5 @@ urlpatterns += [
     # path('accounts/profile/update', UserUpdateView.as_view(), name='edit_profile'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# if settings.DEBUG:
+# if settings.DEBUG: 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,90 +1,48 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<<div class="container mt-5">
+<div class="container">
   <h1>Search Results</h1>
-
   <div style="flex-grow: 1; padding: 20px;">
-    {% if query %}
     <p>You searched for: <strong>{{ query }}</strong></p>
-      <table id="dynamicTable" class="table table-hover">
-        <thead>
-          <tr class="table-primary">
-            <th scope="col">Book</th>
-            <th scope="col">Saga</th>
-            <th scope="col">Author</th>
+    <table id="dynamicTable" class="table table-hover">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">Book</th>
+          <th scope="col">Saga</th>
+          <th scope="col">Author</th>
+          <th scope="col">Rating</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if book_results %}
+          {% for book in book_results %}
+          <tr class="table-secondary">
+            <!-- title -->
+            <td><a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a></td>
+            <!-- saga -->
+            <td>
+              {% if book.saga %}
+                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                  {{ book.saga.name }}
+                </a>
+                #{{ book.saga_volume }}
+              {% endif %}
+            </td>
+            <!-- author -->
+            <td><a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></td>
+            <!-- rating -->
+            <td class="text-center"><a>{% if book.average_rating %} {{ book.average_rating }} {% endif %}</a></td>
+            <!-- status -->
+            <td>
+              <p>{{ book.status }}</p>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {% if book_results %}
-              {% for book in book_results %}
-              <tr class="table-secondary">
-                <th scope="row">
-                  <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-                </th>
-                <td>
-                  {% if book.saga %}
-                    <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
-                      {{ book.saga.name }}
-                    </a>
-                    #{{ book.saga_volume }}
-                  {% endif %}
-                </td>
-                <td>
-                  <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
-                </td>
-              </tr>
-              {% endfor %}
-          {% endif%}
-          {% if saga_results %}
-              {% for saga in saga_results %}
-                {% for book in saga.book_set.all|dictsort:"saga_volume" %}
-                <tr class="table-secondary">
-                  <th scope="row">
-                    <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-                  </th>
-                  <td>
-                    {% if book.saga %}
-                      <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
-                        {{ book.saga.name }}
-                      </a>
-                      #{{ book.saga_volume }}
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              {% endfor %}
-          {% endif%}
-          {% if author_results %}
-            {% for author in author_results %}
-              {% for book in author.book_set.all %}
-              <tr class="table-secondary">
-                <th scope="row">
-                  <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-                </th>
-                <td>
-                  {% if book.saga %}
-                    <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
-                      {{ book.saga.name }}
-                    </a>
-                    #{{ book.saga_volume }}
-                  {% endif %}
-                </td>
-                <td>
-                  <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
-                </td>
-              </tr>
-              {% endfor %}
-            {% endfor %}
+          {% endfor %}
         {% endif%}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No hay autores en la biblioteca.</p>
-    {% endif %} 
+      </tbody>
+    </table>
   </div>
 </div>
 {% endblock %}

@@ -3,49 +3,21 @@
 {% block content %}
 <div style="display: flex;">
   <div class="sidebar">
-    <!-- Primera columna -->
-    <div class="col-md-12">
-      {% comment %} <h3>Options</h3>
-      <ul class="list-group">
-        <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
-      </ul> {% endcomment %}
+    <!-- First colum -->
+    <div class="column-leftt">
     </div>
   </div>
-  <div class="col-md-6 mt-5">
+  <div class="column-right">
     <div style="flex-grow: 1; padding: 20px;">
       <form method="post" action="" style="width: 100%;">
         <h1> Edit profile</h1>
-      </span> 
-      {% csrf_token %}
-            {% comment %} <div class="wrap-input100" style="margin-bottom 23px;">
-              <label for="firstname" class="form-label mt-4">First name</label>
-              <input type="text" class="form-control" id="firstname" name="first_name" placeholder="Type your first name"
-              autocomplete="on" value={% if user.first_name %} {{user.first_name}} {%else%} "" {%endif%}>
-              {% if form.first_name.errors %}
-              <div class="error">{{ form.first_name.errors|join:", " }}</div>
-              {% endif %}
-            </div>
-            <div class="wrap-input100" style="margin-bottom 23px;">
-              <label for="lastname" class="form-label mt-4">Last name</label>
-              <input type="text" class="form-control" id="lastname" name="last_name" placeholder="Type your last name"
-              autocomplete="on" value={% if user.last_name %} {{user.last_name}} {%else%} "" {%endif%}>
-              {% if form.last_name.errors %}
-              <div class="error">{{ form.last_name.errors|join:", " }}</div>
-              {% endif %}
-            </div>
-            <div class="wrap-input100" style="margin-bottom 23px;">
-              <label for="email" class="form-label mt-4">Email Address</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Type your email address"
-              autocomplete="on" value={% if user.email %} {{user.email}} {%else%} "" {%endif%}>
-              {% if form.email.errors %}
-              <div class="error">{{ form.email.errors|join:", " }}</div>
-              {% endif %}
-            </div> {% endcomment %}
-            <table>
-              {{ form.as_p }}
-              </table>
-            <input type="submit" class="btn-save mt-3" value="Save">
-        </form>
+        {% csrf_token %}
+        <table>
+          {{ form.as_p }}
+        </table>
+        <input type="submit" class="btn-save mt-3" value="Save">
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

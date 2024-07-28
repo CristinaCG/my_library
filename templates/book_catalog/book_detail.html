@@ -53,7 +53,7 @@
           <div class="rating" style="justify-content: center;">
             {% for i in rating_range %}
               {% if i <= my_book.rating %}
-                <a class="star selected no-underline" href="{% url 'rating-book' book.id i %}">&#9733;</a>
+                <a class="star star-selected no-underline" href="{% url 'rating-book' book.id i %}">&#9733;</a>
               {% else %}
                 <a class="star no-underline" href="{% url 'rating-book' book.id i %}">&#9733;</a>
               {% endif %}

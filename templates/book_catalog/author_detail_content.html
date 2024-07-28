@@ -1,11 +1,33 @@
 {% block content %}
 <div style="flex-grow: 1; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h1 class="mb-3">
+        <big>{{ author.first_name }} {{ author.last_name }}</big>
+      </h1>
+    </div>
+    <!-- Rating -->
+    <div>
+      {% if average_rating %}
+      <div style="display: flex; align-items: center;">
+        <div class="rating" title="{{ average_rating }}" style="justify-content: left;">
+          <div class="stars-outer">
+            <div class="stars-inner" style="width: {{ average_rating_over_100 }}%;"></div>
+          </div>
+        </div>
+        <span class="rating-text">{{ average_rating|floatformat:1 }}</span>
+        <div class="ml-3 metric-item">
+          <span>{{ total_ratings }} ratings</span>
+          <br>
+          <span>{{ total_reviews }} reviews</span>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <hr>
+  <!-- Author data -->
   <div>
-    <h1 class="mb-3">
-      <big>
-        {{ author.first_name }} {{ author.last_name }}
-      </big>
-    </h1>
     {% if author.social_media %}
       <p><strong>Social media:</strong> {{ author.social_media }}</p>
     {% endif %}
@@ -20,6 +42,7 @@
     {% endif %}
   </div>
   <hr>
+  <!-- Author's book list -->
   <div>
     <h2>Author's book list</h2>
     <table id="dynamicTable" class="table table-hover">

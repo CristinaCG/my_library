@@ -27,10 +27,9 @@
           <tbody>
             {% for object in userbookrelation_list %}
               <tr class="table-secondary">
-                <td>
-                  <a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>
-
-                </td>
+                <!-- title -->
+                <td><a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a></td>
+                <!-- saga -->
                 <td>
                   {% if object.book.saga %}
                     <a class="no-underline" href="{{ object.book.saga.get_absolute_url }}">
@@ -39,20 +38,17 @@
                     #{{ object.book.saga_volume }}
                   {% endif %}
                 </td>
-                <td>
-                  <a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a>
-                </td>
-                <td>
-                  <a>{% if object.rating %} {{ object.rating }} {% endif %}</a>
-                <td>
-                <td>
-                  <a>{{ object.display_status }}</a>
-                </td>
-                  {% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}
-                </td>
-                <td>
-                  {% if object.read_date %}<a>{{ object.read_date }}</a>{% else %}{% endif %}
-                </td>
+                <!-- author -->
+                <td><a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a></td>
+                <!-- rating -->
+                <td><a>{% if object.user.book__ %} {{ object.rating }} {% endif %}</a></td>
+                <!-- status -->
+                <td><a>{{ object.display_status }}</a></td>
+                <!-- date added -->
+                <td>{% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}</td>
+                <!-- date read -->
+                <td>{% if object.read_date %}<a>{{ object.read_date }}</a>{% else %}{% endif %}</td>
+                <!--  edit -->
                 <td>
                   <a class="btn btn-primary" href="{% url 'change-userbookrelation' object.id %}">
                     <i class="fas fa-edit fa-lg"></i>

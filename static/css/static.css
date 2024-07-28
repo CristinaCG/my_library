@@ -1,72 +1,76 @@
+/* Para que no haya subrrayado en los enlaces */
 .no-underline {
     text-decoration: none;
 }
-  .main-content {
-    flex-grow: 1;
-    padding: 20px;
-  }
-  .sidebar {
+/* Estilo genérico */
+.sidebar {
   flex: 0 0 500px;
-  /* flex: 0 1 auto; */
   width: 600px;
   height: 100vh;
   overflow-y: auto;
   background-color: #f4f4f4;
   padding: 20px;
   }
-
-.table-invisible {
-  visibility: hidden;
+.column-right {
+    flex: 75%;
+    margin-right: 40px;
+    margin-top: 40px;
+    margin-left: 20px;
+  }
+.column-left {
+    flex: 25%;
+    margin-left: 40px;
+    margin-top: 40px;
+    margin-right: 20px;
+  }
+.limiter {
+    width: 100%;
+    margin: 0 auto;
+  }
+.dropdown:hover .dropdown-menu {
+  display: block;
 }
+
+ /* --- Dynamic Table --- */
 #dynamicTable {
     border-collapse: separate; 
 }
-
-#dynamicTable thead th, #dynamicTable tbody td, #dynamicTable tbody th {
+#dynamicTable thead th,
+#dynamicTable tbody td,
+#dynamicTable tbody th {
     padding: 15px 20px !important; 
 }
-
 #dynamicTable tbody tr {
     line-height: 2em !important;
 }
-.img-fluid {
-  max-width: 100%;
-  height: auto;
-}
-/* Estilo para el botón de la página seleccionada */
 #dynamicTable_paginate .paginate_button.current, 
 #dynamicTable_paginate .paginate_button.active {
-  border-radius: 0px; /*Bordes redondeados */
-  border: 0px solid #000000; /*Borde*/
-
+  border-radius: 0px;
+  border: 0px solid #000000;
 }
-
 .row > .col-md-4, .row > .col-md-8 {
   padding: 15px;
 }
 
+/* Botones de colores */
 .btn-green {
-  background-color: #B8E0C0; /* Verde */
-  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
+  background-color: #B8E0C0;
+  color: black;
 }
-
 .btn-blue {
-  background-color: #B3CDE0; /* Azul */
-  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
+  background-color: #B3CDE0;
+  color: black;
 }
-
 .btn-yellow {
-  background-color: #F9E3B4; /* Amarillo */
-  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
+  background-color: #F9E3B4;
+  color: black;
 }
-
 .btn-red {
-  background-color: #F4A6A6; /* Rojo */
-  color: black; /* Cambia el color del texto para mejor contraste si es necesario */
+  background-color: #F4A6A6;
+  color: black;
 }
-
 .btn-save {
-  background-color: #B8E0C0; /* Verde */
+  background-color: #B8E0C0;
   color: black;
   border: none;
   padding: 10px 20px;
@@ -76,74 +80,33 @@
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
-  border-radius: 4px; /* Bordes redondeados */
-  transition: background-color 0.3s ease; /* Transición suave para el cambio de color */
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
-
 .btn-save:hover {
-  background-color: #7b987c; /* Color al pasar el ratón por encima */
-}
-
-.book-cover {
-  width: 400px;  /* Ajusta el ancho según tus necesidades */
-  height: 600px; /* Ajusta la altura según tus necesidades */
-  object-fit: cover; /* Asegura que la imagen se ajuste al contenedor */
-}
-
-.login-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  text-align: center;
-}
-
-.login-container h2 {
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #B8E0C0;
-  color: #fff;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
   background-color: #7b987c;
 }
 
+/* Texto de colores */
+.text-green{
+  color: #B8E0C0;
+}
+.text-blue{
+  color: #B3CDE0;
+}
+.text-yellow{
+  color: #F9E3B4;
+}
+.text-red{
+  color: #F4A6A6;
+}
+
+/* error */
 .error {
   color: #d9534f;
   margin-bottom: 15px;
 }
-.limiter {
-  width: 100%;
-  margin: 0 auto;
-}
-
+ /* login */
 .container-login100 {
   width: 100%;  
   min-height: 100vh;
@@ -160,19 +123,15 @@ button:hover {
   background-position: center;
   background-size: cover;
 }
-
 .wrap-login100 {
-  /* width: 500px; */
   border-radius: 10px;
   overflow: hidden;
   padding: 55px 55px 65px 54px;
   padding-block: 55px 55px 65px 54px;
   background: rgba(var(--bs-body-color-rgb), 0.03);
 }
-
 .login100-form-title {
   display: block;
-  /* font-family: Poppins-Bold; */
   font-size: 39px;
   color: #333333;
   line-height: 1.2;
@@ -183,60 +142,4 @@ button:hover {
   width: 100%;
   position: relative;
   border-bottom: 2px solid #d9d9d9;
-
-}
-
-.label-input100 {
-  font-size: 14px;
-  color: #333333;
-  line-height: 1.5;
-  padding-left: 7px;
-}
-.input100 {
-  /* font-family: Poppins-Medium; */
-  font-size: 16px;
-  color: #333333;
-  line-height: 1.2;
-  border: none;
-  display: block;
-  width: 100%;
-  height: 55px;
-  background: transparent;
-  padding: 0 7px 0 43px;
-  align-items: left;
-}
-.container {
-  display: flex;
-  background-color: white;
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
-  max-width: 2000px;
-  width: 100%;
-}
-.left-column img {
-  max-width: 100%;
-  height: auto;
-  margin: auto;
-  display: block;
-}
-.column-right {
-  flex: 75%;
-  margin-right: 40px;
-  margin-top: 40px;
-  margin-left: 20px;
-  /* padding: 20px;
-  width: 60%;
-  margin-top: 3; */
-}
-.column-left {
-  flex: 25%;
-  margin-left: 40px;
-  margin-top: 40px;
-  margin-right: 20px;
-  /* background-color: #f4f4f4; */
-  /* background-color: #d3d3d3;
-  width: 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px; */
 }

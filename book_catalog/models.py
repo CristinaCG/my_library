@@ -1,4 +1,5 @@
 from django.db import models
+import os
 from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -94,7 +95,7 @@ class Book(models.Model):
     isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
     genre = models.ManyToManyField(Genre, )
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
-    cover_image = models.ImageField(upload_to='media/covers/', null=True, blank=True)
+    cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
 
     class Meta:
         """
@@ -162,9 +163,9 @@ class Book(models.Model):
 
     def clean(self):
         if (self.saga is not None) and (self.saga_volume is None):
-            raise ValidationError("Saga volume cannot be empty if saga is set")
+            raise ValidationError("Saga volume cannot be empty if saga is set.")
         if (self.saga is None) and (self.saga_volume is not None):
-            raise ValidationError("Saga cannot be empty if saga volume is set")
+            raise ValidationError("Saga cannot be empty if saga volume is set.")
         if self.title == "":
             raise ValidationError("Title cannot be empty")
         if len(self.title) > 200:
@@ -179,6 +180,16 @@ class Book(models.Model):
             raise ValidationError(f"ISBN must have 13 characters, current length is {len(self.isbn)}")
         if (self.summary is not None) and (len(self.summary) > 1000):
             raise ValidationError("Summary is too long, maximum length is 1000 characters")
+        # para la imagen:
+        # if self.cover_image is not None:
+        #     if not os.path.exists(self.cover_image):
+        #         raise ValidationError("Image file does not exist")
+        #     if self.cover_image.size > 2*1024*1024:
+        #         raise ValidationError("Image file too large ( > 2mb )")
+        #     if self.cover_image.file.content_type not in ['image/jpeg', 'image/png']:
+        #         raise ValidationError("Image file must be JPEG or PNG")
+            
+
 
     def save(self, *args, **kwargs):
         # self.clean()
@@ -272,11 +283,6 @@ class Author(models.Model):
         if ratings:
             return sum(ratings) / len(ratings)
         return None
-        # ratings = UserBookRelation.objects.filter(book=self).values_list('rating')
-        # ratings = [rating[0] for rating in ratings if rating[0] is not None]
-        # if len(ratings)>0:
-        #     return sum(ratings) / len(ratings)
-        # return None
 
     def number_of_ratings(self):
         books = Book.objects.filter(author=self)
@@ -341,6 +347,32 @@ class BookSaga(models.Model):
         String for representing the Model object.
         """
         return str(self.name)
+
+    def average_rating(self):
+        """
+        Returns the average rating of the author.
+        """
+        books = Book.objects.filter(saga=self)
+        ratings = [book.average_rating() for book in books if book.average_rating() is not None]
+        if ratings:
+            return sum(ratings) / len(ratings)
+        return None
+
+    def average_rating_over_100(self):
+        """
+        Returns the average rating of the author over 100.
+        """
+        return self.average_rating()*20
+
+    def number_of_ratings(self):
+        books = Book.objects.filter(saga=self)
+        ratings = [book.number_of_ratings() for book in books]
+        return sum(ratings)
+
+    def number_of_reviews(self):
+        books = Book.objects.filter(saga=self)
+        reviews = [book.number_of_reviews() for book in books]
+        return sum(reviews)
 
     def get_absolute_url(self):
         """

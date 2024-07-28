@@ -1,10 +1,12 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
+<link href="{% static 'css/stars.css' %}" rel="stylesheet">
 <div style="display: flex;">
+  <!-- First colum -->
   <div class="sidebar">
-    <!-- Primera columna -->
     <div class="column-left">
+      <!-- Photo -->
       <div class="text-center">
         {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
           {% if book.cover_image %}
@@ -13,10 +15,14 @@
                 class="img-fluid border rounded shadow book-cover"
                 style="display: none;">
           {% else %}
-            <p>No cover available.</p>
+            <img src="{% static 'images/portada_provisional.png' %}"
+              alt="{% static 'images/portada_provisional.png' %}"
+              class="img-fluid border rounded shadow"
+              style="max-width: 100%; height: auto; margin: auto; display: block;">
           {% endif %}
         {% endfor %}
       </div>
+      <!-- Add to my list -->
       <div class="text-center">
         {% if user_saga_relation == 'i' %}
           <button type="button" class="btn mt-3 btn-yellow" data-toggle="modal" data-target="#changeBookSagaStatusModal">Reading</button>
@@ -30,61 +36,25 @@
           </button>
         {% endif %}
       </div>
+      <!-- Edit -->
       <div class="text-center">
         {% if perms.book_catalog.change_book %}
           <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3"><i class="fas fa-edit fa-lg"></i></a>
         {% endif %}
         {% if perms.book_catalog.delete_book %}
-        <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">
-          <i class="fas fa-trash fa-lg"></i>
-        </a>
-      {% endif %}
+          <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">
+            <i class="fas fa-trash fa-lg"></i>
+          </a>
+        {% endif %}
       </div>
     </div>
   </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let covers = document.querySelectorAll('.book-cover');
-        let currentIndex = 0;
-
-        function showNextCover() {
-            covers[currentIndex].style.display = 'none';
-            currentIndex = (currentIndex + 1) % covers.length;
-            covers[currentIndex].style.display = 'block';
-        }
-
-        if (covers.length > 0) {
-            covers[0].style.display = 'block';
-            setInterval(showNextCover, 3000); // Cambia la imagen cada 3 segundos
-        }
-      });
-    </script>
-    <!-- Segunda columna -->
-    <div class="col-md-8">
-      <div style="flex-grow: 1; padding: 20px;">
-      <h1 class="mb-3"><big>{{ booksaga.name }}</big></h1>
-      <p>
-        <h2>
-          <a href="{{ booksaga.author.get_absolute_url }}" class="text-body-secondary no-underline">
-            {{ booksaga.author }}
-          </a>
-        </h2>
-      </p>
-
-      <ul class="list-group">
-        {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
-          <li class="list-group-item d-flex align-items-center">
-            <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
-            {% if book.saga %}
-              <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
-            {% endif %}
-          </li>
-        {% empty %}
-          <li>No book list.</li>
-        {% endfor %}
-      </ul>
-    </div>
+  <!-- Second column -->
+  <div class="column-right">
+    {% include "book_catalog/booksaga_detail_content.html" %}
+  </div>
 </div>
+  <!-- Modal -->
 <div class="modal fade" id="changeBookSagaStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeBookSagaStatusModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
