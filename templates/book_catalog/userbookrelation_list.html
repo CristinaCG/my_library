@@ -3,63 +3,69 @@
 {% block content %}
 <div style="display: flex;">
   <div class="sidebar">
-    {% include "book_catalog/recent_books.html" %}
+    <div class="justify-content-left">
+      {% include "book_catalog/recent_books.html" %}
+    </div>
   </div>
-  <div style="flex-grow: 1; padding: 20px;">
-    <h1>Books list</h1>
-    {% if userbookrelation_list %}
-      <table id="dynamicTable" class="table table-hover">
-        <thead>
-          <tr class="table-primary">
-            <th scope="col">Title</th>
-            <th scope="col">Saga</th>
-            <th scope="col">Author</th>
-            <th scope="col">Your Rating</th>
-            <th scope="col">Status</th>
-            <th scope="col">Date added</th>
-            <th scope="col">Date read</th>
-            <th scope="col">Edit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for object in userbookrelation_list %}
-            <tr class="table-secondary">
-              <td>
-                <a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>
-
-              </td>
-              <td>
-                {% if object.book.saga %}
-                  <a class="no-underline" href="{{ object.book.saga.get_absolute_url }}">
-                    {{ object.book.saga.name }}
-                  </a>
-                  #{{ object.book.saga_volume }}
-                {% endif %}
-              </td>
-              <td>
-                <a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a>
-              </td>
-              <td>
-                <a>{{ object.rate }}</a>
-              <td>
-              <td>
-                <a>{{ object.display_status }}</a>
-              </td>
-                {% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}
-              </td>
-              <td>
-                {% if object.read_date %}<a>{{ object.read_date }}</a>{% else %}{% endif %}
-              </td>
-              <td>
-                <a class="btn btn-primary" href="{% url 'change-userbookrelation' object.id %}">Editar</a>
-              </td>
+  <div class="column-right">
+    <div style="flex-grow: 1; padding: 20px;">
+      <h1>Books list</h1>
+      {% if userbookrelation_list %}
+        <table id="dynamicTable" class="table table-hover">
+          <thead>
+            <tr class="table-primary">
+              <th scope="col">Title</th>
+              <th scope="col">Saga</th>
+              <th scope="col">Author</th>
+              <th scope="col">Your Rating</th>
+              <th scope="col">Status</th>
+              <th scope="col">Date added</th>
+              <th scope="col">Date read</th>
+              <th scope="col">Edit</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No hay libros en la biblioteca.</p>
-    {% endif %}
+          </thead>
+          <tbody>
+            {% for object in userbookrelation_list %}
+              <tr class="table-secondary">
+                <td>
+                  <a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a>
+
+                </td>
+                <td>
+                  {% if object.book.saga %}
+                    <a class="no-underline" href="{{ object.book.saga.get_absolute_url }}">
+                      {{ object.book.saga.name }}
+                    </a>
+                    #{{ object.book.saga_volume }}
+                  {% endif %}
+                </td>
+                <td>
+                  <a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a>
+                </td>
+                <td>
+                  <a>{% if object.rating %} {{ object.rating }} {% endif %}</a>
+                <td>
+                <td>
+                  <a>{{ object.display_status }}</a>
+                </td>
+                  {% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}
+                </td>
+                <td>
+                  {% if object.read_date %}<a>{{ object.read_date }}</a>{% else %}{% endif %}
+                </td>
+                <td>
+                  <a class="btn btn-primary" href="{% url 'change-userbookrelation' object.id %}">
+                    <i class="fas fa-edit fa-lg"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No hay libros en la biblioteca.</p>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

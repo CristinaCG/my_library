@@ -20,18 +20,23 @@ def index(request):
     # recent_books = Book.objects.all().order_by('-date_finished')[:5]
     recent_books = Book.objects.all().order_by('-publish_date')[:5]
     total_books = Book.objects.all().count()
+
     # books_this_year = Book.objects.filter(date_finished__year=datetime.now().year).count()
     total_authors=Author.objects.count()
     context = {
         'recent_books': recent_books,
         'total_books': total_books,
         'total_authors': total_authors,
-        # 'books_this_year': books_this_year,
         # 'average_books_per_month': average_books_per_month,
     }
     if request.user.is_authenticated:
         books_read_id = UserBookRelation.objects.filter(user=request.user, status='i').order_by('-id')[:3]
         books_read = [Book.objects.get(pk=book.book_id) for book in books_read_id]
+        reading_id = UserBookRelation.objects.filter(user=request.user,
+                                                status='r',
+                                                read_date__year=timezone.now().year).order_by('-read_date')
+        reading_books = [Book.objects.get(pk=reading.book_id) for reading in reading_id]
+        context['books_this_year'] = len(reading_books)
         # books_read = Book.objects.filter(pk__in=books_read)
         # average_books_per_month = books_read.count() / (datetime.now().month - books_read.aggregate(Min('date_finished'))['date_finished__min'].month + 1)
         context['books_read'] = books_read
@@ -49,7 +54,7 @@ class BookListView(generic.ListView):
     Generic class-based view listing books.
     """
     model = Book
-    template_name = 'book_list.html'
+    template_name = 'book_catalog/book_list.html'
 
     def get_context_data(self, **kwargs):
         """
@@ -64,6 +69,7 @@ class AuthorListView(generic.ListView):
     Generic class-based view listing authors.
     """
     model = Author
+    template_name = 'book_catalog/author_list.html'
 
     def get_context_data(self, **kwargs: Any):
         """
@@ -109,9 +115,19 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
         user_book_relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
         context['my_book'] = user_book_relation
         context['average_rating'] = book.average_rating()
-        context['average_rating_over_100'] = int(book.average_rating()*20)
-        context['total_rates'] = book.number_of_ratings()
+        context['average_rating_over_100'] = int(context['average_rating']*20) if context['average_rating'] else 0
+        context['total_ratings'] = book.number_of_ratings()
+        context['rating_range'] = range(5, 0, -1)
+        context['total_reviews'] = book.number_of_reviews()
+        reviews = book.get_reviews()
+        if reviews:
+            for review in reviews:
+                review.user.review_count = UserBookRelation.objects.filter(user=self.request.user).values_list('review').count()
+                review.user.average_rating = UserBookRelation.objects.filter(user=self.request.user).values_list('rating').count()
+                review.rating_over_100 = int(review.rating*20) if review.rating else 0
+        context['book_reviews'] = reviews
 
+        # context['user_id'] = self.request.user.id
         return context
 
 class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
@@ -121,12 +137,18 @@ class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = Author
+    template_name = 'book_catalog/author_detail.html'
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         author = self.get_object()
         books = author.book_set.all().order_by('saga', 'saga_volume')
         context['books'] = books
+        context['average_rating'] = author.average_rating()
+        context['average_rating_over_100'] = int(context['average_rating']*20) if context['average_rating'] else 0
+        context['book_list'] = Book.objects.filter(author=author)
+        context['total_ratings'] = author.number_of_ratings()
+        context['total_reviews'] = author.number_of_reviews()
         return context
 
 class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
@@ -136,6 +158,7 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     model = BookSaga
+    template_name = 'book_catalog/booksaga_detail.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -177,6 +200,9 @@ class AuthorCreateView(PermissionRequiredMixin,CreateView):
         form.fields['last_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
         form.fields['year_of_birth'].widget = forms.TextInput(attrs={'class': 'form-control'})
         form.fields['year_of_death'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['biography'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        form.fields['photo'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
+        form.fields['social_media'].widget = forms.URLInput(attrs={'class': 'form-control'})
         return form
 
 class BookCreateView(PermissionRequiredMixin,CreateView):
@@ -184,8 +210,9 @@ class BookCreateView(PermissionRequiredMixin,CreateView):
     Generic class-based view for creating a book.
     """
     model = Book
-    fields = '__all__'
+    fields = ['title', 'author', 'saga', 'saga_volume', 'publish_date', 'summary', 'isbn', 'language', 'genre', 'cover_image']
     permission_required = 'book_catalog.add_book'
+    template_name = 'book_catalog/book_form.html'
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -194,27 +221,15 @@ class BookCreateView(PermissionRequiredMixin,CreateView):
         language_choices = [(language.id, language) for language in Language.objects.all()]
         genre_choices = [(genre.id, genre) for genre in Genre.objects.all()]
         form.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        form.fields['title'].order = 1
         form.fields['author'].widget = forms.Select(attrs={'class': 'form-select'}, choices=author_choices)
-        form.fields['author'].order = 2
         form.fields['saga'].widget = forms.Select(attrs={'class': 'form-select'}, choices=saga_choices)
-        form.fields['saga'].order = 3
         form.fields['saga_volume'].widget = forms.NumberInput(attrs={'class': 'form-control'})
-        form.fields['saga_volume'].order = 4
         form.fields['publish_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
-        form.fields['publish_date'].order = 5
         form.fields['summary'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        form.fields['summary'].order = 6
         form.fields['isbn'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        form.fields['isbn'].order = 7
         form.fields['language'].widget = forms.Select(attrs={'class': 'form-select'}, choices=language_choices)
-        form.fields['language'].order = 8
         form.fields['genre'].widget = forms.SelectMultiple(attrs={'class': 'form-select'}, choices=genre_choices)
-        form.fields['genre'].order = 9
         form.fields['cover_image'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
-        form.fields['cover_image'].order = 10
-        if 'rate_mean' in form.fields:
-            del form.fields['rate_mean']
         return form
 
 class BookSagaCreateView(PermissionRequiredMixin,CreateView):
@@ -224,6 +239,7 @@ class BookSagaCreateView(PermissionRequiredMixin,CreateView):
     model = BookSaga
     fields = '__all__'
     permission_required = 'book_catalog.add_booksaga'
+    template_name = 'book_catalog/booksaga_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -245,7 +261,7 @@ class AuthorUpdateView(PermissionRequiredMixin, UpdateView):
     Generic class-based view for updating an author.
     """
     model = Author
-    fields = ['first_name', 'last_name', 'year_of_birth', 'year_of_death']
+    fields = ['first_name', 'social_media', 'last_name', 'year_of_birth', 'year_of_death', 'biography', 'photo']
     permission_required = 'book_catalog.change_author'
     template_name = 'book_catalog/author_form.html'
 
@@ -262,6 +278,9 @@ class AuthorUpdateView(PermissionRequiredMixin, UpdateView):
         form.fields['last_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
         form.fields['year_of_birth'].widget = forms.TextInput(attrs={'class': 'form-control'})
         form.fields['year_of_death'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        form.fields['biography'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        form.fields['photo'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
+        form.fields['social_media'].widget = forms.URLInput(attrs={'class': 'form-control'})
         return form
 
     def get_success_url(self):
@@ -272,8 +291,7 @@ class BookUpdateView(PermissionRequiredMixin, UpdateView):
     Generic class-based view for updating a book.
     """
     model = Book
-    fields = '__all__'
-    
+    fields = ['title', 'author', 'saga', 'saga_volume', 'publish_date', 'summary', 'isbn', 'language', 'genre', 'cover_image']
     permission_required = 'book_catalog.change_book'
     template_name = 'book_catalog/book_form.html'
 
@@ -281,30 +299,19 @@ class BookUpdateView(PermissionRequiredMixin, UpdateView):
         form = super().get_form(form_class)
         author_choices = [(author.id, author) for author in Author.objects.all()]
         saga_choices = [(saga.id, saga) for saga in BookSaga.objects.all()]
+        saga_choices = [('', '---------')] + saga_choices
         language_choices = [(language.id, language) for language in Language.objects.all()]
         genre_choices = [(genre.id, genre) for genre in Genre.objects.all()]
         form.fields['title'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        form.fields['title'].order = 1
         form.fields['author'].widget = forms.Select(attrs={'class': 'form-select'}, choices=author_choices)
-        form.fields['author'].order = 2
         form.fields['saga'].widget = forms.Select(attrs={'class': 'form-select'}, choices=saga_choices)
-        form.fields['saga'].order = 3
         form.fields['saga_volume'].widget = forms.NumberInput(attrs={'class': 'form-control'})
-        form.fields['saga_volume'].order = 4
         form.fields['publish_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
-        form.fields['publish_date'].order = 5
         form.fields['summary'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        form.fields['summary'].order = 6
         form.fields['isbn'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        form.fields['isbn'].order = 7
         form.fields['language'].widget = forms.Select(attrs={'class': 'form-select'}, choices=language_choices)
-        form.fields['language'].order = 8
         form.fields['genre'].widget = forms.SelectMultiple(attrs={'class': 'form-select'}, choices=genre_choices)
-        form.fields['genre'].order = 9
         form.fields['cover_image'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
-        form.fields['cover_image'].order = 10
-        if 'rate_mean' in form.fields:
-            del form.fields['rate_mean']
         return form
 
     def get_success_url(self):
@@ -331,18 +338,27 @@ class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
     Generic class-based view for updating a book saga.
     """
     model = UserBookRelation
-    fields = ['status', 'read_date', 'reading_date', 'rate', 'review']
+    fields = ['status', 'reading_date', 'read_date',  'rating', 'review']
     template_name = 'book_catalog/userbookrelation_form.html'
-    success_url = reverse_lazy('my-books')
+
+    def get_success_url(self):
+        return reverse('book-detail', args=[str(self.object.book.pk)])
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['status'].widget = forms.Select(attrs={'class': 'form-select'}, choices=UserBookRelation.STATUS_CHOICES)
-        form.fields['read_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
         form.fields['reading_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
-        form.fields['rate'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        form.fields['reading_date'].label = 'You started reading this book on'
+        form.fields['read_date'].widget = forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        form.fields['read_date'].label = 'You finished reading this book on'
+        form.fields['rating'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         form.fields['review'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
+
+    def form_valid(self, form):
+        if form.cleaned_data.get('review'):
+            form.instance.review_date = timezone.now()
+        return super().form_valid(form)
 
 ################# Delete Views #################
 
@@ -454,17 +470,19 @@ def search(request):
     
     return render(request, 'search_results.html', context)
 
-def rate_book(request, pk, rate: int):
+def rating_book(request, pk, rating: int):
     """
-    View function for updating book rate.
+    View function for updating book rating.
     """
-    if rate >= 0 and rate <= 5:
+    if rating >= 0 and rating <= 5:
         book = get_object_or_404(Book, pk=pk)
         relation = UserBookRelation.objects.filter(user = request.user, book = book).first()
         if relation:
-            relation.rating = rate
+            if rating == relation.rating:
+                relation.rating = None
+            else:
+                relation.rating = rating
             relation.save()
         else:
-            UserBookRelation.objects.create(user = request.user, book = book, rate = rate)
+            UserBookRelation.objects.create(user = request.user, book = book, rating = rating)
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
-

@@ -16,10 +16,9 @@ urlpatterns = [
     path('book/create/', views.BookCreateView.as_view(), name='book-create'),
     path('book/<int:pk>', views.BookDetailView.as_view(), name='book-detail'),
     path('book/<int:pk>/change-status/<str:status>/', views.change_book_status, name='change-book-status'),
-    path('userbookrelation/<uuid:pk>/update/', views.UserBookRelationUpdateView.as_view(), name='change-userbookrelation'),
     path('book/<int:pk>/update/', views.BookUpdateView.as_view(), name='book-update'),
     path('book/<int:pk>/delete/', views.BookDeleteView.as_view(), name='book-delete'),
-    path('book/<int:pk>/update-rate/<int:rate>', views.rate_book, name='rate-book'),
+    path('book/<int:pk>/update-rating/<int:rating>', views.rating_book, name='rating-book'),
     #saga view
     path('saga/create/', views.BookSagaCreateView.as_view(), name='saga-create'),
     path('saga/<int:pk>', views.BookSagaDetailView.as_view(), name='saga-detail'),
@@ -27,6 +26,7 @@ urlpatterns = [
     path('saga/<int:pk>/delete/', views.BookSagaDeleteView.as_view(), name='booksaga-delete'),
     path('saga/<int:pk>/change-status/<str:status>/', views.change_booksaga_status, name='change-booksaga-status'),
     #others
+    path('userbookrelation/<uuid:pk>/update/', views.UserBookRelationUpdateView.as_view(), name='change-userbookrelation'),
     path('search/', views.search, name='search'),
     path('', views.index, name='index'),
 ]

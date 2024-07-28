@@ -17,7 +17,7 @@
               {% if book.saga %}
               <p class="mb-1">
                 <small>
-                  Saga
+                
                   <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
                     {{ book.saga.name }}
                   </a>
@@ -45,16 +45,16 @@
         <li class="list-group-item" style="background-color: #f4f4f4;">
           Total authors: {{ total_authors }}
         </li>
-        {% comment %} <li class="list-group-item">Libros leídos este año: {{ total_authors }}</li> {% endcomment %}
+        {% if books_this_year %}<li class="list-group-item">Books read this year: {{ books_this_year }}</li>{% endif %}
         {% comment %} <li class="list-group-item">Promedio de libros por mes: {{ average_books_per_month }}</li> {% endcomment %}
       </ul>
     </div>
   </div>
   <div style="flex-grow: 1; padding: 20px;">
     <div class="jumbotron">
-      <h1 class="display-4">Bienvenido a Tu Biblioteca Personal</h1>
-      <p class="lead">Administra y lleva un registro de todos los libros que has leído.</p>
-      <p>Mantén un seguimiento de tus lecturas y descubre nuevos libros para disfrutar.</p>
+      <h1 class="display-4">Welcome to Your Personal Library</h1>
+      <p class="lead">Manage and keep a record of all the books you have read.</p>
+      <p>Keep track of your reading and discover new books to enjoy.</p>      
         {% comment %} <a class="btn btn-primary btn-lg" href="{% url 'add_book' %}" role="button">Agregar un nuevo libro</a> {% endcomment %}
     </div>
     <hr class="my-4">

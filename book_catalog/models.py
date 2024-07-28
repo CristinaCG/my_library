@@ -86,15 +86,15 @@ class Book(models.Model):
     Model representing a book (but not a specific copy of a book).
     """
     title = models.CharField(max_length=200,)
-    saga = models.ForeignKey('BookSaga', on_delete=models.PROTECT, null=True, blank=True)
+    saga = models.ForeignKey('BookSaga', on_delete=models.CASCADE, null=True, blank=True)
     saga_volume = models.IntegerField(null=True, blank=True)
-    author = models.ForeignKey('Author', on_delete=models.PROTECT, null=False)
+    author = models.ForeignKey('Author', on_delete=models.CASCADE, null=False)
     publish_date = models.DateField(null=True, blank=True)
     summary = models.TextField(max_length=1000, null=True, blank=True)
     isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
     genre = models.ManyToManyField(Genre, )
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
-    cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
+    cover_image = models.ImageField(upload_to='media/covers/', null=True, blank=True)
 
     class Meta:
         """
@@ -133,14 +133,32 @@ class Book(models.Model):
         else:
             return f"{self.title}"
 
-    def average_rating(self):
-        ratings = UserBookRelation.objects.filter(book=self)
-        if ratings:
-            return ratings.aggregate(models.Avg('rating'))['rating__avg']
-        return 0
-
     def number_of_ratings(self):
-        return UserBookRelation.objects.filter(book=self).count()
+        ratings = UserBookRelation.objects.filter(book=self).values_list('rating')
+        ratings = [rating[0] for rating in ratings if rating[0] is not None]
+        return len(ratings)
+
+    def number_of_reviews(self):
+        reviews = UserBookRelation.objects.filter(book=self).values_list('review')
+        reviews = [review[0] for review in reviews if review[0] is not None]
+        return len(reviews)
+
+    def average_rating(self):
+        """
+        Returns the average rating of the book.
+        """
+        ratings = UserBookRelation.objects.filter(book=self).values_list('rating')
+        ratings = [rating[0] for rating in ratings if rating[0] is not None]
+        if len(ratings)>0:
+            return sum(ratings) / len(ratings)
+        return None
+
+    def get_reviews(self):
+        reviews = UserBookRelation.objects.filter(book=self).filter(review__isnull=False).order_by('-review_date')
+        reviews = [review for review in reviews if review.review not in (None, '')]
+        if reviews:
+            return reviews
+        return None
 
     def clean(self):
         if (self.saga is not None) and (self.saga_volume is None):
@@ -161,7 +179,6 @@ class Book(models.Model):
             raise ValidationError(f"ISBN must have 13 characters, current length is {len(self.isbn)}")
         if (self.summary is not None) and (len(self.summary) > 1000):
             raise ValidationError("Summary is too long, maximum length is 1000 characters")
-
 
     def save(self, *args, **kwargs):
         # self.clean()
@@ -185,6 +202,7 @@ class UserBookRelation(models.Model):
     read_date = models.DateField(null=True, blank=True)
     rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)  # Por ejemplo, 1 a 5 estrellas
     review = models.TextField(max_length=1000, null=True, blank=True)
+    review_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         """
@@ -223,6 +241,9 @@ class Author(models.Model):
     last_name = models.CharField(max_length=100)
     year_of_birth = models.IntegerField(null = True, blank = True)
     year_of_death = models.IntegerField(null = True, blank = True)
+    photo = models.ImageField(upload_to='authors/', null=True, blank=True)
+    social_media = models.URLField(max_length=200, null=True, blank=True)
+    biography = models.TextField(max_length=1000, null=True, blank=True)
 
     class Meta:
         """
@@ -241,6 +262,31 @@ class Author(models.Model):
         String for representing the Model object.
         """
         return f'{self.first_name} {self.last_name}'
+
+    def average_rating(self):
+        """
+        Returns the average rating of the author.
+        """
+        books = Book.objects.filter(author=self)
+        ratings = [book.average_rating() for book in books if book.average_rating() is not None]
+        if ratings:
+            return sum(ratings) / len(ratings)
+        return None
+        # ratings = UserBookRelation.objects.filter(book=self).values_list('rating')
+        # ratings = [rating[0] for rating in ratings if rating[0] is not None]
+        # if len(ratings)>0:
+        #     return sum(ratings) / len(ratings)
+        # return None
+
+    def number_of_ratings(self):
+        books = Book.objects.filter(author=self)
+        ratings = [book.number_of_ratings() for book in books]
+        return sum(ratings)
+
+    def number_of_reviews(self):
+        books = Book.objects.filter(author=self)
+        reviews = [book.number_of_reviews() for book in books]
+        return sum(reviews)
 
     def _check_year_of_birth(self):
         """

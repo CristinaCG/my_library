@@ -4,16 +4,16 @@
 <div style="display: flex;">
   <div class="sidebar">
     <!-- Primera columna -->
-    <div class="col-md-12">
-      <h3>Options</h3>
-      <ul class="list-group">
-        <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
-        <li class="list-group-item"><a class="no-underline" href="{% url 'delete_profile' %}">Delete Profile</a></li>
-        <li class="list-group-item"><a class="no-underline" href="{% url 'change_password' %}">Change Password</a></li>
-      </ul>
+    <div class="column-left">
+        <h3>Options</h3>
+        <ul class="list-group">
+          <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
+          <li class="list-group-item"><a class="no-underline" href="{% url 'delete_profile' %}">Delete Profile</a></li>
+          <li class="list-group-item"><a class="no-underline" href="{% url 'change_password' %}">Change Password</a></li>
+        </ul>
     </div>
   </div>
-  <div class="col-md-6 mt-5">
+  <div class="column-right">
     <div style="flex-grow: 1; padding: 20px;">
       <h1 class="mb-3">
         <big>

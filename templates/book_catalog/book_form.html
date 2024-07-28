@@ -1,28 +1,33 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-4 text-center">
+<div style="display: flex;">
+    <div class="sidebar">
+      <div class="column-left">
+        <div class="text-center">
         {% if book.cover_image %}
             <img src="{{ book.cover_image.url }}"
             alt="{{ book.title }}"
             class="img-fluid border rounded shadow"
             style="max-width: 100%; height: auto; margin: auto; display: block;">
         {% else %}
-            <p>No hay imagen disponible.</p>
-        {% endif %}
+            <img src="{% static 'images/portada_provisional.png' %}"
+            alt="{% static 'images/portada_provisional.png' %}"
+            class="img-fluid border rounded shadow"
+            style="max-width: 100%; height: auto; margin: auto; display: block;">
+         {% endif %}
         </div>
-        <div class="col-md-8">
-            <h1>{% if book.id %}Edit Book{% else %}New Book{% endif %}</h1>
-            <form action="" method="post">
-                {% csrf_token %}
-                <table>
-                    {{ form.as_p }}
-                </table>
-                <input type="submit" class="btn-save mt-3" value="Save">
-            </form>
-        </div>
+      </div>
+    </div>
+    <div class="column-right">
+        <h1>{% if book.id %}Edit Book{% else %}New Book{% endif %}</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            <table>
+                {{ form.as_p }}
+            </table>
+            <input type="submit" class="btn-save mt-3" value="Save">
+        </form>
     </div>
 </div>
 

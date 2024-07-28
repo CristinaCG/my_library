@@ -1,29 +1,42 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-md-4 text-center">
-      {% if book.cover_image %}
-        <img src="{{ book.cover_image.url }}"
-        alt="{{ book.title }}"
-        class="img-fluid border rounded shadow"
-        style="max-width: 100%; height: auto; margin: auto; display: block;">
-      {% else %}
-        <p>No cover available.</p>
-      {% endif %}
-    </div>
-    <div class="col-md-6">
-        <form action="" method="post">
-          <h1>{% if booksaga.author.id %}Edit Saga{% else %}New Saga{% endif %}</h1>
-            {% csrf_token %}
-            <table>
-            {{ form.as_p }}
-            </table>
-            <input type="submit" class="btn-save mt-3" value="Save">
-        </form>
+<div style="display: flex;">
+  <div class="sidebar">
+    <div class="column-left">
+      <div class="text-center">
+        {% comment %} {% if book.cover_image %}
+          <img src="{{ book.cover_image.url }}"
+          alt="{{ book.title }}"
+          class="img-fluid border rounded shadow"
+          style="max-width: 100%; height: auto; margin: auto; display: block;">
+        {% else %}
+          <p>No cover available.</p>
+        {% endif %} {% endcomment %}
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}"
+            alt="{{ book.title }}"
+            class="img-fluid border rounded shadow"
+            style="max-width: 100%; height: auto; margin: auto; display: block;">
+        {% else %}
+            <img src="{% static 'images/portada_provisional.png' %}"
+            alt="{% static 'images/portada_provisional.png' %}"
+            class="img-fluid border rounded shadow"
+            style="max-width: 100%; height: auto; margin: auto; display: block;">
+         {% endif %}
+      </div>
     </div>
   </div>
+    <div class="column-right">
+      <form action="" method="post">
+        <h1>{% if booksaga.author.id %}Edit Saga{% else %}New Saga{% endif %}</h1>
+        {% csrf_token %}
+        <table>
+        {{ form.as_p }}
+        </table>
+        <input type="submit" class="btn-save mt-3" value="Save">
+      </form>
+    </div>
 </div>
 
 {% endblock %}

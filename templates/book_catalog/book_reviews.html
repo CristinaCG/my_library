@@ -1,0 +1,71 @@
+<h3>Reviews</h3>
+<div id="book_reviews" class="reviews-container">
+    {% for review in book_reviews %}
+    <div class="review">
+        <div class="col-md-3">
+            <h4>{{ review.user.username }}</h4>
+            <p>{{ review.user.review_count }} reviews</p>
+            <p>{{ review.user.average_rating|floatformat:1 }} average rating </p>
+        </div>
+        <div class="col-md-9">
+            <div class="review-header">
+                <div class="rating" title="{{ review.rating }}">
+                    <div class="stars-outer">
+                        <div class="stars-inner" style="width: {{ review.rating_over_100 }}%;"></div>
+                    </div>
+                </div>
+                <small class="review-date">Published on {{ review.review_date|date:"d M Y" }}</small>
+            </div>
+            <p class="review-text">{{ review.review }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .reviews-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .review {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .rating {
+        display: flex;
+        align-items: center;
+    }
+
+    .review-date {
+        margin-left: auto;
+    }
+
+    .review-column {
+        box-sizing: border-box;
+        padding: 10px;
+    }
+
+    .narrow-column {
+        flex: 1 1 10%; /* La primera columna ocupará el 10% del ancho del contenedor */
+    }
+
+    .wide-column {
+        flex: 1 1 90%; /* La segunda columna ocupará el 90% del ancho del contenedor */
+    }
+
+    .review-text {
+        word-wrap: break-word; /* Permite que las palabras largas se dividan y se ajusten a la línea */
+        white-space: pre-wrap; /* Mantiene los saltos de línea y espacios en blanco */
+    }
+</style>

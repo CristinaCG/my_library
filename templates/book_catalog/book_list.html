@@ -3,9 +3,11 @@
 {% block content %}
 <div style="display: flex;">
   <div class="sidebar">
-    {% include "book_catalog/recent_books.html" %}
+    <div class="justify-content-left">
+      {% include "book_catalog/recent_books.html" %}
+    </div>
   </div>
-  <div style="flex-grow: 1; padding: 20px;">
+  <div style="flex-grow: 1; padding: 20px;" class="column-right">
     <h1>Books list</h1>
     <table id="dynamicTable" class="table table-hover">
       <thead>

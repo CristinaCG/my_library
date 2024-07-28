@@ -1,23 +1,62 @@
 {% block content %}
 <div style="flex-grow: 1; padding: 20px;">
+  <div>
     <h1 class="mb-3">
       <big>
         {{ author.first_name }} {{ author.last_name }}
       </big>
     </h1>
+    {% if author.social_media %}
+      <p><strong>Social media:</strong> {{ author.social_media }}</p>
+    {% endif %}
     {% if author.year_of_birth %}
       <p><strong>Year of birth:</strong> {{ author.year_of_birth }}</p>
     {% endif %}
     {% if author.year_of_death %}
       <p><strong>Year of death:</strong> {{ author.year_of_death }}</p>
     {% endif %}
-    <div class="mt-3">
-      {% if perms.book_catalog.change_author %}
-      <a href="{% url 'author-update' author.id %}" class="btn btn-outline-dark mr-2">Edit</a>
-      {% endif %}
-      {% if perms.book_catalog.delete_author %}
-      <a href="{% url 'author-delete' author.id %}" class="btn btn-outline-dark">Delete</a>
+    {% if author.biography %}
+      <p><strong>Biography:</strong> {{ author.biography }}</p>
     {% endif %}
-    </div>
   </div>
+  <hr>
+  <div>
+    <h2>Author's book list</h2>
+    <table id="dynamicTable" class="table table-hover">
+      <thead>
+        <tr class="table-primary">
+          <th scope="col">Title</th>
+          <th scope="col">Saga</th>
+          <th scope="col">Data published</th>
+          <th scope="col">Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in book_list %}
+          <tr class="table-secondary">
+            <th scope="row">
+              <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+            </th>
+            <td>
+              {% if book.saga %}
+                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+                  {{ book.saga.name }}
+                </a>
+                #{{ book.saga_volume }}
+              {% endif %}
+            </td>
+            <td>
+              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+            </td>
+            <td>
+              {% if book.average_rating %}
+                <p class="no-underline">{{ book.average_rating|floatformat:1 }}</p>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

@@ -1,54 +1,62 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-  <div class="row">
+<div style="display: flex;">
+  <div class="sidebar">
     <!-- Primera columna -->
-    <div class="col-md-4 text-center">
-      {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
-        {% if book.cover_image %}
-      <img src="{{ book.cover_image.url }}"
-           alt="{{ book.title }}"
-           class="img-fluid border rounded shadow book-cover"
-           style="display: none;">
-           {% else %}
-          <p>No cover available.</p>
+    <div class="column-left">
+      <div class="text-center">
+        {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
+          {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}"
+                alt="{{ book.title }}"
+                class="img-fluid border rounded shadow book-cover"
+                style="display: none;">
+          {% else %}
+            <p>No cover available.</p>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="text-center">
+        {% if user_saga_relation == 'i' %}
+          <button type="button" class="btn mt-3 btn-yellow" data-toggle="modal" data-target="#changeBookSagaStatusModal">Reading</button>
+        {% elif user_saga_relation == 'r' %}
+          <button type="button" class="btn mt-3 btn-green" data-toggle="modal" data-target="#changeBookSagaStatusModal">Read</button>
+        {% elif user_saga_relation == 't' %}
+          <button type="button" class="btn mt-3 btn-blue" data-toggle="modal" data-target="#changeBookSagaStatusModal">To Read</button>
+        {% else %}
+        <button type="button" class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
+          Add to my list
+          </button>
         {% endif %}
-      {% endfor %}
-      {% if user_saga_relation == 'i' %}
-        <button type="button" class="btn mt-3 btn-yellow" data-toggle="modal" data-target="#changeBookSagaStatusModal">Reading</button>
-      {% elif user_saga_relation == 'r' %}
-        <button type="button" class="btn mt-3 btn-green" data-toggle="modal" data-target="#changeBookSagaStatusModal">Read</button>
-      {% elif user_saga_relation == 't' %}
-        <button type="button" class="btn mt-3 btn-blue" data-toggle="modal" data-target="#changeBookSagaStatusModal">To Read</button>
-      {% else %}
-      <button type="button" class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
-        Add to my list
-        </button>
+      </div>
+      <div class="text-center">
+        {% if perms.book_catalog.change_book %}
+          <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3"><i class="fas fa-edit fa-lg"></i></a>
+        {% endif %}
+        {% if perms.book_catalog.delete_book %}
+        <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">
+          <i class="fas fa-trash fa-lg"></i>
+        </a>
       {% endif %}
-      {% if perms.book_catalog.change_book %}
-      <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3">Edit</a>
-      {% endif %}
-      {% if perms.book_catalog.delete_book %}
-      <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">Delete</a>
-      {% endif %}
+      </div>
     </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let covers = document.querySelectorAll('.book-cover');
+        let currentIndex = 0;
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-          let covers = document.querySelectorAll('.book-cover');
-          let currentIndex = 0;
-  
-          function showNextCover() {
-              covers[currentIndex].style.display = 'none';
-              currentIndex = (currentIndex + 1) % covers.length;
-              covers[currentIndex].style.display = 'block';
-          }
-  
-          if (covers.length > 0) {
-              covers[0].style.display = 'block';
-              setInterval(showNextCover, 3000); // Cambia la imagen cada 3 segundos
-          }
+        function showNextCover() {
+            covers[currentIndex].style.display = 'none';
+            currentIndex = (currentIndex + 1) % covers.length;
+            covers[currentIndex].style.display = 'block';
+        }
+
+        if (covers.length > 0) {
+            covers[0].style.display = 'block';
+            setInterval(showNextCover, 3000); // Cambia la imagen cada 3 segundos
+        }
       });
     </script>
     <!-- Segunda columna -->
@@ -76,7 +84,6 @@
         {% endfor %}
       </ul>
     </div>
-  </div>
 </div>
 <div class="modal fade" id="changeBookSagaStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeBookSagaStatusModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
