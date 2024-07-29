@@ -49,3 +49,6 @@ lib64/
 *.njsproj
 *.sln
 *.sw?
+
+.DS_Store
+.coverage
