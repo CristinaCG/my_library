@@ -27,6 +27,17 @@ Describe los pasos para instalar tu proyecto. Por ejemplo, si tu proyecto es una
     ```
     python manage.py migrate
     ```
+4. Importa los datos
+```
+python tools/delete_all.py
+python tools/create_users.py
+python manage.py loaddata media/data/languages.json
+python manage.py loaddata media/data/genres.json
+python manage.py loaddata media/data/authors.json
+python manage.py loaddata media/data/booksagas.json
+python manage.py loaddata media/data/author-*
+python tools/reading.py 
+```
 
 ## Uso
 
@@ -42,20 +53,7 @@ Luego, abre un navegador y ve a `http://localhost:8000`.
 python manage.py test
 ```
 
-## Import data
-
-```
-python tools/delete_all.py
-python tools/create_users.py
-python manage.py loaddata media/data/languages.json
-python manage.py loaddata media/data/genres.json
-python manage.py loaddata media/data/authors.json
-python manage.py loaddata media/data/booksagas.json
-python manage.py loaddata media/data/author-*
-python tools/reading.py 
-```
-
-## Test
+### Test con cobertura
 ```
 pip install coverage
 coverage run --source='.' manage.py test
@@ -64,6 +62,7 @@ coverage html
 open htmlcov/index.html
 ```
 
-## Super user
-admin
-1234
+## Datos de algunos usuarios
+- User: admin, password: 1234
+- User: teresa, password: teresa
+- User: staff1, password: staff1

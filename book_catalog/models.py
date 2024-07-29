@@ -228,6 +228,9 @@ class UserBookRelation(models.Model):
     def clean(self):
         if self.status not in ['r', 't', 'i', None]:
             raise ValidationError("Invalid status, must be 'r', 't' or 'i'")
+        if self.read_date and self.reading_date:
+            if self.read_date < self.reading_date:
+                raise ValidationError("Read date cannot be before reading date")
 
     def save(self, *args, **kwargs):
         self.full_clean()
