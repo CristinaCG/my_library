@@ -8,7 +8,8 @@ Describe los pasos para instalar tu proyecto. Por ejemplo, si tu proyecto es una
 
 1. Clona el repositorio:
     ```
-    git clone https://github.com/username/repo.git
+    git clone https://github.com/CristinaCG/tokio_project.git
+
     ```
 2. Crea un entorno virtual e instala las dependencias:
     ```
