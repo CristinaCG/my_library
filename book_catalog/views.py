@@ -175,6 +175,7 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
                 if relation.status == 't':
                     relations[i] = 1
                     book.status = 't'
+            # print(relations)
         if sum(relations) == 3*len(saga.book_set.all()):
             context['user_saga_relation'] = 'r'
         elif sum(relations) >= len(saga.book_set.all())+1+2:
@@ -339,6 +340,7 @@ class BookSagaUpdateView(PermissionRequiredMixin, UpdateView):
         author_choices = [(author.id, author) for author in Author.objects.all()]
         form.fields['author'].widget = forms.Select(attrs={'class': 'select2 form-select'}, choices=author_choices)
         return form
+
     def get_success_url(self):
         return reverse('saga-detail', args=[str(self.object.pk)])
 
@@ -363,11 +365,6 @@ class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['rating'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         form.fields['review'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
-
-    def form_valid(self, form):
-        if form.cleaned_data.get('review'):
-            form.instance.review_date = timezone.now()
-        return super().form_valid(form)
 
 ################# Delete Views #################
 
@@ -399,7 +396,7 @@ class BookSagaDeleteView(PermissionRequiredMixin,DeleteView):
 
 
 @login_required
-def change_book_status(request, pk, status: str):
+def change_book_status(request, pk: int, status: str):
     """
     View function for changing book status.
     """
@@ -417,13 +414,13 @@ def change_book_status(request, pk, status: str):
                 print(f"Error al guardar la relación: {e}")
         else:
             relation.status = status
-            if status == 'r':
-                relation.read_date = timezone.now()
-            if status == 'i':
-                relation.reading_date = timezone.now()
-            relation.save()
+            try:
+                relation.save()
+                print("Datos eliminados correctamente.")
+            except Exception as e:
+                print(f"Error al guardar la relación: {e}")
     elif not relation and status != 'd':
-        UserBookRelation.objects.create(user = request.user, book = book, status = status)
+        relation = UserBookRelation.objects.create(user = request.user, book = book, status = status)
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
 
 # @login_required

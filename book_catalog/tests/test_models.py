@@ -363,6 +363,43 @@ class AuthorModelTest(TestCase):
             author.append(Author.objects.get(id=i+1))
         self.assertEqual(list(Author.objects.all()), author)
 
+    def test_author_average_rating(self):
+        """
+        Test the average rating of the author
+        """
+        book = Book.objects.create(title='Big Book', author=self.author)
+        user = User.objects.create_user(username='testuser', password='12345')
+        relation = UserBookRelation.objects.create(user = user, book=book, rating=3)
+        self.assertEqual(self.author.average_rating(), 3)
+        book.delete()
+        user.delete()
+        relation.delete()
+
+    def test_author_number_of_ratings(self):
+        """
+        Test the number of rating of the author
+        """
+        book = Book.objects.create(title='Big Book', author=self.author)
+        user = User.objects.create_user(username='testuser', password='12345')
+        relation = UserBookRelation.objects.create(user = user, book=book, rating=3)
+        self.assertEqual(self.author.number_of_ratings(), 1)
+        book.delete()
+        user.delete()
+        relation.delete()
+
+    def test_author_number_of_reviews(self):
+        """
+        Test the number of reviews of the author
+        """
+        book = Book.objects.create(title='Big Book', author=self.author)
+        user = User.objects.create_user(username='testuser', password='12345')
+        relation = UserBookRelation.objects.create(user=user, book=book, review='Great book')
+        print(self.author.number_of_reviews())
+        self.assertEqual(self.author.number_of_reviews(), 1)
+        book.delete()
+        user.delete()
+        relation.delete()
+
 class BookSagaModelTest(TestCase):
     """
     Test the BookSaga model
@@ -480,6 +517,23 @@ class BookSagaModelTest(TestCase):
             BookSaga.objects.create(name=saga.name, author=author)
         self.assertIn("Book saga with this Name and Author already exists.",
                       e.exception.message_dict["__all__"][0])
+
+    def test_saga_rating(self):
+        """
+        Test the average rating of the saga
+        """
+        self.assertEqual(self.saga.average_rating(), None)
+        book = Book.objects.create(title='Big Book', author=self.author, saga=self.saga, saga_volume=1)
+        user = User.objects.create_user(username='testuser', password='12345')
+        relation = UserBookRelation.objects.create(user = user, book=book, rating=3, review='Great book')
+        self.assertEqual(self.saga.average_rating(), 3)
+        self.assertEqual(self.saga.average_rating_over_100(), 3*20)
+        self.assertEqual(self.saga.number_of_ratings(), 1)
+        self.assertEqual(self.saga.number_of_reviews(), 1)
+        book.delete()
+        user.delete()
+        relation.delete()
+
 
 class BookModelTest(TestCase):
     """
@@ -880,9 +934,17 @@ class UserBookRelationModelTest(TestCase):
         """
         Change the user book relation
         """
+        self.assertEqual(self.user_book_relation.status, 't')
+        self.assertIn(self.user_book_relation.display_status(), 'To Read')
         self.user_book_relation.status = 'i'
         self.user_book_relation.save()
         self.assertEqual(self.user_book_relation.status, 'i')
+        self.assertIn(self.user_book_relation.display_status(), 'Reading')
+        self.user_book_relation.status = 'r'
+        self.user_book_relation.save()
+        self.assertEqual(self.user_book_relation.status, 'r')
+        self.assertIn(self.user_book_relation.display_status(), 'Read')
+
 
     def test_user_book_relation_delete(self):
         """

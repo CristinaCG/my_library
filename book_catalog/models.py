@@ -234,6 +234,12 @@ class UserBookRelation(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        if self.status == 'r':
+            self.read_date = timezone.now()
+        if self.status == 'i':
+            self.reading_date = timezone.now()
+        if self.review and not self.review_date:
+            self.review_date = timezone.now()
         super().save(*args, **kwargs)
 
     def display_status(self):

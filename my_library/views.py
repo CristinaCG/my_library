@@ -109,5 +109,4 @@ class UserRegisterView(FormView):
         user.set_password(form.cleaned_data['password'])
         user.save()
         login(self.request, user)
-        form.save()
-        return render(self.request, 'auth/user_register_done.html')
+        return render(self.request, 'auth/user_register_done.html', {'user': user})
