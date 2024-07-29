@@ -8,6 +8,7 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('.select2').select2();
 });
+
 // Para el carrusel de fotos 
 document.addEventListener("DOMContentLoaded", function() {
     let covers = document.querySelectorAll('.book-cover');

@@ -12,8 +12,8 @@
           {% if book.cover_image %}
             <img src="{{ book.cover_image.url }}"
                 alt="{{ book.title }}"
-                class="img-fluid border rounded shadow book-cover"
-                style="width: 100%; height: auto; margin: auto; display: block;">
+                class="img-fluid border rounded shadow book-cover {% if forloop.first %}active{% endif %}"
+                style="width: 100%; height: auto; margin: auto;">
           {% else %}
             <img src="{% static 'images/portada_provisional.png' %}"
               alt="{% static 'images/portada_provisional.png' %}"

@@ -260,6 +260,7 @@ class BookSagaCreateView(PermissionRequiredMixin,CreateView):
         author_choices = [(author.id, author) for author in Author.objects.all()]
         form.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
         form.fields['author'].widget = forms.Select(attrs={'class': 'form-select  select2'}, choices=author_choices)
+        form.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
 
 ################# Update Views #################
@@ -330,7 +331,7 @@ class BookSagaUpdateView(PermissionRequiredMixin, UpdateView):
     Generic class-based view for updating a book saga.
     """
     model = BookSaga
-    fields = ['name', 'author']
+    fields = ['name', 'author', 'description']
     template_name = 'book_catalog/booksaga_form.html'
     permission_required = 'book_catalog.change_booksaga'
 
@@ -339,6 +340,7 @@ class BookSagaUpdateView(PermissionRequiredMixin, UpdateView):
         form.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
         author_choices = [(author.id, author) for author in Author.objects.all()]
         form.fields['author'].widget = forms.Select(attrs={'class': 'select2 form-select'}, choices=author_choices)
+        form.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
 
     def get_success_url(self):
@@ -365,6 +367,24 @@ class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['rating'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         form.fields['review'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        # check if read_date is before reading_date
+        if form.cleaned_data['read_date'] and form.cleaned_data['reading_date']:
+            if form.cleaned_data['read_date'] < form.cleaned_data['reading_date']:
+                form.add_error('read_date', 'Read date must be after reading date.')
+        return response
+
+    def form_valid(self, form):
+        relation = form.save(commit=False)
+        if relation.status == 'r' and relation.read_date is None:
+            relation.read_date = timezone.now().date()
+        elif relation.status == 'i' and relation.reading_date is None:
+            relation.reading_date = timezone.now().date()
+        if relation.review and relation.review_date is None:
+            relation.review_date = timezone.now().date()
+        return super().form_valid(form)    
 
 ################# Delete Views #################
 
@@ -409,18 +429,25 @@ def change_book_status(request, pk: int, status: str):
             relation.reading_date = None
             try:
                 relation.save()
-                print("Datos eliminados correctamente.")
             except Exception as e:
                 print(f"Error al guardar la relación: {e}")
         else:
             relation.status = status
+            if relation.status == 'r' and relation.read_date is None:
+                relation.read_date = timezone.now().date()
+            elif relation.status == 'i' and relation.reading_date is None:
+                relation.reading_date = timezone.now().date()
             try:
                 relation.save()
-                print("Datos eliminados correctamente.")
             except Exception as e:
                 print(f"Error al guardar la relación: {e}")
     elif not relation and status != 'd':
         relation = UserBookRelation.objects.create(user = request.user, book = book, status = status)
+        if relation.status == 'r' and relation.read_date is None:
+            relation.read_date = timezone.now().date()
+        elif relation.status == 'i' and relation.reading_date is None:
+            relation.reading_date = timezone.now().date()
+        relation.save()
     return HttpResponseRedirect(reverse('book-detail', args=[str(pk)]))
 
 # @login_required

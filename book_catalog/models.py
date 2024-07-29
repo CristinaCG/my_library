@@ -1,14 +1,12 @@
-from django.db import models
 import os
+import uuid
+from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-import uuid
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-# Create your models here.
 class Genre(models.Model):
     """
     Model representing a book genre (e.g. Science Fiction, Non Fiction).
@@ -37,7 +35,6 @@ class Genre(models.Model):
         """
         Save the genre in the data base
         """
-        # self.clean()
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -64,16 +61,18 @@ class Language(models.Model):
         if len(self.name) > 200:
             raise ValidationError("Language is too long, maximum length is "
                                   "200 characters.")
-    
+
     def save(self, *args, **kwargs):
         """
         Save the language in the data base
         """
-        # self.clean()
         self.full_clean()
         super().save(*args, **kwargs)
 
     class Meta:
+        """
+        Metadata for the model.
+        """
         constraints = [
             models.UniqueConstraint(
                 models.functions.Lower('name'),
@@ -135,11 +134,17 @@ class Book(models.Model):
             return f"{self.title}"
 
     def number_of_ratings(self):
+        """
+        Returns the number of ratings of the book.
+        """
         ratings = UserBookRelation.objects.filter(book=self).values_list('rating')
         ratings = [rating[0] for rating in ratings if rating[0] is not None]
         return len(ratings)
 
     def number_of_reviews(self):
+        """
+        Returns the number of reviews of the book.
+        """
         reviews = UserBookRelation.objects.filter(book=self).values_list('review')
         reviews = [review[0] for review in reviews if review[0] is not None]
         return len(reviews)
@@ -155,6 +160,9 @@ class Book(models.Model):
         return None
 
     def get_reviews(self):
+        """
+        Returns the reviews of the book.
+        """
         reviews = UserBookRelation.objects.filter(book=self).filter(review__isnull=False).order_by('-review_date')
         reviews = [review for review in reviews if review.review not in (None, '')]
         if reviews:
@@ -180,16 +188,6 @@ class Book(models.Model):
             raise ValidationError(f"ISBN must have 13 characters, current length is {len(self.isbn)}")
         if (self.summary is not None) and (len(self.summary) > 1000):
             raise ValidationError("Summary is too long, maximum length is 1000 characters")
-        # para la imagen:
-        # if self.cover_image is not None:
-        #     if not os.path.exists(self.cover_image):
-        #         raise ValidationError("Image file does not exist")
-        #     if self.cover_image.size > 2*1024*1024:
-        #         raise ValidationError("Image file too large ( > 2mb )")
-        #     if self.cover_image.file.content_type not in ['image/jpeg', 'image/png']:
-        #         raise ValidationError("Image file must be JPEG or PNG")
-            
-
 
     def save(self, *args, **kwargs):
         # self.clean()
@@ -225,7 +223,6 @@ class UserBookRelation(models.Model):
         """
         Metadata for the model.
         """
-        # Para evitar que se puedan tener en la base de datos más de una relación entre un usuario y el mismo libro
         unique_together = ('user', 'book')
 
     def clean(self):
@@ -234,15 +231,12 @@ class UserBookRelation(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        if self.status == 'r':
-            self.read_date = timezone.now()
-        if self.status == 'i':
-            self.reading_date = timezone.now()
-        if self.review and not self.review_date:
-            self.review_date = timezone.now()
         super().save(*args, **kwargs)
 
     def display_status(self):
+        """
+        Creates a string for the status. This is required to display status in Admin.
+        """
         if self.status == 'r':
             return "Read"
         if self.status == 't':
@@ -291,11 +285,17 @@ class Author(models.Model):
         return None
 
     def number_of_ratings(self):
+        """
+        Returns the number of ratings of the author.
+        """
         books = Book.objects.filter(author=self)
         ratings = [book.number_of_ratings() for book in books]
         return sum(ratings)
 
     def number_of_reviews(self):
+        """
+        Returns the number of reviews of the author.
+        """
         books = Book.objects.filter(author=self)
         reviews = [book.number_of_reviews() for book in books]
         return sum(reviews)

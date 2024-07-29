@@ -39,17 +39,19 @@
       </div>
     {% endif %}
     <div class="col-md-9">
-      <h2>Reading statistics</h2>
-      <ul class="list-group">
-        {% if my_books_read %}
-        <li class="list-group-item" style="background-color: #f4f4f4;">
-          Total books: {{ my_books_read }}
-        </li>
-        {% endif %}
-        {% if my_books_this_year %}
-        <li class="list-group-item" style="background-color: #f4f4f4;">
-          Books read this year: {{ my_books_this_year }}
-        </li>
+      {% if user.is_authenticated %}
+        <h2>Reading statistics</h2>
+        <ul class="list-group">
+          {% if my_books_read %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            Total books: {{ my_books_read }}
+          </li>
+          {% endif %}
+          {% if my_books_this_year %}
+          <li class="list-group-item" style="background-color: #f4f4f4;">
+            Books read this year: {{ my_books_this_year }}
+          </li>
+          {% endif %}
         {% endif %}
       </ul>
     </div>

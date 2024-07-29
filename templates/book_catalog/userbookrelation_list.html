@@ -14,6 +14,7 @@
         <table id="dynamicTable" class="table table-hover">
           <thead>
             <tr class="table-primary">
+              <th scope="col"></th>
               <th scope="col">Title</th>
               <th scope="col">Saga</th>
               <th scope="col">Author</th>
@@ -27,6 +28,18 @@
           <tbody>
             {% for object in userbookrelation_list %}
               <tr class="table-secondary">
+                <!-- cover -->
+                <td scope="row">
+                  <div class="text-center">
+                    {% if object.book.cover_image %}
+                      <img src="{{ object.book.cover_image.url }}"
+                        alt="{{ object.book.title }}"
+                        class="img-fluid border rounded shadow"
+                        style="width: 50px; height: auto;">
+                    {% else %}
+                    {% endif %}
+                  </div>
+                </td>
                 <!-- title -->
                 <td><a class="no-underline" href="{{ object.book.get_absolute_url }}">{{ object.book.title }}</a></td>
                 <!-- saga -->
@@ -41,13 +54,13 @@
                 <!-- author -->
                 <td><a class="no-underline" href="{{ object.book.author.get_absolute_url }}">{{ object.book.author }}</a></td>
                 <!-- rating -->
-                <td><a>{% if object.user.book__ %} {{ object.rating }} {% endif %}</a></td>
+                <td><p class="text-center">{% if object.rating %} {{ object.rating }} {% endif %}</p></td>
                 <!-- status -->
                 <td><a>{{ object.display_status }}</a></td>
                 <!-- date added -->
-                <td>{% if object.reading_date %}<a>{{ object.reading_date }}</a>{% else %}{% endif %}</td>
+                <td>{% if object.reading_date %}<p>{{ object.reading_date }}</p>{% else %}{% endif %}</td>
                 <!-- date read -->
-                <td>{% if object.read_date %}<a>{{ object.read_date }}</a>{% else %}{% endif %}</td>
+                <td>{% if object.read_date %}<p>{{ object.read_date }}</p>{% else %}{% endif %}</td>
                 <!--  edit -->
                 <td>
                   <a class="btn btn-primary" href="{% url 'change-userbookrelation' object.id %}">

@@ -1,4 +1,4 @@
-# Good Watch
+# My Library
 
 Es una aplicación para lanzar una biblioteca local y poder manejar.
 
@@ -63,9 +63,6 @@ coverage report
 coverage html
 open htmlcov/index.html
 ```
-## Licencia
-
-Incluye información sobre la licencia de tu proyecto aquí.
 
 ## Super user
 admin

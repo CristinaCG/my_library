@@ -1666,7 +1666,7 @@ class IndexViewTest(TestCase):
     Test if index view works correctly
     """
     @classmethod
-    def setUpTestData(cls):
+    def setUp(cls):
         number_of_books = 5
         number_of_authors = 3
 
@@ -1681,7 +1681,14 @@ class IndexViewTest(TestCase):
             user=cls.user,
             book=Book.objects.get(id=1),
             status='r',
+            read_date=timezone.now().date(),
         )
+
+    def tearDown(self):
+        User.objects.all().delete()
+        Book.objects.all().delete()
+        Author.objects.all().delete()
+        UserBookRelation.objects.all().delete()
 
     def test_view_url_exists_at_desired_location(self):
         """
