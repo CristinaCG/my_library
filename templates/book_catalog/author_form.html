@@ -1,21 +1,19 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
-
 <div style="display: flex;">
-  <div class="sidebar">
-    <div class="column-left">
-      {% if author.id %}
-        <h2>Author's book list</h2>
-        <ul class="list-group">
-          {% for book in books %}
+   <div class="sidebar">
+      <div class="column-left">
+         {% if author.id %}
+         <h2>Author's book list</h2>
+         <ul class="list-group">
+            {% for book in books %}
             <li class="list-group-item d-flex align-items-center">
-              <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
-              {% if book.saga %}
-                <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
-              {% endif %}
+               <a href="{{ book.get_absolute_url }}" class="no-underline">{{ book.title }}</a>
+               {% if book.saga %}
+               <div style="color: gray;"> (<a href="{{ book.saga.get_absolute_url }}" class="no-underline">{{ book.saga.name }} </a>#{{ book.saga_volume }})</div>
+               {% endif %}
             </li>
-          {% empty %}
+            {% empty %}
             <li>Este autor no tiene libros listados.</li>
           {% endfor %}
         </ul>
@@ -31,7 +29,6 @@
         {{ form.as_p }}
           <input type="submit" class="btn-save mt-3" value="Save">
       </form>
-  </div>
+   </div>
 </div>
-
 {% endblock %}

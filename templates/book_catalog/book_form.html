@@ -2,31 +2,31 @@
 {% load static %}
 {% block content %}
 <div style="display: flex;">
-    <div class="sidebar">
+   <div class="sidebar">
       <div class="column-left">
-        <div class="text-center">
-        {% if book.cover_image %}
+         <div class="text-center">
+            {% if book.cover_image %}
             <img src="{{ book.cover_image.url }}"
-            alt="{{ book.title }}"
-            class="img-fluid border rounded shadow"
-            style="width: 100%; height: auto; margin: auto; display: block;">
-        {% else %}
+               alt="{{ book.title }}"
+               class="img-fluid border rounded shadow"
+               style="width: 100%; height: auto; margin: auto; display: block;">
+            {% else %}
             <img src="{% static 'images/portada_provisional.png' %}"
-            alt="{% static 'images/portada_provisional.png' %}"
-            class="img-fluid border rounded shadow"
-            style="width: 100%; height: auto; margin: auto; display: block;">
-        {% endif %}
-        </div>
+               alt="{% static 'images/portada_provisional.png' %}"
+               class="img-fluid border rounded shadow"
+               style="width: 100%; height: auto; margin: auto; display: block;">
+            {% endif %}
+         </div>
       </div>
-    </div>
-    <div class="column-right">
-        <h1>{% if book.id %}Edit Book{% else %}New Book{% endif %}</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.media }}
-            {{ form.as_p }}
-            <input type="submit" class="btn-save mt-3" value="Save">
-        </form>
-    </div>
+   </div>
+   <div class="column-right">
+      <h1>{% if book.id %}Edit Book{% else %}New Book{% endif %}</h1>
+      <form method="post" enctype="multipart/form-data">
+         {% csrf_token %}
+         {{ form.media }}
+         {{ form.as_p }}
+         <input type="submit" class="btn-save mt-3" value="Save">
+      </form>
+   </div>
 </div>
 {% endblock %}

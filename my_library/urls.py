@@ -17,12 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
-from book_catalog import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import UserProfileDetailView, UserProfileDeleteView, UserProfileUpdateView, UserRegisterView, CustomLoginView
-from django.contrib.auth.views import PasswordResetConfirmView, PasswordChangeView
-
+from django.contrib.auth.views import PasswordChangeView
+from .views import (UserProfileDetailView,
+                    UserProfileDeleteView,
+                    UserProfileUpdateView,
+                    UserRegisterView,
+                    CustomLoginView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,18 +35,12 @@ urlpatterns += [
     path('', RedirectView.as_view(url='/book_catalog/', permanent=True)),
     path('accounts/login/', CustomLoginView.as_view(), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
-    # path('profile/', views.profile_view, name='user'), 
     path('accounts/profile/', UserProfileDetailView.as_view(), name='user_profile'),
     path('accounts/profile/update', UserProfileUpdateView.as_view(), name='edit_profile'),
-    # path('accounts/profile/update', profile, name='edit_profile'),
     path('accounts/profile/delete', UserProfileDeleteView.as_view(), name='delete_profile'),
     path('accounts/profile/change_password', PasswordChangeView.as_view(), name='change_password'),
-    # path('accounts/register', user_register, name='register'),
     path('accounts/register', UserRegisterView.as_view(), name='register'),
-    # path('accounts/register/done', UserRegisterView.as_view(), name='register-done'),
-
-    # path('accounts/profile/update', UserUpdateView.as_view(), name='edit_profile'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# if settings.DEBUG: 
+# if settings.DEBUG:
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

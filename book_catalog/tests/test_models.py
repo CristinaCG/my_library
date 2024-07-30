@@ -1,9 +1,8 @@
 from django.test import TestCase
-from ..models import Author, Book, Genre, Language, BookSaga, UserBookRelation
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.utils import timezone
-# Create your tests here.
+from ..models import Author, Book, Genre, Language, BookSaga, UserBookRelation
+
 
 class GenreModelTest(TestCase):
     """
@@ -160,7 +159,8 @@ class AuthorModelTest(TestCase):
         Author.objects.create(first_name='Big', last_name='Bob')
         Author.objects.create(first_name='Small', last_name='Sue', year_of_birth=2000)
         Author.objects.create(first_name='Large', last_name='Mary', year_of_death=2022)
-        Author.objects.create(first_name='Medium', last_name='Joe', year_of_birth=2000, year_of_death=2020)
+        Author.objects.create(first_name='Medium', last_name='Joe', year_of_birth=2000,
+                              year_of_death=2020)
 
     def setUp(self):
         """
@@ -498,7 +498,7 @@ class BookSagaModelTest(TestCase):
         """
         Test the author null
         """
-        with self.assertRaises(ValidationError) as e:
+        with self.assertRaises(ValidationError):
             BookSaga.objects.create(name='Big Saga 4', author=None)
 
     def test_saga_get_absolute_url(self):
@@ -523,9 +523,11 @@ class BookSagaModelTest(TestCase):
         Test the average rating of the saga
         """
         self.assertEqual(self.saga.average_rating(), None)
-        book = Book.objects.create(title='Big Book', author=self.author, saga=self.saga, saga_volume=1)
+        book = Book.objects.create(title='Big Book', author=self.author,
+                                   saga=self.saga, saga_volume=1)
         user = User.objects.create_user(username='testuser', password='12345')
-        relation = UserBookRelation.objects.create(user = user, book=book, rating=3, review='Great book')
+        relation = UserBookRelation.objects.create(user = user, book=book,
+                                                   rating=3, review='Great book')
         self.assertEqual(self.saga.average_rating(), 3)
         self.assertEqual(self.saga.average_rating_over_100(), 3*20)
         self.assertEqual(self.saga.number_of_ratings(), 1)

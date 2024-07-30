@@ -1,46 +1,45 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
 <div style="display: flex;">
-  <div class="sidebar">
-    <!-- Primera columna -->
-    <div class="column-left">
-        <h3>Options</h3>
-        <ul class="list-group">
-          <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
-          <li class="list-group-item"><a class="no-underline" href="{% url 'delete_profile' %}">Delete Profile</a></li>
-          <li class="list-group-item"><a class="no-underline" href="{% url 'change_password' %}">Change Password</a></li>
-        </ul>
-    </div>
-  </div>
-  <div class="column-right">
-    <div style="flex-grow: 1; padding: 20px;">
+<div class="sidebar">
+   <!-- Primera columna -->
+   <div class="column-left">
+      <h3>Options</h3>
+      <ul class="list-group">
+         <li class="list-group-item"><a class="no-underline" href="{% url 'edit_profile' %}">Edit Profile</a></li>
+         <li class="list-group-item"><a class="no-underline" href="{% url 'delete_profile' %}">Delete Profile</a></li>
+         <li class="list-group-item"><a class="no-underline" href="{% url 'change_password' %}">Change Password</a></li>
+      </ul>
+   </div>
+</div>
+<div class="column-right">
+   <div style="flex-grow: 1; padding: 20px;">
       <h1 class="mb-3">
-        <big>
-            User profile
-        </big>
-    </h1>
-    <div>
-      <label class="form-label mt-4">Username</label>
-      <p class="form-control">{{ user.username }}</p>
-    </div>
-    <div>
-      <label class="form-label mt-4">First name</label>
-      <p class="form-control">{{ user.first_name }}</p>
-    </div>
-    <div>
-      <label class="form-label mt-4">Last name</label>
-      <p class="form-control">{{ user.last_name }}</p>
-    </div>
-    <div>
-      <label class="form-label mt-4">Email</label>
-      <p class="form-control">{{ user.email }}</p>
-    </div>
-    {% if user.is_authenticated and user.is_superuser %}
-    <div class="mt-4">
-      <a href="/admin" class="btn btn-primary">Admin View</a>
-    </div>
-    {% endif %}
-  </div>
+         <big>
+         User profile
+         </big>
+      </h1>
+      <div>
+         <label class="form-label mt-4">Username</label>
+         <p class="form-control">{{ user.username }}</p>
+      </div>
+      <div>
+         <label class="form-label mt-4">First name</label>
+         <p class="form-control">{{ user.first_name }}</p>
+      </div>
+      <div>
+         <label class="form-label mt-4">Last name</label>
+         <p class="form-control">{{ user.last_name }}</p>
+      </div>
+      <div>
+         <label class="form-label mt-4">Email</label>
+         <p class="form-control">{{ user.email }}</p>
+      </div>
+      {% if user.is_authenticated and user.is_superuser %}
+      <div class="mt-4">
+         <a href="/admin" class="btn btn-primary">Admin View</a>
+      </div>
+      {% endif %}
+   </div>
 </div>
 {% endblock %}

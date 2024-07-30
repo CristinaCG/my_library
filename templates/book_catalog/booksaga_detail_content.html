@@ -1,77 +1,77 @@
 {% block content %}
 <div style="flex-grow: 1; padding: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1 class="mb-3"><big>{{ booksaga.name }}</big></h1>
-            <p>
-                <h2>
-                    <a href="{{ booksaga.author.get_absolute_url }}" class="text-body-secondary no-underline">
-                        {{ booksaga.author }}
-                    </a>
-                </h2>
-            </p>
-        </div>
-        <!-- Rating -->
-        {% if average_rating %}
-            <div style="display: flex; align-items: center; justify-content: center;">
-                <div class="rating" title="{{ average_rating }}" style="justify-content: left;">
-                    <div class="stars-outer">
-                        <div class="stars-inner" style="width: {{ average_rating_over_100 }}%;"></div>
-                    </div>
-                </div>
-                <span class="rating-text">{{ average_rating|floatformat:1 }}</span>
-                <div class="ml-3 metric-item">
-                    <span>{{ total_ratings }} ratings</span>
-                        <br>
-                    <span>{{ total_reviews }} reviews</span>
-                </div>
+   <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+         <h1 class="mb-3"><big>{{ booksaga.name }}</big></h1>
+         <p>
+         <h2>
+            <a href="{{ booksaga.author.get_absolute_url }}" class="text-body-secondary no-underline">
+            {{ booksaga.author }}
+            </a>
+         </h2>
+         </p>
+      </div>
+      <!-- Rating -->
+      {% if average_rating %}
+      <div style="display: flex; align-items: center; justify-content: center;">
+         <div class="rating" title="{{ average_rating }}" style="justify-content: left;">
+            <div class="stars-outer">
+               <div class="stars-inner" style="width: {{ average_rating_over_100 }}%;"></div>
             </div>
-        {% endif %}
-    </div>
-    <hr>
-    <ul class="list-group">
+         </div>
+         <span class="rating-text">{{ average_rating|floatformat:1 }}</span>
+         <div class="ml-3 metric-item">
+            <span>{{ total_ratings }} ratings</span>
+            <br>
+            <span>{{ total_reviews }} reviews</span>
+         </div>
+      </div>
+      {% endif %}
+   </div>
+   <hr>
+   <ul class="list-group">
       {% for book in books %}
-        <li class="list-group-item">
-          <div>
+      <li class="list-group-item">
+         <div>
             <h4>
-              <a href="{{ book.get_absolute_url }}" class="no-underline">
-                <span class="
-                {% if book.status == 'r' %}
-                    text-green
-                {% elif book.status == 'i' %}
-                    text-yellow
-                {% elif book.status == 't' %}
-                    text-blue
-                {% else %}
+               <a href="{{ book.get_absolute_url }}" class="no-underline">
+               <span class="
+                  {% if book.status == 'r' %}
+                  text-green
+                  {% elif book.status == 'i' %}
+                  text-yellow
+                  {% elif book.status == 't' %}
+                  text-blue
+                  {% else %}
                   text-body-secondary
-                {% endif %}
-                ">
-                {{book.saga_volume}}
-                </span>
-                {{ book.title }}</a>
+                  {% endif %}
+                  ">
+               {{book.saga_volume}}
+               </span>
+               {{ book.title }}</a>
             </h4>
             {% if book.publish_date %}
-                <small>
-                    Published on {{ book.publish_date|date:"Y" }}
-                </small>
+            <small>
+            Published on {{ book.publish_date|date:"Y" }}
+            </small>
             {% endif %}
-          </div>
-          {% if book.average_rating %}
-          <div style="display: flex; align-items: center;">
+         </div>
+         {% if book.average_rating %}
+         <div style="display: flex; align-items: center;">
             <div class="rating" title="{{ book.average_rating }}" style="justify-content: left;">
-              <div class="stars-outer">
-                <div class="stars-inner" style="width: {{ book.average_rating_over_100 }}%;"></div>
-              </div>
+               <div class="stars-outer">
+                  <div class="stars-inner" style="width: {{ book.average_rating_over_100 }}%;"></div>
+               </div>
             </div>
             <span class="rating-text">{{ book.average_rating|floatformat:1 }}</span>
             <span class="ml-3 metric-item">{{ book.number_of_ratings }} ratings · {{ book.number_of_reviews }} reviews</span>
-          </div>
-          {% endif %}
-        </li>
+         </div>
+         {% endif %}
+      </li>
       {% empty %}
-        <li>No book list.</li>
+      <li>No book list.</li>
       {% endfor %}
-    </ul>
-  </div>
+   </ul>
+</div>
 </div>
 {% endblock %}

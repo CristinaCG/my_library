@@ -1,21 +1,19 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
 <div class="limiter">
-  <div class="container-login100">
-    <div class="wrap-login100">
-    {% comment %} <form method="post" action="{% url 'login' %}" style="width: 100%;"> {% endcomment %}
-      <span class="login100-form-title">
-        Logout succefully.
-      </span>
-      <p><a href="{% url 'index' %}" class="no-underline">Back to My Library...</a></p>
-
-      <script>
-          // Redirigir después de 5 segundos (5000 milisegundos)
-          setTimeout(function() {
-              window.location.href = "{% url 'index' %}";
-          }, 5000);
-      </script>    </div>
-</div>
+   <div class="container-login100">
+      <div class="wrap-login100">
+         <span class="login100-form-title">
+         Logout succefully.
+         </span>
+         <p><a href="{% url 'index' %}" class="no-underline">Back to My Library...</a></p>
+         <script>
+            // Redirigir después de 5 segundos (5000 milisegundos)
+            setTimeout(function() {
+                window.location.href = "{% url 'index' %}";
+            }, 5000);
+         </script>    
+      </div>
+   </div>
 </div>
 {% endblock %}

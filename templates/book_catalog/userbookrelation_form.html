@@ -2,44 +2,43 @@
 {% load static %}
 {% block content %}
 <div style="display: flex;">
-  <div class="sidebar">
-    <div class="column-left">
-      <div class="text-center">
-        {% if userbookrelation.book.cover_image %}
-        <img src="{{ userbookrelation.book.cover_image.url }}"
-          alt="{{ userbookrelation.book.title }}"
-          class="img-fluid border rounded shadow"
-          style="width: 100%; height: auto; margin: auto; display: block;">
-        {% else %}
-          <img src="{% static 'images/portada_provisional.png' %}"
-          alt="{% static 'images/portada_provisional.png' %}"
-          class="img-fluid border rounded shadow"
-          style="width: 100%; height: auto; margin: auto; display: block;">
-        {% endif %}
+   <div class="sidebar">
+      <div class="column-left">
+         <div class="text-center">
+            {% if userbookrelation.book.cover_image %}
+            <img src="{{ userbookrelation.book.cover_image.url }}"
+               alt="{{ userbookrelation.book.title }}"
+               class="img-fluid border rounded shadow"
+               style="width: 100%; height: auto; margin: auto; display: block;">
+            {% else %}
+            <img src="{% static 'images/portada_provisional.png' %}"
+               alt="{% static 'images/portada_provisional.png' %}"
+               class="img-fluid border rounded shadow"
+               style="width: 100%; height: auto; margin: auto; display: block;">
+            {% endif %}
+         </div>
       </div>
-    </div>
-  </div>
-  <div class="column-right">
-    <h1>
-      <a class="no-underline" href="{{ userbookrelation.book.saga.get_absolute_url }}">{{ userbookrelation.book.title }}</a>
-    </h1>
-    <h2>
-        <a href="{{ userbookrelation.book.author.get_absolute_url }}" class="text-body-secondary no-underline">
-        {{ userbookrelation.book.author }}
-        </a>
-    </h2>
-    <h4 class="text-body-secondary">
-      <a href="{{ userbookrelation.book.saga.get_absolute_url }}" class="text-body-secondary no-underline">
-        {{ userbookrelation.book.saga.name }}
-      </a>
-      <strong>#</strong>{{ userbookrelation.book.saga_volume }}
-    </h4>
-    <form action="" method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" class="btn-save mt-3" value="Save">
-    </form>
-  </div>
+   </div>
+   <div class="column-right">
+      <h1>
+         <a class="no-underline" href="{{ userbookrelation.book.saga.get_absolute_url }}">{{ userbookrelation.book.title }}</a>
+      </h1>
+      <h2>
+         <a href="{{ userbookrelation.book.author.get_absolute_url }}" class="text-body-secondary no-underline">
+         {{ userbookrelation.book.author }}
+         </a>
+      </h2>
+      <h4 class="text-body-secondary">
+         <a href="{{ userbookrelation.book.saga.get_absolute_url }}" class="text-body-secondary no-underline">
+         {{ userbookrelation.book.saga.name }}
+         </a>
+         <strong>#</strong>{{ userbookrelation.book.saga_volume }}
+      </h4>
+      <form action="" method="post">
+         {% csrf_token %}
+         {{ form.as_p }}
+         <input type="submit" class="btn-save mt-3" value="Save">
+      </form>
+   </div>
 </div>
-
 {% endblock %}

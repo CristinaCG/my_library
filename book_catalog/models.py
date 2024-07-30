@@ -1,11 +1,9 @@
-import os
 import uuid
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-
 
 class Genre(models.Model):
     """
@@ -91,8 +89,9 @@ class Book(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE, null=False)
     publish_date = models.DateField(null=True, blank=True)
     summary = models.TextField(max_length=1000, null=True, blank=True)
-    isbn = models.CharField(max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
-    genre = models.ManyToManyField(Genre, )
+    isbn = models.CharField(max_length=13,
+            help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', null=True, blank=True)
+    genre = models.ManyToManyField(Genre)
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
     cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
 
@@ -228,7 +227,13 @@ class UserBookRelation(models.Model):
     def clean(self):
         if self.status not in ['r', 't', 'i', None]:
             raise ValidationError("Invalid status, must be 'r', 't' or 'i'")
-        if self.read_date and self.reading_date:
+        if self.reading_date is not None:
+            if self.reading_date > timezone.now().date():
+                raise ValidationError("Reading date cannot be in the future")
+        if self.read_date is not None:
+            if self.read_date > timezone.now().date():
+                raise ValidationError("Read date cannot be in the future")
+        if self.read_date is not None and self.reading_date is not None:
             if self.read_date < self.reading_date:
                 raise ValidationError("Read date cannot be before reading date")
 
@@ -375,11 +380,17 @@ class BookSaga(models.Model):
         return self.average_rating()*20
 
     def number_of_ratings(self):
+        """
+        Returns the number of ratings of the author.
+        """
         books = Book.objects.filter(saga=self)
         ratings = [book.number_of_ratings() for book in books]
         return sum(ratings)
 
     def number_of_reviews(self):
+        """
+        Returns the number of reviews of the author.
+        """
         books = Book.objects.filter(saga=self)
         reviews = [book.number_of_reviews() for book in books]
         return sum(reviews)
@@ -398,7 +409,9 @@ class BookSaga(models.Model):
                 raise ValidationError("Saga name is too long, maximum length is 200 characters.")
 
     def save(self, *args, **kwargs):
-        # self.clean()
+        """
+        Save the saga in the data base
+        """
         self.full_clean()
         super().save(*args, **kwargs)
 

@@ -1,20 +1,17 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
 <div class="limiter">
-    <div class="container-login100">
+   <div class="container-login100">
       <div class="wrap-login100">
-      {% comment %} <form method="post" action="{% url 'login' %}" style="width: 100%;"> {% endcomment %}
-        <span class="login100-form-title">
+            <span class="login100-form-title">
             Delete Author 
-        </span>
-        <p>Are you sure you want to delete the author "{{ author }}"?</p>
-        <form action="" method="post">
+            </span>
+            <p>Are you sure you want to delete the author "{{ author }}"?</p>
+         <form action="" method="post">
             {% csrf_token %}
             <input class="btn btn-outline-dark" type="submit" value="Confirm" />
-        </form>
+         </form>
       </div>
-  </div>
-  </div>
-
+   </div>
+</div>
 {% endblock %}

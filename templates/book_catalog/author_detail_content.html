@@ -1,97 +1,97 @@
 {% block content %}
 <div style="flex-grow: 1; padding: 20px;">
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <h1 class="mb-3">
-        <big>{{ author.first_name }} {{ author.last_name }}</big>
-      </h1>
-    </div>
-    <!-- Rating -->
-    <div>
-      {% if average_rating %}
-      <div style="display: flex; align-items: center;">
-        <div class="rating" title="{{ average_rating }}" style="justify-content: left;">
-          <div class="stars-outer">
-            <div class="stars-inner" style="width: {{ average_rating_over_100 }}%;"></div>
-          </div>
-        </div>
-        <span class="rating-text">{{ average_rating|floatformat:1 }}</span>
-        <div class="ml-3 metric-item">
-          <span>{{ total_ratings }} ratings</span>
-          <br>
-          <span>{{ total_reviews }} reviews</span>
-        </div>
+   <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+         <h1 class="mb-3">
+            <big>{{ author.first_name }} {{ author.last_name }}</big>
+         </h1>
       </div>
-      {% endif %}
-    </div>
-  </div>
-  <hr>
-  <!-- Author data -->
-  <div>
-    {% if author.social_media %}
+      <!-- Rating -->
+      <div>
+         {% if average_rating %}
+         <div style="display: flex; align-items: center;">
+            <div class="rating" title="{{ average_rating }}" style="justify-content: left;">
+               <div class="stars-outer">
+                  <div class="stars-inner" style="width: {{ average_rating_over_100 }}%;"></div>
+               </div>
+            </div>
+            <span class="rating-text">{{ average_rating|floatformat:1 }}</span>
+            <div class="ml-3 metric-item">
+               <span>{{ total_ratings }} ratings</span>
+               <br>
+               <span>{{ total_reviews }} reviews</span>
+            </div>
+         </div>
+         {% endif %}
+      </div>
+   </div>
+   <hr>
+   <!-- Author data -->
+   <div>
+      {% if author.social_media %}
       <p><strong>Social media:</strong> {{ author.social_media }}</p>
-    {% endif %}
-    {% if author.year_of_birth %}
+      {% endif %}
+      {% if author.year_of_birth %}
       <p><strong>Year of birth:</strong> {{ author.year_of_birth }}</p>
-    {% endif %}
-    {% if author.year_of_death %}
+      {% endif %}
+      {% if author.year_of_death %}
       <p><strong>Year of death:</strong> {{ author.year_of_death }}</p>
-    {% endif %}
-    {% if author.biography %}
+      {% endif %}
+      {% if author.biography %}
       <p><strong>Biography:</strong> {{ author.biography }}</p>
-    {% endif %}
-  </div>
-  <hr>
-  <!-- Author's book list -->
-  <div>
-    <h2>Author's book list</h2>
-    <table id="dynamicTable" class="table table-hover">
-      <thead>
-        <tr class="table-primary">
-          <th scope="col"></th>
-          <th scope="col">Title</th>
-          <th scope="col">Saga</th>
-          <th scope="col">Data published</th>
-          <th scope="col">Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for book in book_list %}
-          <tr class="table-secondary">
-            <td scope="row">
-              <div class="text-center">
-                {% if book.cover_image %}
-                  <img src="{{ book.cover_image.url }}"
-                    alt="{{ book.title }}"
-                    class="img-fluid border rounded shadow"
-                    style="width: 50px; height: auto;">
-                {% else %}
-                {% endif %}
-              </div>
-            </td>
-            <th scope="row">
-              <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-            </th>
-            <td>
-              {% if book.saga %}
-                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+      {% endif %}
+   </div>
+   <hr>
+   <!-- Author's book list -->
+   <div>
+      <h2>Author's book list</h2>
+      <table id="dynamicTable" class="table table-hover">
+         <thead>
+            <tr class="table-primary">
+               <th scope="col"></th>
+               <th scope="col">Title</th>
+               <th scope="col">Saga</th>
+               <th scope="col">Data published</th>
+               <th scope="col">Rating</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for book in book_list %}
+            <tr class="table-secondary">
+               <td scope="row">
+                  <div class="text-center">
+                     {% if book.cover_image %}
+                     <img src="{{ book.cover_image.url }}"
+                        alt="{{ book.title }}"
+                        class="img-fluid border rounded shadow"
+                        style="width: 50px; height: auto;">
+                     {% else %}
+                     {% endif %}
+                  </div>
+               </td>
+               <th scope="row">
+                  <a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+               </th>
+               <td>
+                  {% if book.saga %}
+                  <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
                   {{ book.saga.name }}
-                </a>
-                #{{ book.saga_volume }}
-              {% endif %}
-            </td>
-            <td>
-              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
-            </td>
-            <td>
-              {% if book.average_rating %}
-                <p class="no-underline">{{ book.average_rating|floatformat:1 }}</p>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+                  </a>
+                  #{{ book.saga_volume }}
+                  {% endif %}
+               </td>
+               <td>
+                  <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+               </td>
+               <td>
+                  {% if book.average_rating %}
+                  <p class="no-underline">{{ book.average_rating|floatformat:1 }}</p>
+                  {% endif %}
+               </td>
+            </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+   </div>
 </div>
 {% endblock %}

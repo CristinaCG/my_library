@@ -1,83 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {% load static %}
-  <!-- Modal -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!--  DataTables -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-  <!-- Icon Library -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Select2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
-  <link href="{% static 'css/bootstrap_lux.css' %}" rel="stylesheet">
-  <link href="{% static 'css/static.css' %}" rel="stylesheet">
-  {% block title %}<title>Local Library</title>{% endblock %}
-</head>
-<body>
-  <header>
-    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'index' %}">My Library</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarColor01">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'books' %}">Books</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'authors' %}">Authors</a>
-            </li>
-            {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'my-books' %}">My Books</a>
-              </li>
-            {% endif %}
-            {% if user.is_authenticated and perms.book_catalog.add_book %}
-              <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="createDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Create
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="createDropdown">
-                <li><a class="dropdown-item" href="{% url 'book-create' %}">Book</a></li>
-                <li><a class="dropdown-item" href="{% url 'author-create' %}">Author</a></li>
-                <li><a class="dropdown-item" href="{% url 'saga-create' %}">Saga</a></li>
-              </ul>
-            </li>
-            {% endif %}
-          </ul>
-          <form class="d-flex" method="get" action="{% url 'search' %}">
-            <input class="form-control me-sm-2" type="search" name="query" placeholder="Search">
-            <button class="btn btn-secondary my-2 my-sm-0" type="submit">
-              <i class="fa fa-search"></i>
-            </button>
-          </form>
-          {% if request.resolver_match.url_name != 'login' %}
-            {% if user.is_authenticated %}
-              <a href="{% url 'user_profile' %}" class="btn btn-primary logout-button">Profile</a>
-              <a href="{% url 'logout' %}" class="btn btn-primary logout-button">Logout</a>
-            {% else %}
-              <a href="{% url 'login' %}" class="btn btn-primary login-button">Login</a>
-            {% endif %}
-          {% endif %}
-        </div>
-      </div>
-    </nav>
-  </header>
-  <main>
-    {% block content %}{% endblock %}
-  </main>
-  <!-- DataTables -->
-  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-  <!-- Modal -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="{% static 'js/scripts.js' %}"></script>
-  <!-- Select2 -->
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-</body>
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      {% load static %}
+      <!-- Modal -->
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <!--  DataTables -->
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+      <!-- Icon Library -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      <!-- Select2 -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
+      <link href="{% static 'css/bootstrap_lux.css' %}" rel="stylesheet">
+      <link href="{% static 'css/static.css' %}" rel="stylesheet">
+      {% block title %}
+      <title>Local Library</title>
+      {% endblock %}
+   </head>
+   <body>
+      <header>
+         <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+            <div class="container-fluid">
+               <a class="navbar-brand" href="{% url 'index' %}">My Library</a>
+               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+               <span class="navbar-toggler-icon"></span>
+               </button>
+               <div class="collapse navbar-collapse" id="navbarColor01">
+                  <ul class="navbar-nav me-auto">
+                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'books' %}">Books</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'authors' %}">Authors</a>
+                     </li>
+                     {% if user.is_authenticated %}
+                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my-books' %}">My Books</a>
+                     </li>
+                     {% endif %}
+                     {% if user.is_authenticated and perms.book_catalog.add_book %}
+                     <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="createDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Create
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="createDropdown">
+                           <li><a class="dropdown-item" href="{% url 'book-create' %}">Book</a></li>
+                           <li><a class="dropdown-item" href="{% url 'author-create' %}">Author</a></li>
+                           <li><a class="dropdown-item" href="{% url 'saga-create' %}">Saga</a></li>
+                        </ul>
+                     </li>
+                     {% endif %}
+                  </ul>
+                  <form class="d-flex" method="get" action="{% url 'search' %}">
+                     <input class="form-control me-sm-2" type="search" name="query" placeholder="Search">
+                     <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+                     <i class="fa fa-search"></i>
+                     </button>
+                  </form>
+                  {% if request.resolver_match.url_name != 'login' %}
+                  {% if user.is_authenticated %}
+                  <a href="{% url 'user_profile' %}" class="btn btn-primary logout-button">Profile</a>
+                  <a href="{% url 'logout' %}" class="btn btn-primary logout-button">Logout</a>
+                  {% else %}
+                  <a href="{% url 'login' %}" class="btn btn-primary login-button">Login</a>
+                  {% endif %}
+                  {% endif %}
+               </div>
+            </div>
+         </nav>
+      </header>
+      <main>
+         {% block content %}{% endblock %}
+      </main>
+      <!-- DataTables -->
+      <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+      <!-- Modal -->
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <script src="{% static 'js/scripts.js' %}"></script>
+      <!-- Select2 -->
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+   </body>
 </html>

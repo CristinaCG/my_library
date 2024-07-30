@@ -1,7 +1,5 @@
-from django.urls import path, include
-
+from django.urls import path
 from . import views
-
 
 urlpatterns = [
     path('mybooks/', views.UserBookRelationListView.as_view(), name='my-books'),
@@ -12,10 +10,11 @@ urlpatterns = [
     path('author/<int:pk>/update/', views.AuthorUpdateView.as_view(), name='author-update'),
     path('author/<int:pk>/delete/', views.AuthorDeleteView.as_view(), name='author-delete'),
     # books view
-    path('books/', views.BookListView.as_view(), name='books'), 
+    path('books/', views.BookListView.as_view(), name='books'),
     path('book/create/', views.BookCreateView.as_view(), name='book-create'),
     path('book/<int:pk>', views.BookDetailView.as_view(), name='book-detail'),
-    path('book/<int:pk>/change-status/<str:status>/', views.change_book_status, name='change-book-status'),
+    path('book/<int:pk>/change-status/<str:status>/', views.change_book_status,
+         name='change-book-status'),
     path('book/<int:pk>/update/', views.BookUpdateView.as_view(), name='book-update'),
     path('book/<int:pk>/delete/', views.BookDeleteView.as_view(), name='book-delete'),
     path('book/<int:pk>/update-rating/<int:rating>', views.rating_book, name='rating-book'),
@@ -24,9 +23,11 @@ urlpatterns = [
     path('saga/<int:pk>', views.BookSagaDetailView.as_view(), name='saga-detail'),
     path('saga/<int:pk>/update/', views.BookSagaUpdateView.as_view(), name='booksaga-update'),
     path('saga/<int:pk>/delete/', views.BookSagaDeleteView.as_view(), name='booksaga-delete'),
-    path('saga/<int:pk>/change-status/<str:status>/', views.change_booksaga_status, name='change-booksaga-status'),
+    path('saga/<int:pk>/change-status/<str:status>/', views.change_booksaga_status,
+         name='change-booksaga-status'),
     #others
-    path('userbookrelation/<uuid:pk>/update/', views.UserBookRelationUpdateView.as_view(), name='change-userbookrelation'),
+    path('userbookrelation/<uuid:pk>/update/', views.UserBookRelationUpdateView.as_view(),
+         name='change-userbookrelation'),
     path('search/', views.search, name='search'),
     path('', views.index, name='index'),
 ]

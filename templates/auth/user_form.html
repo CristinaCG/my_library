@@ -1,23 +1,22 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
 <div style="display: flex;">
-  <div class="sidebar">
-    <!-- First colum -->
-    <div class="column-leftt">
-    </div>
-  </div>
-  <div class="column-right">
-    <div style="flex-grow: 1; padding: 20px;">
-      <form method="post" action="" style="width: 100%;">
-        <h1> Edit profile</h1>
-        {% csrf_token %}
-        <table>
-          {{ form.as_p }}
-        </table>
-        <input type="submit" class="btn-save mt-3" value="Save">
-      </form>
-    </div>
-  </div>
+   <div class="sidebar">
+      <!-- First colum -->
+      <div class="column-leftt">
+      </div>
+   </div>
+   <div class="column-right">
+      <div style="flex-grow: 1; padding: 20px;">
+         <form method="post" action="" style="width: 100%;">
+            <h1> Edit profile</h1>
+            {% csrf_token %}
+            <table>
+               {{ form.as_p }}
+            </table>
+            <input type="submit" class="btn-save mt-3" value="Save">
+         </form>
+      </div>
+   </div>
 </div>
 {% endblock %}

@@ -2,6 +2,9 @@ from django import forms
 from .models import UserBookRelation
 
 class ChangeBookStatusForm(forms.ModelForm):
+    """
+    Form for changing book status
+    """
     class Meta:
         model = UserBookRelation
         fields = ['status', 'read_date', 'reading_date']
@@ -18,4 +21,7 @@ class ChangeBookStatusForm(forms.ModelForm):
         self.fields['reading_date'].required = False
 
 class SearchForm(forms.Form):
+    """
+    Form for searching books
+    """
     query = forms.CharField(label='Search', max_length=100)
