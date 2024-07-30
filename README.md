@@ -13,13 +13,6 @@ Describe los pasos para instalar tu proyecto. Por ejemplo, si tu proyecto es una
     ```
 2. Crea un entorno virtual e instala las dependencias:
     ```
-    pip3 install virtualenvwrapper-win
-    mkvirtualenv myenv
-    workon myenv
-    pip install -r requirements.txt
-    ```
-    or
-    ```
     python -m venv env
     source env/bin/activate  # En Windows, usa `env\Scripts\activate`
     pip install -r requirements.txt
@@ -29,16 +22,16 @@ Describe los pasos para instalar tu proyecto. Por ejemplo, si tu proyecto es una
     python manage.py migrate
     ```
 4. Importa los datos
-```
-python tools/delete_all.py
-python tools/create_users.py
-python manage.py loaddata media/data/languages.json
-python manage.py loaddata media/data/genres.json
-python manage.py loaddata media/data/authors.json
-python manage.py loaddata media/data/booksagas.json
-python manage.py loaddata media/data/author-*
-python tools/reading.py 
-```
+    ```
+    python tools/delete_all.py
+    python tools/create_users.py
+    python manage.py loaddata media/data/languages.json
+    python manage.py loaddata media/data/genres.json
+    python manage.py loaddata media/data/authors.json
+    python manage.py loaddata media/data/booksagas.json
+    python manage.py loaddata media/data/author-*
+    python tools/reading.py 
+    ```
 
 ## Uso
 
