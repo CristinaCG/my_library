@@ -368,13 +368,6 @@ class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['review'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
 
-    # def form_invalid(self, form):
-    #     # check if read_date is before reading_date
-    #     if form.cleaned_data['read_date'] and form.cleaned_data['reading_date']:
-    #         if form.cleaned_data['read_date'] < form.cleaned_data['reading_date']:
-    #             form.add_error('read_date', 'Read date must be after reading date.')
-    #     return super().form_invalid(form)  
-
     def form_valid(self, form):
         relation = form.save(commit=False)
         if relation.status == 'r' and relation.read_date is None:

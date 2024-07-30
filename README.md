@@ -56,7 +56,6 @@ python manage.py test
 
 ### Test con cobertura
 ```
-pip install coverage
 coverage run --source='.' manage.py test
 coverage report
 coverage html
