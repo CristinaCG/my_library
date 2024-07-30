@@ -1,20 +1,18 @@
 from typing import Any
-from django.db.models import Q
-from functools import reduce
 from operator import and_
+from functools import reduce
+from django.db.models import Q
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Author, Book, BookSaga, UserBookRelation, Language, Genre
-from django.views import generic
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django import forms
-from django.db.models import Avg
-from django.contrib.auth.models import Group
+from .models import Author, Book, BookSaga, UserBookRelation, Language, Genre
+
 
 def index(request):
     """
@@ -33,21 +31,24 @@ def index(request):
         # 'average_books_per_month': average_books_per_month,
     }
     if request.user.is_authenticated:
-        books_reading_id = UserBookRelation.objects.filter(user=request.user, status='i').order_by('-id')[:3]
+        books_reading_id = UserBookRelation.objects.filter(
+            user=request.user, status='i').order_by('-id')[:3]
         books_reading = [Book.objects.get(pk=book.book_id) for book in books_reading_id]
         context['my_books_reading'] = books_reading
 
-        books_read_id = UserBookRelation.objects.filter(user=request.user, status='r').order_by('-id')
+        books_read_id = UserBookRelation.objects.filter(
+            user=request.user, status='r').order_by('-id')
         context['my_books_read'] = len(books_read_id)
 
-        reading_id = UserBookRelation.objects.filter(user=request.user, status='r', read_date__year=timezone.now().year)
+        reading_id = UserBookRelation.objects.filter(
+            user=request.user, status='r', read_date__year=timezone.now().year)
         context['my_books_this_year'] = len(reading_id)
 
     return render(request, 'index_book.html', context = context,)
 
 ################# List Views #################
 
-class BookListView(generic.ListView):
+class BookListView(ListView):
     """
     Generic class-based view listing books.
     """
@@ -62,7 +63,7 @@ class BookListView(generic.ListView):
         context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
         return context
 
-class AuthorListView(generic.ListView):
+class AuthorListView(ListView):
     """
     Generic class-based view listing authors.
     """
@@ -77,7 +78,7 @@ class AuthorListView(generic.ListView):
         context["recent_books"] = Book.objects.all().order_by('-publish_date')[:5]
         return context
 
-class UserBookRelationListView(LoginRequiredMixin, generic.ListView):
+class UserBookRelationListView(LoginRequiredMixin, ListView):
     """
     Generic class-based view listing books of the current user.
     """
@@ -98,7 +99,7 @@ class UserBookRelationListView(LoginRequiredMixin, generic.ListView):
 
 ################# Detail Views #################
 
-class BookDetailView(LoginRequiredMixin, generic.DetailView):
+class BookDetailView(LoginRequiredMixin, DetailView):
     """
     Generic class-based view detail of a book.
     """
@@ -110,25 +111,29 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         book = self.object
-        user_book_relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
+        user_book_relation = UserBookRelation.objects.filter(
+            book=book, user=self.request.user).first()
         context['my_book'] = user_book_relation
         context['average_rating'] = book.average_rating()
-        context['average_rating_over_100'] = int(context['average_rating']*20) if context['average_rating'] else 0
+        context['average_rating_over_100'] = int(
+            context['average_rating']*20) if context['average_rating'] else 0
         context['total_ratings'] = book.number_of_ratings()
         context['rating_range'] = range(5, 0, -1)
         context['total_reviews'] = book.number_of_reviews()
         reviews = book.get_reviews()
         if reviews:
             for review in reviews:
-                review.user.review_count = UserBookRelation.objects.filter(user=self.request.user).exclude(review__isnull=True).values_list('review').count()
-                review.user.average_rating = UserBookRelation.objects.filter(user=self.request.user).exclude(rating__isnull=True).values_list('rating').count()
+                review.user.review_count = UserBookRelation.objects.filter(
+                    user=self.request.user).exclude(review__isnull=True).values_list('review').count()
+                review.user.average_rating = UserBookRelation.objects.filter(
+                    user=self.request.user).exclude(rating__isnull=True).values_list('rating').count()
                 review.rating_over_100 = int(review.rating*20) if review.rating else 0
         context['book_reviews'] = reviews
 
         # context['user_id'] = self.request.user.id
         return context
 
-class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
+class AuthorDetailView(LoginRequiredMixin, DetailView):
     """
     Generic class-based view detail of an author.
     """
@@ -143,13 +148,14 @@ class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
         books = author.book_set.all().order_by('saga', 'saga_volume')
         context['books'] = books
         context['average_rating'] = author.average_rating()
-        context['average_rating_over_100'] = int(context['average_rating']*20) if context['average_rating'] else 0
+        context['average_rating_over_100'] = int(
+            context['average_rating']*20) if context['average_rating'] else 0
         context['book_list'] = Book.objects.filter(author=author)
         context['total_ratings'] = author.number_of_ratings()
         context['total_reviews'] = author.number_of_reviews()
         return context
 
-class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
+class BookSagaDetailView(LoginRequiredMixin, DetailView):
     """
     Generic class-based view detail of a book saga.
     """
@@ -157,7 +163,7 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
     redirect_field_name = 'redirect_to'
     model = BookSaga
     template_name = 'book_catalog/booksaga_detail.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         saga = self.get_object()
@@ -165,7 +171,7 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
         relations = [0]*len(books)
         for i, book in enumerate(books):
             relation = UserBookRelation.objects.filter(book=book, user=self.request.user).first()
-            if relation: 
+            if relation:
                 if relation.status == 'r':
                     relations[i] = 3
                     book.status = 'r'
@@ -184,7 +190,8 @@ class BookSagaDetailView(LoginRequiredMixin, generic.DetailView):
             context['user_saga_relation'] = 't'
         context['books'] = books
         context['average_rating'] = saga.average_rating()
-        context['average_rating_over_100'] = int(context['average_rating']*20) if context['average_rating'] else 0
+        context['average_rating_over_100'] = int(
+            context['average_rating']*20) if context['average_rating'] else 0
         context['book_list'] = Book.objects.filter(saga=saga)
         context['total_ratings'] = saga.number_of_ratings()
         context['total_reviews'] = saga.number_of_reviews()
@@ -368,14 +375,6 @@ class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
         form.fields['review'].widget = forms.Textarea(attrs={'class': 'form-control'})
         return form
 
-    def form_invalid(self, form):
-        response = super().form_invalid(form)
-        # check if read_date is before reading_date
-        if form.cleaned_data['read_date'] and form.cleaned_data['reading_date']:
-            if form.cleaned_data['read_date'] < form.cleaned_data['reading_date']:
-                form.add_error('read_date', 'Read date must be after reading date.')
-        return response
-
     def form_valid(self, form):
         relation = form.save(commit=False)
         if relation.status == 'r' and relation.read_date is None:
@@ -384,7 +383,7 @@ class UserBookRelationUpdateView(LoginRequiredMixin, UpdateView):
             relation.reading_date = timezone.now().date()
         if relation.review and relation.review_date is None:
             relation.review_date = timezone.now().date()
-        return super().form_valid(form)    
+        return super().form_valid(form)
 
 ################# Delete Views #################
 
@@ -427,20 +426,14 @@ def change_book_status(request, pk: int, status: str):
             relation.status = None
             relation.read_date = None
             relation.reading_date = None
-            try:
-                relation.save()
-            except Exception as e:
-                print(f"Error al guardar la relación: {e}")
+            relation.save()
         else:
             relation.status = status
             if relation.status == 'r' and relation.read_date is None:
                 relation.read_date = timezone.now().date()
             elif relation.status == 'i' and relation.reading_date is None:
                 relation.reading_date = timezone.now().date()
-            try:
-                relation.save()
-            except Exception as e:
-                print(f"Error al guardar la relación: {e}")
+            relation.save()
     elif not relation and status != 'd':
         relation = UserBookRelation.objects.create(user = request.user, book = book, status = status)
         if relation.status == 'r' and relation.read_date is None:
@@ -480,6 +473,9 @@ def change_booksaga_status(request, pk, status: str):
 
 
 def search(request):
+    """
+    View function for searching books.
+    """
     query = request.GET.get('query')
     if query:
         query_parts = query.split()

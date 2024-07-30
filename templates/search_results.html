@@ -1,61 +1,60 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
 <div class="container mt-5">
-  <h1>Search Results</h1>
-  <div style="flex-grow: 1; padding: 20px;">
-    <p>You searched for: <strong>{{ query }}</strong></p>
-    <table id="dynamicTable" class="table table-hover">
-      <thead>
-        <tr class="table-primary">
-          <th scope="col"></th>
-          <th scope="col">Book</th>
-          <th scope="col">Saga</th>
-          <th scope="col">Author</th>
-          <th scope="col">Rating</th>
-          <th scope="col">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if book_results %}
-          {% for book in book_results %}
-          <tr class="table-secondary">
-            <!-- photo -->
-            <td scope="row">
-              <div class="text-center">
-                {% if book.cover_image %}
-                  <img src="{{ book.cover_image.url }}"
-                    alt="{{ book.title }}"
-                    class="img-fluid border rounded shadow"
-                    style="width: 50px; height: auto;">
-                {% else %}
-                {% endif %}
-              </div>
-            </td>
-            <!-- title -->
-            <td><a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a></td>
-            <!-- saga -->
-            <td>
-              {% if book.saga %}
-                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+   <h1>Search Results</h1>
+   <div style="flex-grow: 1; padding: 20px;">
+      <p>You searched for: <strong>{{ query }}</strong></p>
+      <table id="dynamicTable" class="table table-hover">
+         <thead>
+            <tr class="table-primary">
+               <th scope="col"></th>
+               <th scope="col">Book</th>
+               <th scope="col">Saga</th>
+               <th scope="col">Author</th>
+               <th scope="col">Rating</th>
+               <th scope="col">Status</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% if book_results %}
+            {% for book in book_results %}
+            <tr class="table-secondary">
+               <!-- photo -->
+               <td scope="row">
+                  <div class="text-center">
+                     {% if book.cover_image %}
+                     <img src="{{ book.cover_image.url }}"
+                        alt="{{ book.title }}"
+                        class="img-fluid border rounded shadow"
+                        style="width: 50px; height: auto;">
+                     {% else %}
+                     {% endif %}
+                  </div>
+               </td>
+               <!-- title -->
+               <td><a class="no-underline" href="{{ book.get_absolute_url }}">{{ book.title }}</a></td>
+               <!-- saga -->
+               <td>
+                  {% if book.saga %}
+                  <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
                   {{ book.saga.name }}
-                </a>
-                #{{ book.saga_volume }}
-              {% endif %}
-            </td>
-            <!-- author -->
-            <td><a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></td>
-            <!-- rating -->
-            <td class="text-center"><a>{% if book.average_rating %} {{ book.average_rating|floatformat:1 }} {% endif %}</a></td>
-            <!-- status -->
-            <td>
-              <p>{{ book.status }}</p>
-            </td>
-          </tr>
-          {% endfor %}
-        {% endif%}
-      </tbody>
-    </table>
-  </div>
+                  </a>
+                  #{{ book.saga_volume }}
+                  {% endif %}
+               </td>
+               <!-- author -->
+               <td><a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></td>
+               <!-- rating -->
+               <td class="text-center"><a>{% if book.average_rating %} {{ book.average_rating|floatformat:1 }} {% endif %}</a></td>
+               <!-- status -->
+               <td>
+                  <p>{{ book.status }}</p>
+               </td>
+            </tr>
+            {% endfor %}
+            {% endif%}
+         </tbody>
+      </table>
+   </div>
 </div>
 {% endblock %}

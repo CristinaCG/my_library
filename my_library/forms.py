@@ -2,17 +2,31 @@ from django.contrib.auth.models import User
 from django import forms
 
 class UserRegisterForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Type your password'}))
-    password_confirm = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Type your password again'}))
+    """
+    Form for registering a new user.
+    """
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={'class': 'form-control','placeholder': 'Type your password'}))
+    password_confirm = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={'class': 'form-control', 'placeholder': 'Type your password again'}))
 
     class Meta:
+        """
+        Meta class for UserRegisterForm.
+        """
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'password']
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your user name'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your first name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your last name'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Type your email address'}),
+            'username': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Type your user name'}),
+            'first_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Type your first name'}),
+            'last_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Type your last name'}),
+            'email': forms.EmailInput(
+                attrs={'class': 'form-control', 'placeholder': 'Type your email address'}),
         }
 
     def clean(self):

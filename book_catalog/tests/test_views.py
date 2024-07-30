@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from book_catalog.models import Author, Book, User, BookSaga, UserBookRelation, Genre
 
+
 ################# List Views #################
 
 class AuthorListViewTest(TestCase):
@@ -65,7 +66,9 @@ class BookListViewTest(TestCase):
         for book_num in range(number_of_books):
             Book.objects.create(
                 title=f'The Book {book_num}',
-                author=Author.objects.create(first_name=f'Sara {book_num}', last_name=f'Trueman {book_num}'),
+                author=Author.objects.create(
+                    first_name=f'Sara {book_num}',
+                    last_name=f'Trueman {book_num}'),
                 summary=f'Book {book_num} summary',
             )
 
@@ -152,7 +155,7 @@ class UserBookRelationListViewTest(TestCase):
     def test_view_url_accessible_by_name(self):
         """
         Test if view is accessible by name
-        """ 
+        """
         self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('my-books'))
         self.assertEqual(response.status_code, 200)
@@ -226,7 +229,7 @@ class AuthorDetailViewTest(TestCase):
     def test_view_url_accessible_by_name(self):
         """
         Test if view is accessible by name
-        """ 
+        """
         self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('author-detail', args=[1]))
         self.assertEqual(response.status_code, 200)
@@ -251,6 +254,9 @@ class AuthorDetailViewTest(TestCase):
         self.assertTrue(len(response.context['books']) == 25)
 
 class BookDetailViewTest(TestCase):
+    """
+    Test for BookDetailView    
+    """
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(username='testuser', password='12345')
@@ -287,7 +293,7 @@ class BookDetailViewTest(TestCase):
     def test_view_url_accessible_by_name(self):
         """
         Test if view is accessible by name
-        """ 
+        """
         self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('book-detail', args=[1]))
         self.assertEqual(response.status_code, 200)
@@ -393,7 +399,7 @@ class BookSagaDetailViewTest(TestCase):
     def test_view_url_accessible_by_name(self):
         """
         Test if view is accessible by name
-        """ 
+        """
         self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('saga-detail', args=[1]))
         self.assertEqual(response.status_code, 200)
@@ -576,7 +582,7 @@ class AuthorCreateViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         form_data = {'first_name': 'Sara', 'last_name': 'Trueman'}
         response = self.client.post(reverse('author-create'), form_data)
@@ -636,7 +642,7 @@ class BookCreateViewTest(TestCase):
         form_data = {'title': 'The Book', 'author': self.author.pk, 'summary': 'Book summary'}
         response = self.client.post(reverse('book-create'), form_data)
         self.assertEqual(response.status_code, 403)
-    
+
     def test_view_post_with_permission(self):
         """
         Test if view method is POST with user logged and has permission
@@ -665,7 +671,7 @@ class BookCreateViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         form_data = {'title': 'The Book', 'author': self.author.pk, 'summary': 'Book summary'}
         response = self.client.post(reverse('book-create'), form_data)
@@ -682,7 +688,7 @@ class BookSagaCreateViewTest(TestCase):
         cls.staff.user_permissions.add(cls.permission)
         cls.user = User.objects.create_user(username='testuser', password='12345')
         cls.author = Author.objects.create(first_name='Sara', last_name='Trueman')
-    
+
     def test_view_url_exists_at_desired_location(self):
         """
         Test if view is accessible
@@ -745,7 +751,7 @@ class BookSagaCreateViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         form_data = {'name': 'The Saga', 'author': self.author.pk}
         response = self.client.post(reverse('saga-create'), form_data)
@@ -836,7 +842,7 @@ class AuthorUpdateViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         form_data = {'first_name': 'Sara', 'last_name': 'Trueman'}
         response = self.client.post(reverse('author-update', args=[1]), form_data)
@@ -928,7 +934,7 @@ class BookUpdateViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         form_data = {'title': 'The Book', 'author': self.author.pk, 'summary': 'Book summary'}
         response = self.client.post(reverse('book-update', args=[1]), form_data)
@@ -1000,7 +1006,7 @@ class BookSagaUpdateViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         form_data = {'name': 'The Saga', 'author': self.author.pk}
         response = self.client.post(reverse('booksaga-update', args=[1]), form_data)
@@ -1010,23 +1016,23 @@ class UserBookRelationUpdateViewTest(TestCase):
     """
     Test if UserBookRelationUpdateView works correctly
     """
-    def setUp(cls):
-        cls.user = User.objects.create_user(username='testuser', password='12345')
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
         author = Author.objects.create(
             first_name='Sara',
             last_name='Trueman',
         )
-        cls.book = Book.objects.create(
+        self.book = Book.objects.create(
             title='The Book',
             author=author,
             summary='Book summary',
         )
-        cls.user_book_relation = UserBookRelation.objects.create(
-                user=cls.user,
-                book=cls.book,
+        self.user_book_relation = UserBookRelation.objects.create(
+                user=self.user,
+                book=self.book,
                 status='r',
             )
-        cls.test_uuid=str(cls.user_book_relation.id)
+        self.test_uuid=str(self.user_book_relation.id)
 
     def test_view_url_exists_at_desired_location(self):
         """
@@ -1047,7 +1053,10 @@ class UserBookRelationUpdateViewTest(TestCase):
         Test if view method is POST
         """
         form_data = {'status': 't'}
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        response = self.client.post(
+            reverse('change-userbookrelation',
+                    args=[self.test_uuid]),
+                    form_data)
         self.assertEqual(response.status_code, 302)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.status, 'r')
@@ -1058,7 +1067,10 @@ class UserBookRelationUpdateViewTest(TestCase):
         """
         self.client.login(username=self.user, password='12345')
         form_data = {'status': 't'}
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        response = self.client.post(
+            reverse('change-userbookrelation',
+                    args=[self.test_uuid]),
+                    form_data)
         self.assertEqual(response.status_code, 302)
 
     def test_view_redirects_for_not_existing_relation(self):
@@ -1076,18 +1088,18 @@ class UserBookRelationUpdateViewTest(TestCase):
         form_data = {'status': 't'}
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.status, 'r')
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.status, 't')
         form_data = {'status': 'i'}
         relation = UserBookRelation.objects.get(id=self.test_uuid)
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.status, 'i')
         self.assertEqual(relation.reading_date, timezone.now().date())
         form_data = {'status': 'r'}
         relation = UserBookRelation.objects.get(id=self.test_uuid)
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.status, 'r')
         self.assertEqual(relation.read_date, timezone.now().date())
@@ -1100,7 +1112,7 @@ class UserBookRelationUpdateViewTest(TestCase):
         form_data = {'review': 'Great book'}
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.review, None)
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.review, 'Great book')
         self.assertEqual(relation.review_date, timezone.now().date())
@@ -1113,12 +1125,12 @@ class UserBookRelationUpdateViewTest(TestCase):
         form_data = {'rating': 5}
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.rating, None)
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.rating, 5)
         form_data = {'rating': 3}
         relation = UserBookRelation.objects.get(id=self.test_uuid)
-        response = self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
+        self.client.post(reverse('change-userbookrelation', args=[self.test_uuid]), form_data)
         relation = UserBookRelation.objects.get(id=self.test_uuid)
         self.assertEqual(relation.rating, 3)
 
@@ -1175,7 +1187,7 @@ class AuthorDeleteViewTest(TestCase):
         Test if view method is POST with user logged but without permission
         """
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         response = self.client.post(reverse('author-delete', args=[1]))
         self.assertEqual(response.status_code, 403)
@@ -1184,7 +1196,7 @@ class BookDeleteViewTest(TestCase):
     """
     Test if BookDeleteView works correctly
     """
-    @classmethod 
+    @classmethod
     def setUpTestData(cls):
         cls.staff = User.objects.create_user(username='staffuser', password='12345')
         cls.permission = Permission.objects.get(codename='delete_book')
@@ -1233,7 +1245,7 @@ class BookDeleteViewTest(TestCase):
         """
         # Remove permission
         self.user.user_permissions.remove(self.permission)
-        
+
         self.client.login(username=self.user.username, password='12345')
         response = self.client.post(reverse('book-delete', args=[1]))
         self.assertEqual(response.status_code, 403)
@@ -1309,7 +1321,8 @@ class SearchViewTest(TestCase):
         self.book2 = Book.objects.create(title='Another Great', author=self.author2)
         self.book3 = Book.objects.create(title='Saga', author=self.author1,saga=self.saga,
                                          saga_volume=1)
-        self.user_book_relation = UserBookRelation.objects.create(user=self.user, book=self.book1, status='r')
+        self.user_book_relation = UserBookRelation.objects.create(
+            user=self.user, book=self.book1, status='r')
 
     def test_view_url_accessible_by_name(self):
         """
@@ -1383,9 +1396,10 @@ class SearchViewTest(TestCase):
         self.assertTrue('book_results' in response.context)
         self.assertEqual(len(response.context['book_results']), 3)
 
-    def test_context_contains_correct_search_results_with_no_books_and_no_query_and_user_logged(self):
+    def test_context_contains_correct_search_results_with_no_books_no_query_user_logged(self):
         """
-        Test if context contains correct search results with no books and no query and user logged
+        Test if context contains correct search results with no books
+        and no query and user logged
         """
         Book.objects.all().delete()
         response = self.client.get(reverse('search'))
@@ -1393,7 +1407,7 @@ class SearchViewTest(TestCase):
         self.assertTrue('book_results' in response.context)
         self.assertEqual(len(response.context['book_results']), 0)
 
-    def test_context_contains_correct_search_results_with_no_books_and_no_query_and_no_user_logged(self):
+    def test_context_contains_correct_search_results_with_no_books_no_query_no_user_logged(self):
         """
         Test if context contains correct search results with no books and no query and no user logged
         """
@@ -1414,7 +1428,7 @@ class SearchViewTest(TestCase):
         self.assertEqual(len(response.context['book_results']), 2)
         self.assertEqual(response.context['book_results'][0], self.book2)
         self.assertEqual(response.context['book_results'][1], self.book1)
-    
+
     def test_search_by_author(self):
         """
         Test if search by author works correctly
@@ -1442,20 +1456,20 @@ class ChangeBookStatusViewTest(TestCase):
     """
     Test if ChangeBookStatusView works correctly
     """
-    def setUp(cls):
-        cls.user = User.objects.create_user(username='testuser', password='12345')
-        cls.author = Author.objects.create(
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.author = Author.objects.create(
             first_name='Sara',
             last_name='Trueman',
         )
-        cls.book = Book.objects.create(
+        self.book = Book.objects.create(
             title='The Book',
-            author=cls.author,
+            author=self.author,
             summary='Book summary',
         )
-        cls.user_book_relation = UserBookRelation.objects.create(
-                user=cls.user,
-                book=cls.book,
+        self.user_book_relation = UserBookRelation.objects.create(
+                user=self.user,
+                book=self.book,
                 status='t',
             )
 
@@ -1511,16 +1525,16 @@ class ChangeBookStatusViewTest(TestCase):
         self.client.login(username=self.user.username, password='12345')
         relation = UserBookRelation.objects.filter(user=self.user, book=self.book).first()
         self.assertEqual(relation, None)
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 't']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 't']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 't')
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 'i']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 'i']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 'i')
         self.assertEqual(relation.reading_date, timezone.now().date())
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 'r']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 'r']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 'r')
@@ -1533,16 +1547,16 @@ class ChangeBookStatusViewTest(TestCase):
         self.client.login(username=self.user.username, password='12345')
         relation = UserBookRelation.objects.filter(user=self.user, book=self.book).first()
         self.assertNotEqual(relation, None)
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 't']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 't']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 't')
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 'i']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 'i']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 'i')
         self.assertEqual(relation.reading_date, timezone.now().date())
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 'r']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 'r']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 'r')
@@ -1556,7 +1570,7 @@ class ChangeBookStatusViewTest(TestCase):
         self.client.login(username=self.user.username, password='12345')
         relation = UserBookRelation.objects.filter(user=self.user, book=self.book).first()
         self.assertEqual(relation, None)
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 'i']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 'i']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 'i')
@@ -1570,7 +1584,7 @@ class ChangeBookStatusViewTest(TestCase):
         self.client.login(username=self.user.username, password='12345')
         relation = UserBookRelation.objects.filter(user=self.user, book=self.book).first()
         self.assertEqual(relation, None)
-        response = self.client.get(reverse('change-book-status', args=[self.book.pk, 'r']))
+        self.client.get(reverse('change-book-status', args=[self.book.pk, 'r']))
         relation = UserBookRelation.objects.filter(user=self.user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 'r')
@@ -1612,7 +1626,7 @@ class ChangeBookSagaStatusViewTest(TestCase):
     def test_view_url_accessible_by_name(self):
         """
         Test if view is accessible by name
-        """ 
+        """
         self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('change-booksaga-status', args=[1,'r']))
         self.assertEqual(response.status_code, 302)
@@ -1656,7 +1670,7 @@ class ChangeBookSagaStatusViewTest(TestCase):
         self.client.login(username=user.username, password='12345')
         relation = UserBookRelation.objects.filter(user = user, book = self.book).first() 
         self.assertEqual(relation, None)
-        response = self.client.get(reverse('change-booksaga-status', args=[1, 't']))
+        self.client.get(reverse('change-booksaga-status', args=[1, 't']))
         relation = UserBookRelation.objects.filter(user = user, book = self.book).first()
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.status, 't')
@@ -1665,8 +1679,7 @@ class IndexViewTest(TestCase):
     """
     Test if index view works correctly
     """
-    @classmethod
-    def setUp(cls):
+    def setUp(self):
         number_of_books = 5
         number_of_authors = 3
 
@@ -1676,9 +1689,9 @@ class IndexViewTest(TestCase):
             Book.objects.create(title=f'Book {book_id}',
                                 author=Author.objects.get(id=book_id % number_of_authors+1),
                                 summary='Test Book')
-        cls.user = User.objects.create_user(username='testuser', password='12345')
-        cls.relation = UserBookRelation.objects.create(
-            user=cls.user,
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.relation = UserBookRelation.objects.create(
+            user=self.user,
             book=Book.objects.get(id=1),
             status='r',
             read_date=timezone.now().date(),
@@ -1786,21 +1799,21 @@ class RatingBookViewTest(TestCase):
     """
     Test if RatingBookView works correctly
     """
-    def setUp(cls):
+    def setUp(self):
         super().setUp()
-        cls.user = User.objects.create_user(username='testuser', password='12345')
+        self.user = User.objects.create_user(username='testuser', password='12345')
         author = Author.objects.create(
             first_name='Sara',
             last_name='Trueman',
         )
-        cls.book = Book.objects.create(
+        self.book = Book.objects.create(
             title='The Book',
             author=author,
             summary='Book summary',
         )
-        cls.relation = UserBookRelation.objects.create(
-            user=cls.user,
-            book=cls.book,
+        self.relation = UserBookRelation.objects.create(
+            user=self.user,
+            book=self.book,
             status='r',
         )
 
@@ -1842,10 +1855,10 @@ class RatingBookViewTest(TestCase):
         Test if view method is POST
         """
         self.client.login(username='testuser', password='12345')
-        response = self.client.post(reverse('rating-book', args=[self.book.pk, 2]))
+        self.client.post(reverse('rating-book', args=[self.book.pk, 2]))
         relation = UserBookRelation.objects.get(user=self.user, book=self.book)
         self.assertEqual(relation.rating, 2)
-        response = self.client.post(reverse('rating-book', args=[self.book.pk, 2]))
+        self.client.post(reverse('rating-book', args=[self.book.pk, 2]))
         relation = UserBookRelation.objects.get(user=self.user, book=self.book)
         self.assertEqual(relation.rating, None)
 
@@ -1858,7 +1871,7 @@ class RatingBookViewTest(TestCase):
         relation.delete()
         relation = UserBookRelation.objects.filter(user=self.user).first()
         self.assertEqual(relation, None)
-        response = self.client.post(reverse('rating-book', args=[self.book.pk, 2]))
+        self.client.post(reverse('rating-book', args=[self.book.pk, 2]))
         relation = UserBookRelation.objects.get(user=self.user, book=self.book)
         self.assertNotEqual(relation, None)
         self.assertEqual(relation.rating, 2)

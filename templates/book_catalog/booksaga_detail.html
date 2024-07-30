@@ -3,77 +3,77 @@
 {% block content %}
 <link href="{% static 'css/stars.css' %}" rel="stylesheet">
 <div style="display: flex;">
-  <!-- First colum -->
-  <div class="sidebar">
-    <div class="column-left">
-      <!-- Photo -->
-      <div class="text-center">
-        {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
-          {% if book.cover_image %}
+   <!-- First colum -->
+   <div class="sidebar">
+      <div class="column-left">
+         <!-- Photo -->
+         <div class="text-center">
+            {% for book in booksaga.book_set.all|dictsort:"saga_volume" %}
+            {% if book.cover_image %}
             <img src="{{ book.cover_image.url }}"
-                alt="{{ book.title }}"
-                class="img-fluid border rounded shadow book-cover {% if forloop.first %}active{% endif %}"
-                style="width: 100%; height: auto; margin: auto;">
-          {% else %}
+               alt="{{ book.title }}"
+               class="img-fluid border rounded shadow book-cover {% if forloop.first %}active{% endif %}"
+               style="width: 100%; height: auto; margin: auto;">
+            {% else %}
             <img src="{% static 'images/portada_provisional.png' %}"
-              alt="{% static 'images/portada_provisional.png' %}"
-              class="img-fluid border rounded shadow"
-              style="width: 100%; height: auto; margin: auto; display: block;">
-          {% endif %}
-        {% endfor %}
-      </div>
-      <!-- Add to my list -->
-      <div class="text-center">
-        {% if user_saga_relation == 'i' %}
-          <button type="button" class="btn mt-3 btn-yellow" data-toggle="modal" data-target="#changeBookSagaStatusModal">Reading</button>
-        {% elif user_saga_relation == 'r' %}
-          <button type="button" class="btn mt-3 btn-green" data-toggle="modal" data-target="#changeBookSagaStatusModal">Read</button>
-        {% elif user_saga_relation == 't' %}
-          <button type="button" class="btn mt-3 btn-blue" data-toggle="modal" data-target="#changeBookSagaStatusModal">To Read</button>
-        {% else %}
-        <button type="button" class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
-          Add to my list
-          </button>
-        {% endif %}
-      </div>
-      <!-- Edit -->
-      <div class="text-center">
-        {% if perms.book_catalog.change_book %}
-          <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3"><i class="fas fa-edit fa-lg"></i></a>
-        {% endif %}
-        {% if perms.book_catalog.delete_book %}
-          <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">
+               alt="{% static 'images/portada_provisional.png' %}"
+               class="img-fluid border rounded shadow"
+               style="width: 100%; height: auto; margin: auto; display: block;">
+            {% endif %}
+            {% endfor %}
+         </div>
+         <!-- Add to my list -->
+         <div class="text-center">
+            {% if user_saga_relation == 'i' %}
+            <button type="button" class="btn mt-3 btn-yellow" data-toggle="modal" data-target="#changeBookSagaStatusModal">Reading</button>
+            {% elif user_saga_relation == 'r' %}
+            <button type="button" class="btn mt-3 btn-green" data-toggle="modal" data-target="#changeBookSagaStatusModal">Read</button>
+            {% elif user_saga_relation == 't' %}
+            <button type="button" class="btn mt-3 btn-blue" data-toggle="modal" data-target="#changeBookSagaStatusModal">To Read</button>
+            {% else %}
+            <button type="button" class="btn mt-3 btn-primary" data-toggle="modal" data-target="#changeBookSagaStatusModal">
+            Add to my list
+            </button>
+            {% endif %}
+         </div>
+         <!-- Edit -->
+         <div class="text-center">
+            {% if perms.book_catalog.change_book %}
+            <a href="{% url 'booksaga-update' booksaga.id %}" class="btn btn-outline-dark mt-3"><i class="fas fa-edit fa-lg"></i></a>
+            {% endif %}
+            {% if perms.book_catalog.delete_book %}
+            <a href="{% url 'booksaga-delete' booksaga.id %}" class="btn btn-outline-dark mt-3">
             <i class="fas fa-trash fa-lg"></i>
-          </a>
-        {% endif %}
+            </a>
+            {% endif %}
+         </div>
       </div>
-    </div>
-  </div>
-  <!-- Second column -->
-  <div class="column-right">
-    {% include "book_catalog/booksaga_detail_content.html" %}
-  </div>
+   </div>
+   <!-- Second column -->
+   <div class="column-right">
+      {% include "book_catalog/booksaga_detail_content.html" %}
+   </div>
 </div>
-  <!-- Modal -->
+<!-- Modal -->
 <div class="modal fade" id="changeBookSagaStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeBookSagaStatusModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <!-- Aquí se incluirá el formulario -->
-        <div id="modal-form-content">
-          <div style="margin-top: 20px;">
-            <form method="post">
-              {% csrf_token %}
-              <div style="display: flex; flex-direction: column;">
-                <a class="btn mt-3 btn-blue" href="{% url 'change-booksaga-status' booksaga.id 't' %}">I want to read it!</a>
-                <a class="btn mt-3 btn-green" href="{% url 'change-booksaga-status' booksaga.id 'r' %}">Already read</a>
-                <a class="btn mt-3 btn-red"href="{% url 'change-booksaga-status' booksaga.id 'd' %}">Forget about it...</a>
-              </div>
-            </form>
-          </div>
-        </div>
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-body">
+            <!-- Aquí se incluirá el formulario -->
+            <div id="modal-form-content">
+               <div style="margin-top: 20px;">
+                  <form method="post">
+                     {% csrf_token %}
+                     <div style="display: flex; flex-direction: column;">
+                        <a class="btn mt-3 btn-blue" href="{% url 'change-booksaga-status' booksaga.id 't' %}">I want to read it!</a>
+                        <a class="btn mt-3 btn-green" href="{% url 'change-booksaga-status' booksaga.id 'r' %}">Already read</a>
+                        <a class="btn mt-3 btn-red"href="{% url 'change-booksaga-status' booksaga.id 'd' %}">Forget about it...</a>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
       </div>
-    </div>
-  </div>
+   </div>
 </div>
 {% endblock %}

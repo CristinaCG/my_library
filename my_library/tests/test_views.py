@@ -1,10 +1,7 @@
-from django.test import TestCase
-from django.urls import reverse
-from django.contrib.auth.models import User
-from django.urls import reverse_lazy
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.urls import reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
 from my_library.forms import UserRegisterForm
 
@@ -28,7 +25,8 @@ class CustomLoginViewTest(TestCase):
         """
         Test login with invalid username.
         """
-        response = self.client.post(reverse('login'), {'username': 'wronguser', 'password': '12345'})
+        response = self.client.post(reverse('login'),
+                                    {'username': 'wronguser', 'password': '12345'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'This user name does not exist.')
 
@@ -36,7 +34,8 @@ class CustomLoginViewTest(TestCase):
         """
         Test login with invalid password.
         """
-        response = self.client.post(reverse('login'), {'username': 'testuser', 'password': 'wrongpassword'})
+        response = self.client.post(reverse('login'),
+                                    {'username': 'testuser', 'password': 'wrongpassword'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'The password is not correct.')
 

@@ -1,6 +1,6 @@
 from django.test import TestCase
-from my_library.forms import UserRegisterForm
 from django.contrib.auth.models import User
+from my_library.forms import UserRegisterForm
 
 class UserRegisterFormTests(TestCase):
     """
@@ -20,7 +20,7 @@ class UserRegisterFormTests(TestCase):
         }
         form = UserRegisterForm(data=form_data)
         self.assertTrue(form.is_valid())
-    
+
     def test_passwords_do_not_match(self):
         """
         Test passwords do not match.
@@ -36,7 +36,7 @@ class UserRegisterFormTests(TestCase):
         form = UserRegisterForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('Passwords do not match', form.errors['__all__'])
-    
+
     def test_missing_required_field(self):
         """
         Test missing required field.
@@ -51,7 +51,7 @@ class UserRegisterFormTests(TestCase):
         form = UserRegisterForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('username', form.errors)
-    
+
     def test_email_field_format(self):
         """
         Test email field format.
@@ -67,7 +67,7 @@ class UserRegisterFormTests(TestCase):
         form = UserRegisterForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
-    
+
     def test_unique_username(self):
         """
         Test unique username.

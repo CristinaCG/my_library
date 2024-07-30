@@ -1,18 +1,17 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
 <div class="limiter">
-    <div class="container-login100">
+   <div class="container-login100">
       <div class="wrap-login100">
-        <span class="login100-form-title">
-            Delete Saga 
-        </span>
-        <p>Are you sure you want to delete the saga "{{ booksaga }}"?</p>
-        <form action="" method="post">
+         <span class="login100-form-title">
+         Delete Saga 
+         </span>
+         <p>Are you sure you want to delete the saga "{{ booksaga }}"?</p>
+         <form action="" method="post">
             {% csrf_token %}
             <input class="btn btn-outline-dark" type="submit" value="Confirm" />
-        </form>
+         </form>
       </div>
-  </div>
-  </div>
+   </div>
+</div>
 {% endblock content %}

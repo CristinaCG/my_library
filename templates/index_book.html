@@ -1,126 +1,101 @@
 {% extends 'base_generic.html' %}
-
 {% block content %}
 <div style="display: flex;">
-  <div class="sidebar">
-    {% if user.is_authenticated %}
-      <div class="col-md-9">
-        <h2>Currently reading...</h2>
-        <ul class="list-group">
-          {% for book in my_books_reading %}
-            <li class="list-group-item" style="background-color: #f4f4f4;">
-              <h5 class="mb-1">
-                <a class="no-underline" href="{{book.get_absolute_url}} ">
-                  {{ book.title }}
-                </a>
-              </h5>
-              <p class="mb-1 ">
-                Author: 
-                <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
-              </p>
-              {% if book.saga %}
-              <p class="mb-1">
-                <small>
-                  <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
-                    {{ book.saga.name }}
-                  </a>
-                  #{{ book.saga_volume }}
-                </small>
-              </p>
-              {% endif %}
-            </li>
-          {% empty %}
-            <li class="list-group-item" style="background-color: #f4f4f4;">
-              You need a new book!
-            </li>
-          {% endfor %}
-        </ul>
-        <hr class="my-4">
-      </div>
-    {% endif %}
-    <div class="col-md-9">
-      {% if user.is_authenticated %}
-        <h2>Reading statistics</h2>
-        <ul class="list-group">
-          {% if my_books_read %}
-          <li class="list-group-item" style="background-color: #f4f4f4;">
-            Total books: {{ my_books_read }}
-          </li>
-          {% endif %}
-          {% if my_books_this_year %}
-          <li class="list-group-item" style="background-color: #f4f4f4;">
-            Books read this year: {{ my_books_this_year }}
-          </li>
-          {% endif %}
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-  <div style="flex-grow: 1; padding: 20px;">
-    <div class="jumbotron">
-      <h1 class="display-4">Welcome to Your Personal Library</h1>
-      <p class="lead">Manage and keep a record of all the books you have read.</p>
-      <p>Keep track of your reading and discover new books to enjoy with a database with {{ total_books }} books from {{ total_authors }} authors.</p>
-        {% comment %} <a class="btn btn-primary btn-lg" href="{% url 'add_book' %}" role="button">Agregar un nuevo libro</a> {% endcomment %}
-    </div>
-    <hr class="my-4">
-    <div class="col-md-9">
-      <h2>Recent books</h2>
+<div class="sidebar">
+   {% if user.is_authenticated %}
+   <div class="col-md-9">
+      <h2>Currently reading...</h2>
       <ul class="list-group">
-        {% for book in recent_books %}
-          <li class="list-group-item" style="background-color: #f4f4f4;">
+         {% for book in my_books_reading %}
+         <li class="list-group-item" style="background-color: #f4f4f4;">
             <h5 class="mb-1">
-              <a class="no-underline"href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+               <a class="no-underline" href="{{book.get_absolute_url}} ">
+               {{ book.title }}
+               </a>
             </h5>
             <p class="mb-1 ">
-              <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+               Author: 
+               <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
             </p>
             {% if book.saga %}
             <p class="mb-1">
-              <small>
-                Saga
-                <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
-                  {{ book.saga.name }}
-                </a>
-                #{{ book.saga_volume }}
-              </small>
+               <small>
+               <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+               {{ book.saga.name }}
+               </a>
+               #{{ book.saga_volume }}
+               </small>
+            </p>
+            {% endif %}
+         </li>
+         {% empty %}
+         <li class="list-group-item" style="background-color: #f4f4f4;">
+            You need a new book!
+         </li>
+         {% endfor %}
+      </ul>
+      <hr class="my-4">
+   </div>
+   {% endif %}
+   <div class="col-md-9">
+      {% if user.is_authenticated %}
+      <h2>Reading statistics</h2>
+      <ul class="list-group">
+         {% if my_books_read %}
+         <li class="list-group-item" style="background-color: #f4f4f4;">
+            Total books: {{ my_books_read }}
+         </li>
+         {% endif %}
+         {% if my_books_this_year %}
+         <li class="list-group-item" style="background-color: #f4f4f4;">
+            Books read this year: {{ my_books_this_year }}
+         </li>
+         {% endif %}
+         {% endif %}
+      </ul>
+   </div>
+</div>
+<div style="flex-grow: 1; padding: 20px;">
+   <div class="jumbotron">
+      <h1 class="display-4">Welcome to Your Personal Library</h1>
+      <p class="lead">Manage and keep a record of all the books you have read.</p>
+      <p>Keep track of your reading and discover new books to enjoy with a database with {{ total_books }} books from {{ total_authors }} authors.</p>
+      {% comment %} <a class="btn btn-primary btn-lg" href="{% url 'add_book' %}" role="button">Agregar un nuevo libro</a> {% endcomment %}
+   </div>
+   <hr class="my-4">
+   <div class="col-md-9">
+      <h2>Recent books</h2>
+      <ul class="list-group">
+         {% for book in recent_books %}
+         <li class="list-group-item" style="background-color: #f4f4f4;">
+            <h5 class="mb-1">
+               <a class="no-underline"href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+            </h5>
+            <p class="mb-1 ">
+               <a class="no-underline" href="{{ book.author.get_absolute_url }}">{{ book.author }}</a>
+            </p>
+            {% if book.saga %}
+            <p class="mb-1">
+               <small>
+               Saga
+               <a class="no-underline" href="{{ book.saga.get_absolute_url }}">
+               {{ book.saga.name }}
+               </a>
+               #{{ book.saga_volume }}
+               </small>
             </p>
             {% endif %}
             {% comment %} <small class="text-muted">Fecha de finalización: {{ book.date_finished }}</small> {% endcomment %}
-          </li>
-        {% empty %}
-          <li class="list-group-item" style="background-color: #f4f4f4;">
+         </li>
+         {% empty %}
+         <li class="list-group-item" style="background-color: #f4f4f4;">
             No books for now.
-          </li>
-        {% endfor %}
+         </li>
+         {% endfor %}
       </ul>
       <hr class="my-4">
-    </div>
-    <div class="row">
-      
-    </div>
+   </div>
+   <div class="row">
+   </div>
 </div>
 {% endblock %}
-
-{% comment %} {% extends "base_generic.html" %}
-
-{% block content %}
-<h1>GoodWatch Home</h1>
-  {% if user.is_authenticated %}
-    <div class="home-greeting">
-      <p>Hello, {{ user.first_name }}!</p>
-    </div>
-  {% endif %}
-  <p>Welcome to <em>GoodWatch</em>, a very basic Django website developed as a tutorial example on the Mozilla Developer Network.</p>
-
-<h2>Dynamic content</h2>
-
-  <p>The library has the following record counts:</p>
-  <ul>
-    <li><strong>Books:</strong> {{ num_books }}</li>
-    <!-- <li><strong>Copies:</strong> {{ num_instances }}</li>
-    <li><strong>Copies available:</strong> {{ num_instances_available }}</li> -->
-    <li><strong>Authors:</strong> {{ num_authors }}</li>
-  </ul>
-
-{% endblock %} {% endcomment %}
